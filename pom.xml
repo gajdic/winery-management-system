@@ -19,10 +19,10 @@
     <description>Winery Management System</description>
 
     <modules>
+        <module>customer-service</module>
         <module>harvest-service</module>
         <module>production-service</module>
         <module>inventory-service</module>
-        <module>sales-service</module>
     </modules>
 
     <properties>

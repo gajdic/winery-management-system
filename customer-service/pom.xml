@@ -9,8 +9,8 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>sales-service</artifactId>
-    <name>sales-service</name>
+    <artifactId>customer-service</artifactId>
+    <name>customer-service</name>
 
     <build>
         <plugins>
