@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.salesservice;
+package cz.muni.fi.pa165.customerservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
