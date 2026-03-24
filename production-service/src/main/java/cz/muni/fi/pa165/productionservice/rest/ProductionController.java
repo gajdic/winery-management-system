@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.productionservice.rest;
 import cz.muni.fi.pa165.productionservice.api.*;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.facade.ProductionBranchFacade;
+import cz.muni.fi.pa165.productionservice.facade.ProductionPlanningFacade;
 import cz.muni.fi.pa165.productionservice.facade.WineRecipeFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -16,13 +17,16 @@ import java.util.List;
 @RequestMapping("/api/production")
 public class ProductionController {
     private final WineRecipeFacade wineRecipeFacade;
+    private final ProductionPlanningFacade productionPlanningFacade;
     private final ProductionBranchFacade productionBranchFacade;
 
     public ProductionController(
         WineRecipeFacade wineRecipeFacade,
+        ProductionPlanningFacade productionPlanningFacade,
         ProductionBranchFacade productionBranchFacade
     ) {
         this.wineRecipeFacade = wineRecipeFacade;
+        this.productionPlanningFacade = productionPlanningFacade;
         this.productionBranchFacade = productionBranchFacade;
     }
 
@@ -47,13 +51,13 @@ public class ProductionController {
     @PostMapping("/planning")
     @Operation(summary = "Plan production from harvest lots and recipe requirements", tags = {"Planning"})
     public ResponseEntity<ProductionPlanDto> planProduction(@Valid @RequestBody ProductionPlanRequestDto dto) {
-        return ResponseEntity.ok(wineRecipeFacade.planProduction(dto));
+        return ResponseEntity.ok(productionPlanningFacade.planProduction(dto));
     }
 
     @PostMapping("/quality-evaluations")
     @Operation(summary = "Evaluate expected blend quality for a recipe and harvest set", tags = {"Planning"})
     public ResponseEntity<QualityEvaluationDto> evaluateQuality(@Valid @RequestBody QualityEvaluationRequestDto dto) {
-        return ResponseEntity.ok(wineRecipeFacade.evaluateQuality(dto));
+        return ResponseEntity.ok(productionPlanningFacade.evaluateQuality(dto));
     }
 
     @PostMapping("/batches")
