@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
 import cz.muni.fi.pa165.productionservice.data.model.GrapeComponent;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -57,12 +58,26 @@ public class ProductionPlanningService {
     }
 
     public QualityEvaluationDto evaluateBlendQuality(WineRecipe recipe, List<HarvestLot> harvestLots) {
+        if (recipe == null) {
+            throw new IllegalArgumentException("Recipe must not be null.");
+        }
+        if (harvestLots == null) {
+            throw new IllegalArgumentException("Harvest lots must not be null.");
+        }
+        if (recipe.getGrapeComponents() == null || recipe.getGrapeComponents().isEmpty()) {
+            throw new IllegalArgumentException("Recipe must contain at least one grape component.");
+        }
+
         int weightedQuality = calculateWeightedQuality(recipe, harvestLots);
         int targetQuality = (int) Math.round(recipe.getGrapeComponents().stream()
             .mapToInt(GrapeComponent::getPreferredQuality)
             .average()
             .orElse(0));
 
+        return getQualityEvaluationDto(recipe, weightedQuality, targetQuality);
+    }
+
+    private static @NonNull QualityEvaluationDto getQualityEvaluationDto(WineRecipe recipe, int weightedQuality, int targetQuality) {
         QualityEvaluationDto evaluationDto = new QualityEvaluationDto();
         evaluationDto.setRecipeId(recipe.getId());
         evaluationDto.setWeightedQualityScore(weightedQuality);
