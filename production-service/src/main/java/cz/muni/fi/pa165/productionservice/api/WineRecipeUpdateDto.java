@@ -5,12 +5,8 @@ import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class WineRecipeUpdateDto {
-    @NotNull
-    private UUID id;
-
     @NotBlank
     private String name;
 
