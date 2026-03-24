@@ -32,5 +32,10 @@ public class InMemoryWineRecipeRepository implements WineRecipeRepository {
     public List<WineRecipe> findAll() {
         return new ArrayList<>(recipes.values());
     }
+
+    @Override
+    public Optional<WineRecipe> deleteById(UUID id) {
+        return Optional.ofNullable(recipes.remove(id));
+    }
 }
 

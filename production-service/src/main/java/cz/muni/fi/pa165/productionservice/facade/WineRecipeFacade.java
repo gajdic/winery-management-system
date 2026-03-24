@@ -35,4 +35,8 @@ public class WineRecipeFacade {
     public List<WineRecipeDto> findAllRecipes() {
         return wineRecipeService.findAll().stream().map(wineRecipeMapper::mapToDto).toList();
     }
+
+    public WineRecipeDto deleteRecipe(UUID id) {
+        return wineRecipeMapper.mapToDto(wineRecipeService.deleteById(id));
+    }
 }

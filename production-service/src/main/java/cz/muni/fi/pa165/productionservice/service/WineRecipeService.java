@@ -30,4 +30,9 @@ public class WineRecipeService {
     public List<WineRecipe> findAll() {
         return wineRecipeRepository.findAll();
     }
+
+    public WineRecipe deleteById(UUID id) {
+        return wineRecipeRepository.deleteById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Wine recipe with id " + id + " not found"));
+    }
 }

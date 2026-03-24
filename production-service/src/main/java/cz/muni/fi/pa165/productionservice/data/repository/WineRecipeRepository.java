@@ -14,4 +14,6 @@ public interface WineRecipeRepository {
     Optional<WineRecipe> findById(UUID id);
 
     List<WineRecipe> findAll();
+
+    Optional<WineRecipe> deleteById(UUID id);
 }

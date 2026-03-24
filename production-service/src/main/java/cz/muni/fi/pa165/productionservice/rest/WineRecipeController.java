@@ -42,4 +42,10 @@ public class WineRecipeController {
     public ResponseEntity<WineRecipeDto> getRecipe(@PathVariable UUID id) {
         return ResponseEntity.ok(wineRecipeFacade.findRecipe(id));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a wine recipe by id")
+    public ResponseEntity<WineRecipeDto> deleteRecipe(@PathVariable UUID id) {
+        return ResponseEntity.ok(wineRecipeFacade.deleteRecipe(id));
+    }
 }
