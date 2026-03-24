@@ -9,9 +9,6 @@ public class HarvestLot {
     private double availableKilograms;
     private int qualityScore;
 
-    public HarvestLot() {
-    }
-
     public HarvestLot(String grapeType, String vineyardLocation, LocalDate harvestDate, double availableKilograms, int qualityScore) {
         this.grapeType = grapeType;
         this.vineyardLocation = vineyardLocation;

@@ -5,9 +5,6 @@ public class AdditionalIngredient {
     private double quantityPerLiter;
     private String unit;
 
-    public AdditionalIngredient() {
-    }
-
     public AdditionalIngredient(String name, double quantityPerLiter, String unit) {
         this.name = name;
         this.quantityPerLiter = quantityPerLiter;

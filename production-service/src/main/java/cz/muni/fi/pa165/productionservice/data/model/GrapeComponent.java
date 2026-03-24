@@ -5,9 +5,6 @@ public class GrapeComponent {
     private double kilogramsPerLiter;
     private int preferredQuality;
 
-    public GrapeComponent() {
-    }
-
     public GrapeComponent(String grapeType, double kilogramsPerLiter, int preferredQuality) {
         this.grapeType = grapeType;
         this.kilogramsPerLiter = kilogramsPerLiter;
