@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.productionservice.rest;
+package cz.muni.fi.pa165.productionservice.controller;
 
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;

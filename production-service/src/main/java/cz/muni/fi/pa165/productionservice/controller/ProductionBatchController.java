@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.productionservice.rest;
+package cz.muni.fi.pa165.productionservice.controller;
 
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
