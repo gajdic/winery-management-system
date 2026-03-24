@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.productionservice.api;
+package cz.muni.fi.pa165.productionservice.api.error;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
