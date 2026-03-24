@@ -45,6 +45,6 @@ public class ProductionPlanRequestDto {
     }
 
     public void setAvailableHarvests(List<HarvestLotDto> availableHarvests) {
-        this.availableHarvests = availableHarvests;
+        this.availableHarvests = availableHarvests != null ? availableHarvests : new ArrayList<>();
     }
 }
