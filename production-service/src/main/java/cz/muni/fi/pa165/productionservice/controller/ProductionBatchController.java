@@ -7,6 +7,7 @@ import cz.muni.fi.pa165.productionservice.facade.ProductionBatchFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class ProductionBatchController {
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update a production batch status")
-    public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam BatchStatus status) {
+    public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam @NotNull BatchStatus status) {
         return ResponseEntity.ok(productionBatchFacade.updateBatchStatus(id, status));
     }
 }
