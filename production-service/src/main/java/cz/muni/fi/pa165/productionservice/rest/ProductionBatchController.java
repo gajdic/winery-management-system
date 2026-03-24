@@ -27,32 +27,32 @@ public class ProductionBatchController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a production batch from a requested bottle count", tags = {"Batches"})
+    @Operation(summary = "Create a production batch from a requested bottle count")
     public ResponseEntity<ProductionBatchDto> createBatch(@Valid @RequestBody ProductionBatchCreateRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(productionBranchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
     }
 
     @GetMapping
-    @Operation(summary = "Get all production batches", tags = {"Batches"})
+    @Operation(summary = "Get all production batches")
     public ResponseEntity<List<ProductionBatchDto>> getBatches() {
         return ResponseEntity.ok(productionBranchFacade.findAllBatches());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a production batch by id", tags = {"Batches"})
+    @Operation(summary = "Get a production batch by id")
     public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable UUID id) {
         return ResponseEntity.ok(productionBranchFacade.findBatch(id));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a production batch by id", tags = {"Batches"})
+    @Operation(summary = "Delete a production batch by id")
     public ResponseEntity<ProductionBatchDto> deleteBatch(@PathVariable UUID id) {
         return ResponseEntity.ok(productionBranchFacade.deleteBatch(id));
     }
 
     @PatchMapping("/{id}/status")
-    @Operation(summary = "Update a production batch status", tags = {"Batches"})
+    @Operation(summary = "Update a production batch status")
     public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam BatchStatus status) {
         return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
     }

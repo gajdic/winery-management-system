@@ -27,13 +27,13 @@ public class ProductionPlanningController {
     }
 
     @PostMapping("/planning")
-    @Operation(summary = "Plan production from harvest lots and recipe requirements", tags = {"Planning"})
+    @Operation(summary = "Plan production from harvest lots and recipe requirements")
     public ResponseEntity<ProductionPlanDto> planProduction(@Valid @RequestBody ProductionPlanRequestDto dto) {
         return ResponseEntity.ok(productionPlanningFacade.planProduction(dto));
     }
 
     @PostMapping("/quality-evaluations")
-    @Operation(summary = "Evaluate expected blend quality for a recipe and harvest set", tags = {"Planning"})
+    @Operation(summary = "Evaluate expected blend quality for a recipe and harvest set")
     public ResponseEntity<QualityEvaluationDto> evaluateQuality(@Valid @RequestBody QualityEvaluationRequestDto dto) {
         return ResponseEntity.ok(productionPlanningFacade.evaluateQuality(dto));
     }
