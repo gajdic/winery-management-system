@@ -13,6 +13,16 @@ import java.util.List;
 @Service
 public class ProductionPlanningService {
     public ProductionPlanDto createProductionPlan(WineRecipe recipe, int desiredBottleCount, List<HarvestLot> harvestLots) {
+        if (recipe == null) {
+            throw new IllegalArgumentException("Recipe must not be null.");
+        }
+        if (harvestLots == null) {
+            throw new IllegalArgumentException("Harvest lots must not be null.");
+        }
+        if (recipe.getGrapeComponents() == null || recipe.getGrapeComponents().isEmpty()) {
+            throw new IllegalArgumentException("Recipe must contain at least one grape component.");
+        }
+
         double requestedLiters = desiredBottleCount * recipe.getBottleVolumeLiters();
 
         double maxLiters = recipe.getGrapeComponents().stream()
