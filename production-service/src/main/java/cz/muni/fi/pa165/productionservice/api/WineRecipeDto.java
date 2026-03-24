@@ -1,6 +1,10 @@
 package cz.muni.fi.pa165.productionservice.api;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WineRecipeDto {
     private Long id;
@@ -18,6 +22,12 @@ public class WineRecipeDto {
 
     @PositiveOrZero
     private double bottleVolumeLiters;
+
+    @Valid
+    private List<GrapeComponentDto> grapeComponents = new ArrayList<>();
+
+    @Valid
+    private List<AdditionalIngredientDto> additionalIngredients = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -65,5 +75,21 @@ public class WineRecipeDto {
 
     public void setBottleVolumeLiters(double bottleVolumeLiters) {
         this.bottleVolumeLiters = bottleVolumeLiters;
+    }
+
+    public List<GrapeComponentDto> getGrapeComponents() {
+        return grapeComponents;
+    }
+
+    public void setGrapeComponents(List<GrapeComponentDto> grapeComponents) {
+        this.grapeComponents = grapeComponents;
+    }
+
+    public List<AdditionalIngredientDto> getAdditionalIngredients() {
+        return additionalIngredients;
+    }
+
+    public void setAdditionalIngredients(List<AdditionalIngredientDto> additionalIngredients) {
+        this.additionalIngredients = additionalIngredients;
     }
 }
