@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public class BatchCreateRequestDto {
+public class ProductionBatchCreateRequestDto {
     @Valid
     @NotNull
     private ProductionBatchCreateDto batch;
