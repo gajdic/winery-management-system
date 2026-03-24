@@ -33,6 +33,6 @@ public class QualityEvaluationRequestDto {
     }
 
     public void setHarvestLots(List<HarvestLotDto> harvestLots) {
-        this.harvestLots = harvestLots;
+        this.harvestLots = harvestLots != null ? harvestLots : new ArrayList<>();
     }
 }
