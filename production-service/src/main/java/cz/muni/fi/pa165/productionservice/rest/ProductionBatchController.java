@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/production/batches")
@@ -40,13 +41,13 @@ public class ProductionBatchController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a production batch by id", tags = {"Batches"})
-    public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable Long id) {
+    public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable UUID id) {
         return ResponseEntity.ok(productionBranchFacade.findBatch(id));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update a production batch status", tags = {"Batches"})
-    public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable Long id, @RequestParam BatchStatus status) {
+    public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam BatchStatus status) {
         return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
     }
 

@@ -9,17 +9,15 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class InMemoryProductionBatchRepository implements ProductionBatchRepository {
-    private final AtomicLong idSequence = new AtomicLong(1);
     private final ConcurrentMap<UUID, ProductionBatch> batches = new ConcurrentHashMap<>();
 
     @Override
     public ProductionBatch save(ProductionBatch batch) {
         if (batch.getId() == null) {
-            batch.setId(idSequence.getAndIncrement());
+            batch.setId(UUID.randomUUID());
         }
         batches.put(batch.getId(), batch);
         return batch;

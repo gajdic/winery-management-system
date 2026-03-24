@@ -9,17 +9,15 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class InMemoryWineRecipeRepository implements WineRecipeRepository {
-    private final AtomicLong idSequence = new AtomicLong(1);
     private final ConcurrentMap<UUID, WineRecipe> recipes = new ConcurrentHashMap<>();
 
     @Override
     public WineRecipe save(WineRecipe wineRecipe) {
         if (wineRecipe.getId() == null) {
-            wineRecipe.setId(idSequence.getAndIncrement());
+            wineRecipe.setId(UUID.randomUUID());
         }
         recipes.put(wineRecipe.getId(), wineRecipe);
         return wineRecipe;
