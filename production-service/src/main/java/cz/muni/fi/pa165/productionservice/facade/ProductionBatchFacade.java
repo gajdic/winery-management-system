@@ -58,7 +58,7 @@ public class ProductionBatchFacade {
         return productionBatchMapper.mapToDto(productionBatchService.updateStatus(id, status));
     }
 
-    public ProductionBatchDto deleteBatch(UUID id) {
-        return productionBatchMapper.mapToDto(productionBatchService.deleteById(id));
+    public void deleteBatch(UUID id) {
+        productionBatchMapper.mapToDto(productionBatchService.deleteById(id));
     }
 }
