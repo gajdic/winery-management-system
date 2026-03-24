@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.controller;
 
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
+import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.facade.WineRecipeFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +42,15 @@ public class WineRecipeController {
     @Operation(summary = "Get a wine recipe by id")
     public ResponseEntity<WineRecipeDto> getRecipe(@PathVariable UUID id) {
         return ResponseEntity.ok(wineRecipeFacade.findRecipe(id));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a wine recipe by id")
+    public ResponseEntity<WineRecipeDto> updateRecipe(
+        @PathVariable UUID id,
+        @Valid @RequestBody WineRecipeUpdateDto dto
+    ) {
+        return ResponseEntity.ok(wineRecipeFacade.updateRecipe(id, dto));
     }
 
     @DeleteMapping("/{id}")

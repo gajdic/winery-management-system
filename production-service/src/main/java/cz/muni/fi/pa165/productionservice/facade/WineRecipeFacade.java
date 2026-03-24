@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.facade;
 
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
+import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ public class WineRecipeFacade {
 
     public List<WineRecipeDto> findAllRecipes() {
         return wineRecipeService.findAll().stream().map(wineRecipeMapper::mapToDto).toList();
+    }
+
+    public WineRecipeDto updateRecipe(UUID id, WineRecipeUpdateDto dto) {
+        return wineRecipeMapper.mapToDto(wineRecipeService.update(id, dto));
     }
 
     public WineRecipeDto deleteRecipe(UUID id) {
