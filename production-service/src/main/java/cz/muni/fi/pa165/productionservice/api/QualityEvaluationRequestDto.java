@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.productionservice.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class QualityEvaluationRequestDto {
     private UUID recipeId;
 
     @Valid
+    @NotEmpty
     private List<HarvestLotDto> harvestLots;
 
     public QualityEvaluationRequestDto() {

@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.productionservice.api;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -16,6 +17,7 @@ public class ProductionPlanRequestDto {
     private int desiredBottleCount;
 
     @Valid
+    @NotEmpty
     private List<HarvestLotDto> availableHarvests;
 
     public ProductionPlanRequestDto() {
