@@ -14,4 +14,6 @@ public interface ProductionBatchRepository {
     Optional<ProductionBatch> findById(UUID id);
 
     List<ProductionBatch> findAll();
+
+    Optional<ProductionBatch> deleteById(UUID id);
 }

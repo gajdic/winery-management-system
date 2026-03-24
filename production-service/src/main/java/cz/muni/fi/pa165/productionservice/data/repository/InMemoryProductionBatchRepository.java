@@ -32,5 +32,10 @@ public class InMemoryProductionBatchRepository implements ProductionBatchReposit
     public List<ProductionBatch> findAll() {
         return new ArrayList<>(batches.values());
     }
+
+    @Override
+    public Optional<ProductionBatch> deleteById(UUID id) {
+        return Optional.ofNullable(batches.remove(id));
+    }
 }
 

@@ -45,10 +45,15 @@ public class ProductionBatchController {
         return ResponseEntity.ok(productionBranchFacade.findBatch(id));
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a production batch by id", tags = {"Batches"})
+    public ResponseEntity<ProductionBatchDto> deleteBatch(@PathVariable UUID id) {
+        return ResponseEntity.ok(productionBranchFacade.deleteBatch(id));
+    }
+
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update a production batch status", tags = {"Batches"})
     public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam BatchStatus status) {
         return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
     }
-
 }
