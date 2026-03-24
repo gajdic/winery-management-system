@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
+import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.facade.StockFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,47 @@ public class StockController {
 	public ResponseEntity<List<StockDetailedViewDto>> findAll() {
 		return ResponseEntity.ok(stockFacade.findAll());
 	}
+
+	@GetMapping("/wine/{wineId}")
+	public ResponseEntity<StockDetailedViewDto> findByWine(@PathVariable UUID wineId) {
+		StockDetailedViewDto stock = stockFacade.findByWine(wineId);
+		if (stock == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(stock);
+	}
+
+	@PostMapping("/{id}/add")
+	public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
+		if (change == null || change.getQuantity() <= 0) {
+			return ResponseEntity.badRequest().build();
+		}
+		try {
+			StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
+			return ResponseEntity.ok(updated);
+		} catch (IllegalArgumentException ex) {
+			if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
+				return ResponseEntity.notFound().build();
+			}
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@PostMapping("/{id}/remove")
+    public ResponseEntity<StockDetailedViewDto> removeFromStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
+        if (change == null || change.getQuantity() <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            StockDetailedViewDto updated = stockFacade.removeFromStock(id, change.getQuantity());
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
 	@PutMapping("/{id}")
 	public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody Stock stock) {

@@ -2,29 +2,30 @@ package cz.muni.fi.pa165.inventoryservice.data.models;
 
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.UUID;
 
 public class Reservation extends EntityBase {
-    private Long customerId;
-    private Long wineId;
+    private UUID customerId;
+    private UUID wineId;
     private int quantity;
     private ReservationStatus status;
-    private Date createdAt;
+    private LocalDate createdAt;
 
-
-    public Long getCustomerId() {
+    public UUID getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(UUID customerId) {
         this.customerId = customerId;
     }
 
-    public Long getWineId() {
+    public UUID getWineId() {
         return wineId;
     }
 
-    public void setWineId(Long wineId) {
+    public void setWineId(UUID wineId) {
         this.wineId = wineId;
     }
 
@@ -44,11 +45,11 @@ public class Reservation extends EntityBase {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 }

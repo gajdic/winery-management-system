@@ -1,7 +1,9 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
 import cz.muni.fi.pa165.inventoryservice.data.models.EntityBase;
+import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class InMemoryRepository<T extends EntityBase> {
@@ -13,9 +15,8 @@ public class InMemoryRepository<T extends EntityBase> {
         return entity;
     }
 
-    public T findById(UUID id) {
-        return Optional.ofNullable(storage.get(id))
-                .orElseThrow(() -> new IllegalArgumentException("Entity with ID " + id + " not found"));
+    public Optional<T> findById(UUID id) {
+        return Optional.ofNullable(storage.get(id));
     }
 
     public List<T> findAll() {

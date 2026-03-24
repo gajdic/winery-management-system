@@ -1,8 +1,10 @@
 package cz.muni.fi.pa165.inventoryservice.api;
 
+import java.util.UUID;
+
 public class ReservationDetailedViewDto extends ReservationBasicViewDto {
-    private Long wineId;
-    private Long customerId;
+    private UUID wineId;
+    private UUID customerId;
     private int quantity;
 
 
@@ -14,19 +16,19 @@ public class ReservationDetailedViewDto extends ReservationBasicViewDto {
         this.quantity = quantity;
     }
 
-    public Long getWineId() {
+    public UUID getWineId() {
         return wineId;
     }
 
-    public void setWineId(Long wineId) {
+    public void setWineId(UUID wineId) {
         this.wineId = wineId;
     }
 
-    public Long getCustomerId() {
+    public UUID getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(UUID customerId) {
         this.customerId = customerId;
     }
 }

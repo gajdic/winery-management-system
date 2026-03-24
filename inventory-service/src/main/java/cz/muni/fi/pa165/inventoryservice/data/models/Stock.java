@@ -7,7 +7,6 @@ public class Stock extends EntityBase {
     private int quantity;
     private int reservedQuantity;
 
-
     public UUID getWineId() {
         return wineId;
     }
@@ -31,5 +30,5 @@ public class Stock extends EntityBase {
     public void setReservedQuantity(int reservedQuantity) {
         this.reservedQuantity = reservedQuantity;
     }
-}
 
+}

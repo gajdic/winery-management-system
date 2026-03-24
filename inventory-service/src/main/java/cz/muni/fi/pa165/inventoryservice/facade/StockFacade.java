@@ -26,7 +26,21 @@ public class StockFacade {
 	}
 
 	public StockDetailedViewDto findById(UUID id) {
-		return stockMapper.mapToDetailViewDto(stockService.findById(id));
+		Stock stock = stockService.findById(id);
+		return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
+	}
+
+	public StockDetailedViewDto findByWine(UUID wineId) {
+		Stock stock = stockService.findByWine(wineId);
+		return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
+	}
+
+	public StockDetailedViewDto addToStock(UUID id, int quantityToAdd) {
+		return stockMapper.mapToDetailViewDto(stockService.addToStock(id, quantityToAdd));
+	}
+
+	public StockDetailedViewDto removeFromStock(UUID id, int quantityToRemove) {
+		return stockMapper.mapToDetailViewDto(stockService.removeFromStock(id, quantityToRemove));
 	}
 
 	public List<StockDetailedViewDto> findAll() {
