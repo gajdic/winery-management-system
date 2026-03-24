@@ -42,6 +42,6 @@ public class WineRecipeFacade {
     }
 
     public void deleteRecipe(UUID id) {
-        wineRecipeMapper.mapToDto(wineRecipeService.deleteById(id));
+        wineRecipeService.deleteById(id);
     }
 }
