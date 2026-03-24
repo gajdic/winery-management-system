@@ -6,8 +6,6 @@ import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
@@ -25,9 +23,4 @@ public interface GrapeTypeMapper {
 
     // update dto -> existing entity
     void updateEntity(GrapeTypeUpdateDto dto, @MappingTarget GrapeType grapeType);
-
-    // map to page
-//    default Page<GrapeTypeViewDto> mapToPageDto(Page<GrapeType> grapeTypes) {
-//        return new PageImpl<>(mapToList(grapeTypes.getContent()), grapeTypes.getPageable(), grapeTypes.getTotalPages());
-//    }
 }

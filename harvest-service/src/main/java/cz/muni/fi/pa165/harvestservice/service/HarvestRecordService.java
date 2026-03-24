@@ -7,9 +7,9 @@ import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.HarvestRecordRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
 import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +20,7 @@ public class HarvestRecordService {
     private final VineyardRepository vineyardRepository;
     private final GrapeTypeRepository grapeTypeRepository;
 
+    @Autowired
     public HarvestRecordService(HarvestRecordRepository harvestRecordRepository,
                                 VineyardRepository vineyardRepository,
                                 GrapeTypeRepository grapeTypeRepository) {
@@ -90,53 +91,55 @@ public class HarvestRecordService {
         return harvestRecordRepository.findAll();
     }
 
-    public HarvestRecord update(UUID id,
-                                UUID vineyardId,
-                                UUID grapeTypeId,
-                                LocalDate harvestDate,
-                                double quantity,
-                                int quality) {
-
-        HarvestRecord existing = harvestRecordRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Harvest record with id " + id + " was not found."
-            ));
-
-        if (vineyardId == null) {
-            throw new IllegalArgumentException("Vineyard id cannot be null.");
+    public HarvestRecord update(HarvestRecord harvestRecord) {
+        if (harvestRecord == null) {
+            throw new IllegalArgumentException("Harvest record cannot be null.");
         }
 
-        if (grapeTypeId == null) {
-            throw new IllegalArgumentException("Grape type id cannot be null.");
+        if (harvestRecord.getId() == null) {
+            throw new IllegalArgumentException("Harvest record id cannot be null.");
         }
 
-        Vineyard vineyard = vineyardRepository.findById(vineyardId)
+        if (harvestRecord.getVineyard() == null || harvestRecord.getVineyard().getId() == null) {
+            throw new IllegalArgumentException("Vineyard cannot be null.");
+        }
+
+        if (harvestRecord.getGrapeType() == null || harvestRecord.getGrapeType().getId() == null) {
+            throw new IllegalArgumentException("Grape type cannot be null.");
+        }
+
+        HarvestRecord existing = harvestRecordRepository.findById(harvestRecord.getId())
             .orElseThrow(() -> new ResourceNotFoundException(
-                "Vineyard with id " + vineyardId + " was not found."
+                "Harvest record with id " + harvestRecord.getId() + " was not found."
             ));
 
-        GrapeType grapeType = grapeTypeRepository.findById(grapeTypeId)
+        Vineyard vineyard = vineyardRepository.findById(harvestRecord.getVineyard().getId())
             .orElseThrow(() -> new ResourceNotFoundException(
-                "Grape type with id " + grapeTypeId + " was not found."
+                "Vineyard with id " + harvestRecord.getVineyard().getId() + " was not found."
             ));
 
-        if (harvestDate == null) {
+        GrapeType grapeType = grapeTypeRepository.findById(harvestRecord.getGrapeType().getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Grape type with id " + harvestRecord.getGrapeType().getId() + " was not found."
+            ));
+
+        if (harvestRecord.getHarvestDate() == null) {
             throw new IllegalArgumentException("Harvest date cannot be null.");
         }
 
-        if (quantity <= 0) {
+        if (harvestRecord.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0.");
         }
 
-        if (quality < 0 || quality > 10) {
-            throw new IllegalArgumentException("Quality must be between 0 and 10.");
+        if (harvestRecord.getQuality() < 1 || harvestRecord.getQuality() > 10) {
+            throw new IllegalArgumentException("Quality must be between 1 and 10.");
         }
 
         existing.setVineyard(vineyard);
         existing.setGrapeType(grapeType);
-        existing.setHarvestDate(harvestDate);
-        existing.setQuantity(quantity);
-        existing.setQuality(quality);
+        existing.setHarvestDate(harvestRecord.getHarvestDate());
+        existing.setQuantity(harvestRecord.getQuantity());
+        existing.setQuality(harvestRecord.getQuality());
 
         return harvestRecordRepository.save(existing);
     }

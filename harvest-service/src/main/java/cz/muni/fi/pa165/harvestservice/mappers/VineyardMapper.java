@@ -23,9 +23,4 @@ public interface VineyardMapper {
 
     // update dto -> existing entity
     void updateEntity(VineyardUpdateDto dto, @MappingTarget Vineyard vineyard);
-
-    // map to page
-//    default Page<VineyardViewDto> mapToPageDto(Page<Vineyard> vineyards) {
-//        return new PageImpl<>(mapToList(vineyards.getContent()), vineyards.getPageable(), vineyards.getTotalPages());
-//    }
 }

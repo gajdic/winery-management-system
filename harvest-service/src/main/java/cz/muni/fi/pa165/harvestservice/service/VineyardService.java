@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.harvestservice.service;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
 import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class VineyardService {
 
     private final VineyardRepository vineyardRepository;
 
+    @Autowired
     public VineyardService(VineyardRepository vineyardRepository) {
         this.vineyardRepository = vineyardRepository;
     }
@@ -43,27 +45,38 @@ public class VineyardService {
         return vineyardRepository.findAll();
     }
 
-    public Vineyard update(UUID id, String name, String location, double areaSize, String description) {
-        Vineyard vineyard = findById(id);
+    public Vineyard update(Vineyard vineyard) {
+        if (vineyard == null) {
+            throw new IllegalArgumentException("Vineyard cannot be null.");
+        }
 
-        if (name == null || name.isBlank()) {
+        if (vineyard.getId() == null) {
+            throw new IllegalArgumentException("Vineyard id cannot be null.");
+        }
+
+        if  (vineyard.getName() == null || vineyard.getName().isBlank()) {
             throw new IllegalArgumentException("Vineyard name cannot be null or blank.");
         }
 
-        if (location == null || location.isBlank()) {
+        if (vineyard.getLocation() == null || vineyard.getLocation().isBlank()) {
             throw new IllegalArgumentException("Location cannot be null or blank.");
         }
 
-        if (areaSize <= 0) {
+        if (vineyard.getAreaSize() <= 0) {
             throw new IllegalArgumentException("Area size must be greater than 0.");
         }
 
-        vineyard.setName(name);
-        vineyard.setLocation(location);
-        vineyard.setAreaSize(areaSize);
-        vineyard.setDescription(description);
+        Vineyard existing = vineyardRepository.findById(vineyard.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Vineyard with id: " + vineyard.getId() + " was not found."
+            ));
 
-        return vineyardRepository.save(vineyard);
+        existing.setName(vineyard.getName());
+        existing.setLocation(vineyard.getLocation());
+        existing.setAreaSize(vineyard.getAreaSize());
+        existing.setDescription(vineyard.getDescription());
+
+        return vineyardRepository.save(existing);
     }
 
     public void deleteById(UUID id) {

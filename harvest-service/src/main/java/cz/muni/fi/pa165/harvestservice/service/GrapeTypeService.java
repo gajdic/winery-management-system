@@ -13,13 +13,14 @@ import java.util.UUID;
 public class GrapeTypeService {
     private final GrapeTypeRepository grapeTypeRepository;
 
+    @Autowired
     public GrapeTypeService(GrapeTypeRepository grapeTypeRepository) {
         this.grapeTypeRepository = grapeTypeRepository;
     }
 
     public GrapeType create(GrapeType grapeType) {
         if (grapeType == null) {
-            throw new IllegalArgumentException("GrapeType cannot be null");
+            throw new IllegalArgumentException("Grape type cannot be null");
         }
 
         if  (grapeType.getName() == null || grapeType.getName().isBlank()) {
@@ -43,18 +44,26 @@ public class GrapeTypeService {
         return grapeTypeRepository.findAll();
     }
 
-    public GrapeType update(UUID id, String name, String description) {
-        GrapeType existing = grapeTypeRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "GrapeType with id: " + id + " was not found."
-            ));
-
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("GrapeType name cannot be null or blank");
+    public GrapeType update(GrapeType grapeType) {
+        if  (grapeType == null) {
+            throw new IllegalArgumentException("Grape type cannot be null");
         }
 
-        existing.setName(name);
-        existing.setDescription(description);
+        if (grapeType.getId() == null) {
+            throw new IllegalArgumentException("Grape type id cannot be null");
+        }
+
+        if  (grapeType.getName() == null || grapeType.getName().isBlank()) {
+            throw new IllegalArgumentException("Grape type name cannot be null or blank");
+        }
+
+        GrapeType existing = grapeTypeRepository.findById(grapeType.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Grape type with id: " + grapeType.getId() + " was not found."
+            ));
+
+        existing.setName(grapeType.getName());
+        existing.setDescription(grapeType.getDescription());
 
         return grapeTypeRepository.save(existing);
     }
