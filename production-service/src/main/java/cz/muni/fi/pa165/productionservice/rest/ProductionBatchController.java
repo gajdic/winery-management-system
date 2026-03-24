@@ -1,0 +1,51 @@
+package cz.muni.fi.pa165.productionservice.rest;
+
+import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
+import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
+import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
+import cz.muni.fi.pa165.productionservice.facade.ProductionBranchFacade;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/production")
+@Tag(name = "Production Batches", description = "Endpoints for managing production batches")
+public class ProductionBatchController {
+    private final ProductionBranchFacade productionBranchFacade;
+
+    public ProductionBatchController(ProductionBranchFacade productionBranchFacade) {
+        this.productionBranchFacade = productionBranchFacade;
+    }
+
+    @PostMapping("/batches")
+    @Operation(summary = "Create a production batch from a requested bottle count", tags = {"Batches"})
+    public ResponseEntity<ProductionBatchDto> createBatch(@Valid @RequestBody ProductionBatchCreateRequestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(productionBranchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
+    }
+
+    @GetMapping("/batches")
+    @Operation(summary = "Get all production batches", tags = {"Batches"})
+    public ResponseEntity<List<ProductionBatchDto>> getBatches() {
+        return ResponseEntity.ok(productionBranchFacade.findAllBatches());
+    }
+
+    @GetMapping("/batches/{id}")
+    @Operation(summary = "Get a production batch by id", tags = {"Batches"})
+    public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable Long id) {
+        return ResponseEntity.ok(productionBranchFacade.findBatch(id));
+    }
+
+    @PatchMapping("/batches/{id}/status")
+    @Operation(summary = "Update a production batch status", tags = {"Batches"})
+    public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable Long id, @RequestParam BatchStatus status) {
+        return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
+    }
+
+}
