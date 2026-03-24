@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class WineRecipeDto {
+    @NotNull
     private UUID id;
 
     @NotBlank
