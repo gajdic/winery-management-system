@@ -16,59 +16,59 @@ import java.util.UUID;
 @RequestMapping("/stocks")
 public class StockController {
 
-	private final StockFacade stockFacade;
+    private final StockFacade stockFacade;
 
     @Autowired
-	public StockController(StockFacade stockFacade) {
-		this.stockFacade = stockFacade;
-	}
+    public StockController(StockFacade stockFacade) {
+        this.stockFacade = stockFacade;
+    }
 
-	@PostMapping
-	public ResponseEntity<StockDetailedViewDto> create(@RequestBody Stock stock) {
-		StockDetailedViewDto created = stockFacade.create(stock);
-		return ResponseEntity.status(HttpStatus.CREATED).body(created);
-	}
+    @PostMapping
+    public ResponseEntity<StockDetailedViewDto> create(@RequestBody Stock stock) {
+        StockDetailedViewDto created = stockFacade.create(stock);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<StockDetailedViewDto> findById(@PathVariable UUID id) {
-		StockDetailedViewDto stock = stockFacade.findById(id);
-		if (stock == null) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(stock);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<StockDetailedViewDto> findById(@PathVariable UUID id) {
+        StockDetailedViewDto stock = stockFacade.findById(id);
+        if (stock == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(stock);
+    }
 
-	@GetMapping
-	public ResponseEntity<List<StockDetailedViewDto>> findAll() {
-		return ResponseEntity.ok(stockFacade.findAll());
-	}
+    @GetMapping
+    public ResponseEntity<List<StockDetailedViewDto>> findAll() {
+        return ResponseEntity.ok(stockFacade.findAll());
+    }
 
-	@GetMapping("/wine/{wineId}")
-	public ResponseEntity<StockDetailedViewDto> findByWine(@PathVariable UUID wineId) {
-		StockDetailedViewDto stock = stockFacade.findByWine(wineId);
-		if (stock == null) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(stock);
-	}
+    @GetMapping("/wine/{wineId}")
+    public ResponseEntity<StockDetailedViewDto> findByWine(@PathVariable UUID wineId) {
+        StockDetailedViewDto stock = stockFacade.findByWine(wineId);
+        if (stock == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(stock);
+    }
 
-	@PostMapping("/{id}/add")
-	public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
-		if (change == null || change.getQuantity() <= 0) {
-			return ResponseEntity.badRequest().build();
-		}
-		try {
-			StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
-			return ResponseEntity.ok(updated);
-		} catch (IllegalArgumentException ex) {
-			if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
-				return ResponseEntity.notFound().build();
-			}
-			return ResponseEntity.badRequest().build();
-		}
-	}
+    @PostMapping("/{id}/add")
+    public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
+        if (change == null || change.getQuantity() <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException ex) {
+            if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-	@PostMapping("/{id}/remove")
+    @PostMapping("/{id}/remove")
     public ResponseEntity<StockDetailedViewDto> removeFromStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
         if (change == null || change.getQuantity() <= 0) {
             return ResponseEntity.badRequest().build();
@@ -84,17 +84,17 @@ public class StockController {
         }
     }
 
-	@PutMapping("/{id}")
-	public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody Stock stock) {
-		stock.setId(id);
-		StockDetailedViewDto updated = stockFacade.update(stock);
-		return ResponseEntity.ok(updated);
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody Stock stock) {
+        stock.setId(id);
+        StockDetailedViewDto updated = stockFacade.update(stock);
+        return ResponseEntity.ok(updated);
+    }
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable UUID id) {
-		boolean deleted = stockFacade.delete(id);
-		return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-	}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        boolean deleted = stockFacade.delete(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 
 }

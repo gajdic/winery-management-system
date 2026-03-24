@@ -1,9 +1,7 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
-import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
-import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class StockService {
         validatePositiveQuantity(quantityToRemove);
 
         Stock stock = stockRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
 
         int available = stock.getQuantity() - stock.getReservedQuantity();
         if (quantityToRemove > available) {

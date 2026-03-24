@@ -2,14 +2,14 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
-import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
+import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,10 +47,10 @@ public class ReservationController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<ReservationBasicViewDto>> filter(
-            @RequestParam(required = false) UUID customerId,
-            @RequestParam(required = false) UUID wineId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAfter,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore) {
+        @RequestParam(required = false) UUID customerId,
+        @RequestParam(required = false) UUID wineId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdAfter,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore) {
         return ResponseEntity.ok(reservationFacade.filter(customerId, wineId, createdAfter, createdBefore));
     }
 

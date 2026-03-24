@@ -11,7 +11,7 @@ public class ReservationRepository extends InMemoryRepository<Reservation> {
 
     public Reservation updateStatus(UUID id, ReservationStatus status) {
         Reservation reservation = super.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + id));
+            .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + id));
         reservation.setStatus(status);
         return super.update(reservation);
     }

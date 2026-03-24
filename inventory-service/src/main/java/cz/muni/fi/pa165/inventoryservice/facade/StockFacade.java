@@ -12,46 +12,46 @@ import java.util.UUID;
 
 @Component
 public class StockFacade {
-	private final StockService stockService;
-	private final StockMapper stockMapper;
+    private final StockService stockService;
+    private final StockMapper stockMapper;
 
     @Autowired
-	public StockFacade(StockService stockService, StockMapper stockMapper) {
-		this.stockService = stockService;
-		this.stockMapper = stockMapper;
-	}
+    public StockFacade(StockService stockService, StockMapper stockMapper) {
+        this.stockService = stockService;
+        this.stockMapper = stockMapper;
+    }
 
-	public StockDetailedViewDto create(Stock stock) {
-		return stockMapper.mapToDetailViewDto(stockService.create(stock));
-	}
+    public StockDetailedViewDto create(Stock stock) {
+        return stockMapper.mapToDetailViewDto(stockService.create(stock));
+    }
 
-	public StockDetailedViewDto findById(UUID id) {
-		Stock stock = stockService.findById(id);
-		return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
-	}
+    public StockDetailedViewDto findById(UUID id) {
+        Stock stock = stockService.findById(id);
+        return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
+    }
 
-	public StockDetailedViewDto findByWine(UUID wineId) {
-		Stock stock = stockService.findByWine(wineId);
-		return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
-	}
+    public StockDetailedViewDto findByWine(UUID wineId) {
+        Stock stock = stockService.findByWine(wineId);
+        return stock == null ? null : stockMapper.mapToDetailViewDto(stock);
+    }
 
-	public StockDetailedViewDto addToStock(UUID id, int quantityToAdd) {
-		return stockMapper.mapToDetailViewDto(stockService.addToStock(id, quantityToAdd));
-	}
+    public StockDetailedViewDto addToStock(UUID id, int quantityToAdd) {
+        return stockMapper.mapToDetailViewDto(stockService.addToStock(id, quantityToAdd));
+    }
 
-	public StockDetailedViewDto removeFromStock(UUID id, int quantityToRemove) {
-		return stockMapper.mapToDetailViewDto(stockService.removeFromStock(id, quantityToRemove));
-	}
+    public StockDetailedViewDto removeFromStock(UUID id, int quantityToRemove) {
+        return stockMapper.mapToDetailViewDto(stockService.removeFromStock(id, quantityToRemove));
+    }
 
-	public List<StockDetailedViewDto> findAll() {
+    public List<StockDetailedViewDto> findAll() {
         return stockMapper.mapToList(stockService.findAll());
-	}
+    }
 
-	public StockDetailedViewDto update(Stock stock) {
-		return stockMapper.mapToDetailViewDto(stockService.update(stock));
-	}
+    public StockDetailedViewDto update(Stock stock) {
+        return stockMapper.mapToDetailViewDto(stockService.update(stock));
+    }
 
-	public boolean delete(UUID id) {
-		return stockService.delete(id);
-	}
+    public boolean delete(UUID id) {
+        return stockService.delete(id);
+    }
 }

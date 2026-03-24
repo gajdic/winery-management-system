@@ -3,7 +3,6 @@ package cz.muni.fi.pa165.inventoryservice.api;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 public class ReservationBasicViewDto {
