@@ -80,7 +80,7 @@ public class WineRecipeUpdateDto {
     }
 
     public void setGrapeComponents(List<GrapeComponentDto> grapeComponents) {
-        this.grapeComponents = grapeComponents;
+        this.grapeComponents = grapeComponents != null ? grapeComponents : new ArrayList<>();
     }
 
     public List<AdditionalIngredientDto> getAdditionalIngredients() {
@@ -88,6 +88,6 @@ public class WineRecipeUpdateDto {
     }
 
     public void setAdditionalIngredients(List<AdditionalIngredientDto> additionalIngredients) {
-        this.additionalIngredients = additionalIngredients;
+        this.additionalIngredients = additionalIngredients != null ? additionalIngredients : new ArrayList<>();
     }
 }
