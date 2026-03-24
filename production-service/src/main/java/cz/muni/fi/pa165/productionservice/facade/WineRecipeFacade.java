@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class WineRecipeFacade {
@@ -27,7 +28,7 @@ public class WineRecipeFacade {
         return wineRecipeMapper.toDto(wineRecipeService.create(wineRecipeMapper.toEntity(dto)));
     }
 
-    public WineRecipeDto findRecipe(Long id) {
+    public WineRecipeDto findRecipe(UUID id) {
         return wineRecipeMapper.toDto(wineRecipeService.findById(id));
     }
 

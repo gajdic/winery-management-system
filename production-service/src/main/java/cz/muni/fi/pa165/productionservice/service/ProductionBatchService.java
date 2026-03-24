@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductionBatchService {
@@ -20,7 +21,7 @@ public class ProductionBatchService {
         this.productionBatchRepository = productionBatchRepository;
     }
 
-    public ProductionBatch createPlannedBatch(Long recipeId, ProductionPlanDto plan) {
+    public ProductionBatch createPlannedBatch(UUID recipeId, ProductionPlanDto plan) {
         ProductionBatch batch = new ProductionBatch();
         batch.setRecipeId(recipeId);
         batch.setPlannedBottleCount(plan.getFeasibleBottleCount());
@@ -31,7 +32,7 @@ public class ProductionBatchService {
         return productionBatchRepository.save(batch);
     }
 
-    public ProductionBatch findById(Long id) {
+    public ProductionBatch findById(UUID id) {
         return productionBatchRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Production batch with id " + id + " was not found."));
     }
@@ -40,7 +41,7 @@ public class ProductionBatchService {
         return productionBatchRepository.findAll();
     }
 
-    public ProductionBatch updateStatus(Long id, BatchStatus status) {
+    public ProductionBatch updateStatus(UUID id, BatchStatus status) {
         ProductionBatch batch = findById(id);
         batch.setStatus(status);
         return productionBatchRepository.save(batch);

@@ -2,8 +2,10 @@ package cz.muni.fi.pa165.productionservice.api;
 
 import jakarta.validation.constraints.PositiveOrZero;
 
+import java.util.UUID;
+
 public class QualityEvaluationDto {
-    private Long recipeId;
+    private UUID recipeId;
 
     @PositiveOrZero
     private int weightedQualityScore;
@@ -11,11 +13,11 @@ public class QualityEvaluationDto {
     private boolean recipeQualityTargetMet;
     private String recommendation;
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 

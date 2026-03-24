@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class InMemoryProductionBatchRepository implements ProductionBatchRepository {
     private final AtomicLong idSequence = new AtomicLong(1);
-    private final ConcurrentMap<Long, ProductionBatch> batches = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, ProductionBatch> batches = new ConcurrentHashMap<>();
 
     @Override
     public ProductionBatch save(ProductionBatch batch) {
@@ -25,7 +26,7 @@ public class InMemoryProductionBatchRepository implements ProductionBatchReposit
     }
 
     @Override
-    public Optional<ProductionBatch> findById(Long id) {
+    public Optional<ProductionBatch> findById(UUID id) {
         return Optional.ofNullable(batches.get(id));
     }
 

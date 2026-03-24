@@ -5,12 +5,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface WineRecipeRepository {
     WineRecipe save(WineRecipe wineRecipe);
 
-    Optional<WineRecipe> findById(Long id);
+    Optional<WineRecipe> findById(UUID id);
 
     List<WineRecipe> findAll();
 }

@@ -5,9 +5,10 @@ import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class WineRecipeDto {
-    private Long id;
+    private UUID id;
 
     @NotBlank
     private String name;
@@ -29,11 +30,11 @@ public class WineRecipeDto {
     @Valid
     private List<AdditionalIngredientDto> additionalIngredients = new ArrayList<>();
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

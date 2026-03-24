@@ -2,9 +2,10 @@ package cz.muni.fi.pa165.productionservice.data.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class WineRecipe {
-    private Long id;
+    private UUID id;
     private String name;
     private int productionYear;
     private double alcoholPercentage;
@@ -19,11 +20,11 @@ public class WineRecipe {
         additionalIngredients = new ArrayList<>();
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -12,9 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/production")
+@RequestMapping("/api/production/recipes")
 @Tag(name = "Wine Recipe", description = "Endpoints for managing wine recipes")
 public class WineRecipeController {
     private final WineRecipeFacade wineRecipeFacade;
@@ -24,21 +25,21 @@ public class WineRecipeController {
         this.wineRecipeFacade = wineRecipeFacade;
     }
 
-    @PostMapping("/recipes")
+    @PostMapping
     @Operation(summary = "Create a wine recipe")
     public ResponseEntity<WineRecipeDto> createRecipe(@Valid @RequestBody WineRecipeCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(wineRecipeFacade.createRecipe(dto));
     }
 
-    @GetMapping("/recipes")
+    @GetMapping
     @Operation(summary = "Get all wine recipes")
     public ResponseEntity<List<WineRecipeDto>> getRecipes() {
         return ResponseEntity.ok(wineRecipeFacade.findAllRecipes());
     }
 
-    @GetMapping("/recipes/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get a wine recipe by id")
-    public ResponseEntity<WineRecipeDto> getRecipe(@PathVariable Long id) {
+    public ResponseEntity<WineRecipeDto> getRecipe(@PathVariable UUID id) {
         return ResponseEntity.ok(wineRecipeFacade.findRecipe(id));
     }
 }

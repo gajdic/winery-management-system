@@ -3,10 +3,11 @@ package cz.muni.fi.pa165.productionservice.data.model;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class ProductionBatch {
-    private Long id;
-    private Long recipeId;
+    private UUID id;
+    private UUID recipeId;
     private double plannedLiters;
     private int plannedBottleCount;
     private int actualBottleCount;
@@ -16,19 +17,19 @@ public class ProductionBatch {
     public ProductionBatch() {
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductionBranchFacade {
@@ -49,11 +50,11 @@ public class ProductionBranchFacade {
         return productionBatchService.findAll().stream().map(productionBatchMapper::toDto).toList();
     }
 
-    public ProductionBatchDto findBatch(Long id) {
+    public ProductionBatchDto findBatch(UUID id) {
         return productionBatchMapper.toDto(productionBatchService.findById(id));
     }
 
-    public ProductionBatchDto updateBatchStatus(Long id, BatchStatus status) {
+    public ProductionBatchDto updateBatchStatus(UUID id, BatchStatus status) {
         return productionBatchMapper.toDto(productionBatchService.updateStatus(id, status));
     }
 }

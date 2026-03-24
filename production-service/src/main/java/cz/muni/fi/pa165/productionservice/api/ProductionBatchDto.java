@@ -5,10 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class ProductionBatchDto {
-    private Long id;
-    private Long recipeId;
+    private UUID id;
+    private UUID recipeId;
 
     @PositiveOrZero
     private double plannedLiters;
@@ -23,19 +24,19 @@ public class ProductionBatchDto {
     @NotNull
     private LocalDateTime createdAt;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 

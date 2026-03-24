@@ -5,8 +5,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 
+import java.util.UUID;
+
 public class ProductionPlanDto {
-    private Long recipeId;
+    private UUID recipeId;
 
     @PositiveOrZero
     private int requestedBottleCount;
@@ -25,11 +27,11 @@ public class ProductionPlanDto {
     @Max(100)
     private int estimatedBlendQuality;
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 

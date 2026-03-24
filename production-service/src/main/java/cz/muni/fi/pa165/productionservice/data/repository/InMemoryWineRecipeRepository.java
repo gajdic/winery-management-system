@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Repository
 public class InMemoryWineRecipeRepository implements WineRecipeRepository {
     private final AtomicLong idSequence = new AtomicLong(1);
-    private final ConcurrentMap<Long, WineRecipe> recipes = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, WineRecipe> recipes = new ConcurrentHashMap<>();
 
     @Override
     public WineRecipe save(WineRecipe wineRecipe) {
@@ -25,7 +26,7 @@ public class InMemoryWineRecipeRepository implements WineRecipeRepository {
     }
 
     @Override
-    public Optional<WineRecipe> findById(Long id) {
+    public Optional<WineRecipe> findById(UUID id) {
         return Optional.ofNullable(recipes.get(id));
     }
 

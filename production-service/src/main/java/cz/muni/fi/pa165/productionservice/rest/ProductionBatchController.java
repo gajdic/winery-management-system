@@ -25,14 +25,14 @@ public class ProductionBatchController {
         this.productionBranchFacade = productionBranchFacade;
     }
 
-    @PostMapping("")
+    @PostMapping
     @Operation(summary = "Create a production batch from a requested bottle count", tags = {"Batches"})
     public ResponseEntity<ProductionBatchDto> createBatch(@Valid @RequestBody ProductionBatchCreateRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(productionBranchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
     }
 
-    @GetMapping("")
+    @GetMapping
     @Operation(summary = "Get all production batches", tags = {"Batches"})
     public ResponseEntity<List<ProductionBatchDto>> getBatches() {
         return ResponseEntity.ok(productionBranchFacade.findAllBatches());

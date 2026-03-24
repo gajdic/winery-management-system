@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class WineRecipeService {
@@ -21,7 +22,7 @@ public class WineRecipeService {
         return wineRecipeRepository.save(wineRecipe);
     }
 
-    public WineRecipe findById(Long id) {
+    public WineRecipe findById(UUID id) {
         return wineRecipeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Wine recipe with id " + id + " not found"));
     }

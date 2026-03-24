@@ -6,10 +6,11 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProductionPlanRequestDto {
     @NotNull
-    private Long recipeId;
+    private UUID recipeId;
 
     @PositiveOrZero
     private int desiredBottleCount;
@@ -21,11 +22,11 @@ public class ProductionPlanRequestDto {
         availableHarvests = new ArrayList<>();
     }
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 

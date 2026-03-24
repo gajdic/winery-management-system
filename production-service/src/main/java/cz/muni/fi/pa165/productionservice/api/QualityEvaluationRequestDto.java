@@ -5,10 +5,11 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class QualityEvaluationRequestDto {
     @NotNull
-    private Long recipeId;
+    private UUID recipeId;
 
     @Valid
     private List<HarvestLotDto> harvestLots;
@@ -17,11 +18,11 @@ public class QualityEvaluationRequestDto {
         harvestLots = new ArrayList<>();
     }
 
-    public Long getRecipeId() {
+    public UUID getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(Long recipeId) {
+    public void setRecipeId(UUID recipeId) {
         this.recipeId = recipeId;
     }
 
