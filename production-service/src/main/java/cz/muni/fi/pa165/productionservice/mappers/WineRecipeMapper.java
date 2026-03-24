@@ -3,7 +3,9 @@ package cz.muni.fi.pa165.productionservice.mappers;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
+import org.springframework.stereotype.Service;
 
+@Service
 public class WineRecipeMapper {
     public WineRecipe toEntity(WineRecipeCreateDto dto) {
         WineRecipe recipe = new WineRecipe();

@@ -2,7 +2,9 @@ package cz.muni.fi.pa165.productionservice.mappers;
 
 import cz.muni.fi.pa165.productionservice.api.GrapeComponentDto;
 import cz.muni.fi.pa165.productionservice.data.model.GrapeComponent;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GrapeComponentMapper {
     public static GrapeComponent toEntity(GrapeComponentDto dto) {
         return new GrapeComponent(dto.getGrapeType(), dto.getKilogramsPerLiter(), dto.getPreferredQuality());
