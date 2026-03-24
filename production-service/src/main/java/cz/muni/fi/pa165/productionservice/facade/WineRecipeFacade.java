@@ -25,14 +25,14 @@ public class WineRecipeFacade {
     }
 
     public WineRecipeDto createRecipe(WineRecipeCreateDto dto) {
-        return wineRecipeMapper.toDto(wineRecipeService.create(wineRecipeMapper.toEntity(dto)));
+        return wineRecipeMapper.mapToDto(wineRecipeService.create(wineRecipeMapper.mapToEntity(dto)));
     }
 
     public WineRecipeDto findRecipe(UUID id) {
-        return wineRecipeMapper.toDto(wineRecipeService.findById(id));
+        return wineRecipeMapper.mapToDto(wineRecipeService.findById(id));
     }
 
     public List<WineRecipeDto> findAllRecipes() {
-        return wineRecipeService.findAll().stream().map(wineRecipeMapper::toDto).toList();
+        return wineRecipeService.findAll().stream().map(wineRecipeMapper::mapToDto).toList();
     }
 }

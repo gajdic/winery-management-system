@@ -43,18 +43,18 @@ public class ProductionBranchFacade {
     public ProductionBatchDto createBatch(ProductionBatchCreateDto dto, List<HarvestLotDto> harvestLots) {
         WineRecipe recipe = wineRecipeService.findById(dto.getRecipeId());
         ProductionPlanDto plan = productionPlanningService.createProductionPlan(recipe, dto.getDesiredBottleCount(), harvestLotMapper.toHarvestEntities(harvestLots));
-        return productionBatchMapper.toDto(productionBatchService.createPlannedBatch(dto.getRecipeId(), plan));
+        return productionBatchMapper.mapToDto(productionBatchService.createPlannedBatch(dto.getRecipeId(), plan));
     }
 
     public List<ProductionBatchDto> findAllBatches() {
-        return productionBatchService.findAll().stream().map(productionBatchMapper::toDto).toList();
+        return productionBatchService.findAll().stream().map(productionBatchMapper::mapToDto).toList();
     }
 
     public ProductionBatchDto findBatch(UUID id) {
-        return productionBatchMapper.toDto(productionBatchService.findById(id));
+        return productionBatchMapper.mapToDto(productionBatchService.findById(id));
     }
 
     public ProductionBatchDto updateBatchStatus(UUID id, BatchStatus status) {
-        return productionBatchMapper.toDto(productionBatchService.updateStatus(id, status));
+        return productionBatchMapper.mapToDto(productionBatchService.updateStatus(id, status));
     }
 }
