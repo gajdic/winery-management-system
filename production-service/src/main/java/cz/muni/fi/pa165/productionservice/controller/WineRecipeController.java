@@ -45,7 +45,8 @@ public class WineRecipeController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a wine recipe by id")
-    public ResponseEntity<WineRecipeDto> deleteRecipe(@PathVariable UUID id) {
-        return ResponseEntity.ok(wineRecipeFacade.deleteRecipe(id));
+    public ResponseEntity<Void> deleteRecipe(@PathVariable UUID id) {
+        wineRecipeFacade.deleteRecipe(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

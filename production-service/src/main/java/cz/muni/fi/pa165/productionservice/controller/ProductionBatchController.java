@@ -48,7 +48,8 @@ public class ProductionBatchController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a production batch by id")
     public ResponseEntity<ProductionBatchDto> deleteBatch(@PathVariable UUID id) {
-        return ResponseEntity.ok(productionBatchFacade.deleteBatch(id));
+        productionBatchFacade.deleteBatch(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/{id}/status")
