@@ -11,8 +11,20 @@
 
     <artifactId>harvest-service</artifactId>
     <name>harvest-service</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.6.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+    </dependency>
+  </dependencies>
 
-    <build>
+  <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
