@@ -1,15 +1,10 @@
 package cz.muni.fi.pa165.productionservice.api;
 
-import jakarta.validation.constraints.PositiveOrZero;
-
 import java.util.UUID;
 
 public class QualityEvaluationDto {
     private UUID recipeId;
-
-    @PositiveOrZero
     private int weightedQualityScore;
-
     private boolean recipeQualityTargetMet;
     private String recommendation;
 

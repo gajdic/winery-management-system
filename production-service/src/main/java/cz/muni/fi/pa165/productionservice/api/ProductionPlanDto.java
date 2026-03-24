@@ -1,30 +1,14 @@
 package cz.muni.fi.pa165.productionservice.api;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-
 import java.util.UUID;
 
 public class ProductionPlanDto {
     private UUID recipeId;
-
-    @PositiveOrZero
     private int requestedBottleCount;
-
-    @PositiveOrZero
     private int feasibleBottleCount;
-
-    @PositiveOrZero
     private double producibleLiters;
     private boolean fullyFeasible;
-
-    @NotBlank
     private String limitingGrapeType;
-
-    @Min(0)
-    @Max(100)
     private int estimatedBlendQuality;
 
     public UUID getRecipeId() {
