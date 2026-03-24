@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.productionservice.facade;
 
-import cz.muni.fi.pa165.productionservice.api.QualityEvaluationRequestDto;
+import cz.muni.fi.pa165.productionservice.api.*;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.mappers.HarvestLotMapper;
