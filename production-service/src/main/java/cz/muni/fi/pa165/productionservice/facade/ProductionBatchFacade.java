@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ProductionBranchFacade {
+public class ProductionBatchFacade {
     private final ProductionBatchService productionBatchService;
     private final ProductionBatchMapper productionBatchMapper;
     private final WineRecipeService wineRecipeService;
@@ -26,7 +26,7 @@ public class ProductionBranchFacade {
     private final HarvestLotMapper harvestLotMapper;
 
     @Autowired
-    public ProductionBranchFacade(
+    public ProductionBatchFacade(
         ProductionBatchService productionBatchService,
         ProductionBatchMapper productionBatchMapper,
         WineRecipeService wineRecipeService,

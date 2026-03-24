@@ -3,7 +3,7 @@ package cz.muni.fi.pa165.productionservice.rest;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
-import cz.muni.fi.pa165.productionservice.facade.ProductionBranchFacade;
+import cz.muni.fi.pa165.productionservice.facade.ProductionBatchFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,41 +19,41 @@ import java.util.UUID;
 @RequestMapping("/api/production/batches")
 @Tag(name = "Production Batches", description = "Endpoints for managing production batches")
 public class ProductionBatchController {
-    private final ProductionBranchFacade productionBranchFacade;
+    private final ProductionBatchFacade productionBatchFacade;
 
     @Autowired
-    public ProductionBatchController(ProductionBranchFacade productionBranchFacade) {
-        this.productionBranchFacade = productionBranchFacade;
+    public ProductionBatchController(ProductionBatchFacade productionBatchFacade) {
+        this.productionBatchFacade = productionBatchFacade;
     }
 
     @PostMapping
     @Operation(summary = "Create a production batch from a requested bottle count")
     public ResponseEntity<ProductionBatchDto> createBatch(@Valid @RequestBody ProductionBatchCreateRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(productionBranchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
+            .body(productionBatchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
     }
 
     @GetMapping
     @Operation(summary = "Get all production batches")
     public ResponseEntity<List<ProductionBatchDto>> getBatches() {
-        return ResponseEntity.ok(productionBranchFacade.findAllBatches());
+        return ResponseEntity.ok(productionBatchFacade.findAllBatches());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a production batch by id")
     public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable UUID id) {
-        return ResponseEntity.ok(productionBranchFacade.findBatch(id));
+        return ResponseEntity.ok(productionBatchFacade.findBatch(id));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a production batch by id")
     public ResponseEntity<ProductionBatchDto> deleteBatch(@PathVariable UUID id) {
-        return ResponseEntity.ok(productionBranchFacade.deleteBatch(id));
+        return ResponseEntity.ok(productionBatchFacade.deleteBatch(id));
     }
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "Update a production batch status")
     public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable UUID id, @RequestParam BatchStatus status) {
-        return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
+        return ResponseEntity.ok(productionBatchFacade.updateBatchStatus(id, status));
     }
 }
