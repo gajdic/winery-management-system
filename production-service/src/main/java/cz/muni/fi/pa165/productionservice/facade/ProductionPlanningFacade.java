@@ -8,6 +8,7 @@ import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.mappers.HarvestLotMapper;
 import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +17,7 @@ public class ProductionPlanningFacade {
     private final HarvestLotMapper harvestLotMapper;
     private final WineRecipeService wineRecipeService;
 
-
+    @Autowired
     public ProductionPlanningFacade(
         ProductionPlanningService productionPlanningService,
         HarvestLotMapper harvestLotMapper,
