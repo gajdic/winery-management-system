@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/production")
+@RequestMapping("/api/production/batches")
 @Tag(name = "Production Batches", description = "Endpoints for managing production batches")
 public class ProductionBatchController {
     private final ProductionBranchFacade productionBranchFacade;
@@ -23,26 +23,26 @@ public class ProductionBatchController {
         this.productionBranchFacade = productionBranchFacade;
     }
 
-    @PostMapping("/batches")
+    @PostMapping("")
     @Operation(summary = "Create a production batch from a requested bottle count", tags = {"Batches"})
     public ResponseEntity<ProductionBatchDto> createBatch(@Valid @RequestBody ProductionBatchCreateRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(productionBranchFacade.createBatch(request.getBatch(), request.getHarvestLots()));
     }
 
-    @GetMapping("/batches")
+    @GetMapping("")
     @Operation(summary = "Get all production batches", tags = {"Batches"})
     public ResponseEntity<List<ProductionBatchDto>> getBatches() {
         return ResponseEntity.ok(productionBranchFacade.findAllBatches());
     }
 
-    @GetMapping("/batches/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get a production batch by id", tags = {"Batches"})
     public ResponseEntity<ProductionBatchDto> getBatch(@PathVariable Long id) {
         return ResponseEntity.ok(productionBranchFacade.findBatch(id));
     }
 
-    @PatchMapping("/batches/{id}/status")
+    @PatchMapping("/{id}/status")
     @Operation(summary = "Update a production batch status", tags = {"Batches"})
     public ResponseEntity<ProductionBatchDto> updateBatchStatus(@PathVariable Long id, @RequestParam BatchStatus status) {
         return ResponseEntity.ok(productionBranchFacade.updateBatchStatus(id, status));
