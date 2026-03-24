@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.socialnetwork.exceptions;
+package cz.muni.fi.pa165.harvestservice.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException() {
