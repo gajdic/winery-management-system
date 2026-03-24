@@ -27,7 +27,7 @@ public interface GrapeTypeMapper {
     void updateEntity(GrapeTypeUpdateDto dto, @MappingTarget GrapeType grapeType);
 
     // map to page
-    default Page<GrapeTypeViewDto> mapToPageDto(Page<GrapeType> grapeTypes) {
-        return new PageImpl<>(mapToList(grapeTypes.getContent()), grapeTypes.getPageable(), grapeTypes.getTotalPages());
-    }
+//    default Page<GrapeTypeViewDto> mapToPageDto(Page<GrapeType> grapeTypes) {
+//        return new PageImpl<>(mapToList(grapeTypes.getContent()), grapeTypes.getPageable(), grapeTypes.getTotalPages());
+//    }
 }
