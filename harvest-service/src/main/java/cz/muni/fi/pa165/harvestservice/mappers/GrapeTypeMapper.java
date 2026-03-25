@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
@@ -19,8 +20,10 @@ public interface GrapeTypeMapper {
     List<GrapeTypeViewDto> mapToList(List<GrapeType> grapeTypes);
 
     // dto -> entity
+    @Mapping(target = "id", ignore = true)
     GrapeType mapToEntity(GrapeTypeCreateDto dto);
 
     // update dto -> existing entity
+    @Mapping(target = "id", ignore = true)
     void updateEntity(GrapeTypeUpdateDto dto, @MappingTarget GrapeType grapeType);
 }

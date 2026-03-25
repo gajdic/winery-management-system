@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.harvestservice.api.dto.VineyardUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
@@ -19,8 +20,10 @@ public interface VineyardMapper {
     List<VineyardViewDto> mapToList(List<Vineyard> vineyards);
 
     // dto -> entity
+    @Mapping(target = "id", ignore = true)
     Vineyard mapToEntity(VineyardCreateDto dto);
 
     // update dto -> existing entity
+    @Mapping(target = "id", ignore = true)
     void updateEntity(VineyardUpdateDto dto, @MappingTarget Vineyard vineyard);
 }
