@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HarvestRecordService {
@@ -89,6 +92,26 @@ public class HarvestRecordService {
 
     public List<HarvestRecord> findAll() {
         return harvestRecordRepository.findAll();
+    }
+
+    public Map<String, Double> summaryByYear() {
+        return harvestRecordRepository.findAll().stream()
+            .filter(record -> record.getHarvestDate() != null)
+            .collect(Collectors.groupingBy(
+                record -> String.valueOf(record.getHarvestDate().getYear()),
+                TreeMap::new,
+                Collectors.summingDouble(HarvestRecord::getQuantity)
+            ));
+    }
+
+    public Map<String, Double> summaryByVineyard() {
+        return harvestRecordRepository.findAll().stream()
+            .filter(record -> record.getVineyard() != null && record.getVineyard().getName() != null)
+            .collect(Collectors.groupingBy(
+                record -> record.getVineyard().getName(),
+                TreeMap::new,
+                Collectors.summingDouble(HarvestRecord::getQuantity)
+            ));
     }
 
     public HarvestRecord update(HarvestRecord harvestRecord) {

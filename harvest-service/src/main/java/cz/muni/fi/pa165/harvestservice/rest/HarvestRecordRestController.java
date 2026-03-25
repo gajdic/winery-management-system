@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.harvestservice.rest;
 
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordUpdateDto;
+import cz.muni.fi.pa165.harvestservice.api.dto.HarvestSummaryDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
 import cz.muni.fi.pa165.harvestservice.facade.HarvestRecordFacade;
 import jakarta.validation.Valid;
@@ -51,6 +52,16 @@ public class HarvestRecordRestController {
     @GetMapping
     public ResponseEntity<List<HarvestRecordViewDto>> findAll() {
         return ResponseEntity.ok(harvestRecordFacade.findAll());
+    }
+
+    @GetMapping("/summary/by-year")
+    public ResponseEntity<List<HarvestSummaryDto>> summaryByYear() {
+        return ResponseEntity.ok(harvestRecordFacade.summaryByYear());
+    }
+
+    @GetMapping("/summary/by-vineyard")
+    public ResponseEntity<List<HarvestSummaryDto>> summaryByVineyard() {
+        return ResponseEntity.ok(harvestRecordFacade.summaryByVineyard());
     }
 
     @PutMapping("/{id}")

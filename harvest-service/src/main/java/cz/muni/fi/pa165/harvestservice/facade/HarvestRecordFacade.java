@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.harvestservice.facade;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
+import cz.muni.fi.pa165.harvestservice.api.dto.HarvestSummaryDto;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.mappers.HarvestRecordMapper;
 import cz.muni.fi.pa165.harvestservice.service.HarvestRecordService;
@@ -48,6 +49,14 @@ public class HarvestRecordFacade {
 
     public List<HarvestRecordViewDto> findAll() {
         return harvestRecordMapper.mapToList(harvestRecordService.findAll());
+    }
+
+    public List<HarvestSummaryDto> summaryByYear() {
+        return harvestRecordMapper.mapSummaryToDtoList(harvestRecordService.summaryByYear());
+    }
+
+    public List<HarvestSummaryDto> summaryByVineyard() {
+        return harvestRecordMapper.mapSummaryToDtoList(harvestRecordService.summaryByVineyard());
     }
 
     public HarvestRecordViewDto update(UUID id, HarvestRecordUpdateDto dto) {

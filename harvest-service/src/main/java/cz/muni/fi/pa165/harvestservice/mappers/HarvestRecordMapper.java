@@ -3,13 +3,13 @@ package cz.muni.fi.pa165.harvestservice.mappers;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
-import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
+import cz.muni.fi.pa165.harvestservice.api.dto.HarvestSummaryDto;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
-import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring")
@@ -23,54 +23,22 @@ public interface HarvestRecordMapper {
 
     List<HarvestRecordViewDto> mapToList(List<HarvestRecord> harvestRecords);
 
-    default HarvestRecord mapToEntity(HarvestRecordCreateDto dto) {
-        if (dto == null) {
-            return null;
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "grapeType.id", source = "grapeTypeId")
+    @Mapping(target = "vineyard.id", source = "vineyardId")
+    HarvestRecord mapToEntity(HarvestRecordCreateDto dto);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "grapeType.id", source = "dto.grapeTypeId")
+    @Mapping(target = "vineyard.id", source = "dto.vineyardId")
+    HarvestRecord mapToEntity(UUID id, HarvestRecordUpdateDto dto);
+
+    default List<HarvestSummaryDto> mapSummaryToDtoList(Map<String, Double> summary) {
+        if (summary == null) {
+            return List.of();
         }
-
-        HarvestRecord harvestRecord = new HarvestRecord();
-        harvestRecord.setGrapeType(mapGrapeType(dto.getGrapeTypeId()));
-        harvestRecord.setVineyard(mapVineyard(dto.getVineyardId()));
-        harvestRecord.setHarvestDate(dto.getHarvestDate());
-        harvestRecord.setQuantity(dto.getQuantity());
-        harvestRecord.setQuality(dto.getQuality());
-
-        return harvestRecord;
-    }
-
-    default HarvestRecord mapToEntity(UUID id, HarvestRecordUpdateDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        HarvestRecord harvestRecord = new HarvestRecord();
-        harvestRecord.setId(id);
-        harvestRecord.setGrapeType(mapGrapeType(dto.getGrapeTypeId()));
-        harvestRecord.setVineyard(mapVineyard(dto.getVineyardId()));
-        harvestRecord.setHarvestDate(dto.getHarvestDate());
-        harvestRecord.setQuantity(dto.getQuantity());
-        harvestRecord.setQuality(dto.getQuality());
-
-        return harvestRecord;
-    }
-
-    default GrapeType mapGrapeType(UUID id) {
-        if (id == null) {
-            return null;
-        }
-
-        GrapeType grapeType = new GrapeType();
-        grapeType.setId(id);
-        return grapeType;
-    }
-
-    default Vineyard mapVineyard(UUID id) {
-        if (id == null) {
-            return null;
-        }
-
-        Vineyard vineyard = new Vineyard();
-        vineyard.setId(id);
-        return vineyard;
+        return summary.entrySet().stream()
+            .map(entry -> new HarvestSummaryDto(entry.getKey(), entry.getValue()))
+            .toList();
     }
 }
