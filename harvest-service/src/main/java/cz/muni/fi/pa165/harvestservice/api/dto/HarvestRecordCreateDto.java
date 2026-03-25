@@ -22,7 +22,7 @@ public class HarvestRecordCreateDto {
     @Positive(message = "Quantity must be greater than 0")
     private double quantity;
 
-    @Min(value = 0, message = "Quality must be at least 0")
+    @Min(value = 1, message = "Quality must be at least 1")
     @Max(value = 10, message = "Quality must be at most 10")
     private int quality;
 
