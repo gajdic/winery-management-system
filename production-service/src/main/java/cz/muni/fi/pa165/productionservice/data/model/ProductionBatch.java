@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.productionservice.data.model;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ProductionBatch {
@@ -71,5 +72,30 @@ public class ProductionBatch {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductionBatch that = (ProductionBatch) o;
+        return Double.compare(plannedLiters, that.plannedLiters) == 0 && plannedBottleCount == that.plannedBottleCount && actualBottleCount == that.actualBottleCount && Objects.equals(id, that.id) && Objects.equals(recipeId, that.recipeId) && status == that.status && Objects.equals(createdAt, that.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, recipeId, plannedLiters, plannedBottleCount, actualBottleCount, status, createdAt);
+    }
+
+    @Override
+    public String toString() {
+        return "ProductionBatch{" +
+            "id=" + id +
+            ", recipeId=" + recipeId +
+            ", plannedLiters=" + plannedLiters +
+            ", plannedBottleCount=" + plannedBottleCount +
+            ", actualBottleCount=" + actualBottleCount +
+            ", status=" + status +
+            ", createdAt=" + createdAt +
+            '}';
     }
 }

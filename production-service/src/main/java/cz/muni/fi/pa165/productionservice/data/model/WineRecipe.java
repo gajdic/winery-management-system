@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.data.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class WineRecipe {
@@ -82,5 +83,31 @@ public class WineRecipe {
 
     public void setAdditionalIngredients(List<AdditionalIngredient> additionalIngredients) {
         this.additionalIngredients = additionalIngredients;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        WineRecipe that = (WineRecipe) o;
+        return productionYear == that.productionYear && Double.compare(alcoholPercentage, that.alcoholPercentage) == 0 && Double.compare(bottleVolumeLiters, that.bottleVolumeLiters) == 0 && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(tastingNotes, that.tastingNotes) && Objects.equals(grapeComponents, that.grapeComponents) && Objects.equals(additionalIngredients, that.additionalIngredients);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, productionYear, alcoholPercentage, tastingNotes, bottleVolumeLiters, grapeComponents, additionalIngredients);
+    }
+
+    @Override
+    public String toString() {
+        return "WineRecipe{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", productionYear=" + productionYear +
+            ", alcoholPercentage=" + alcoholPercentage +
+            ", tastingNotes='" + tastingNotes + '\'' +
+            ", bottleVolumeLiters=" + bottleVolumeLiters +
+            ", grapeComponents=" + grapeComponents +
+            ", additionalIngredients=" + additionalIngredients +
+            '}';
     }
 }
