@@ -57,20 +57,22 @@ public class Vineyard {
             return true;
         }
 
-        if (!(o instanceof Vineyard)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         Vineyard vineyard = (Vineyard) o;
 
-        return Objects.equals(getName(), vineyard.getName())
+        return Double.compare(vineyard.getAreaSize(), getAreaSize()) == 0
+            && Objects.equals(getId(), vineyard.getId())
+            && Objects.equals(getName(), vineyard.getName())
             && Objects.equals(getLocation(), vineyard.getLocation())
-            && getAreaSize() == vineyard.getAreaSize();
+            && Objects.equals(getDescription(), vineyard.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, location, areaSize);
+        return Objects.hash(getId(), getName(), getLocation(), getAreaSize(), getDescription());
     }
 
     @Override

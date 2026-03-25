@@ -68,22 +68,23 @@ public class HarvestRecord {
             return true;
         }
 
-        if (!(o instanceof HarvestRecord)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         HarvestRecord harvestRecord = (HarvestRecord) o;
 
-        return getGrapeType().equals(harvestRecord.getGrapeType())
-            && getVineyard().equals(harvestRecord.getVineyard())
-            && getHarvestDate().equals(harvestRecord.getHarvestDate())
-            && getQuantity() == harvestRecord.getQuantity()
-            && getQuality() == harvestRecord.getQuality();
+        return Double.compare(harvestRecord.getQuantity(), getQuantity()) == 0
+            && Double.compare(harvestRecord.getQuality(), getQuality()) == 0
+            && Objects.equals(getId(), harvestRecord.getId())
+            && Objects.equals(getGrapeType(), harvestRecord.getGrapeType())
+            && Objects.equals(getVineyard(), harvestRecord.getVineyard())
+            && Objects.equals(getHarvestDate(), harvestRecord.getHarvestDate());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(grapeType, vineyard, harvestDate, quantity, quality);
+        return Objects.hash(getId(), getGrapeType(), getVineyard(), getHarvestDate(), getQuantity(), getQuality());
     }
 
     @Override

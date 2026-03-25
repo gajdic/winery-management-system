@@ -38,19 +38,20 @@ public class GrapeType {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof GrapeType)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         GrapeType grapeType = (GrapeType) o;
 
-        return Objects.equals(getName(), grapeType.getName())
+        return Objects.equals(getId(), grapeType.getId())
+            && Objects.equals(getName(), grapeType.getName())
             && Objects.equals(getDescription(), grapeType.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getDescription());
+        return Objects.hash(getId(), getName(), getDescription());
     }
 
     @Override
