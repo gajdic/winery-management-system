@@ -106,9 +106,9 @@ public class HarvestRecordService {
 
     public Map<String, Double> summaryByVineyard() {
         return harvestRecordRepository.findAll().stream()
-            .filter(record -> record.getVineyard() != null && record.getVineyard().getName() != null)
+            .filter(record -> record.getVineyard() != null && record.getVineyard().getId() != null)
             .collect(Collectors.groupingBy(
-                record -> record.getVineyard().getName(),
+                record -> record.getVineyard().getId().toString(),
                 TreeMap::new,
                 Collectors.summingDouble(HarvestRecord::getQuantity)
             ));
