@@ -3,14 +3,9 @@ package cz.muni.fi.pa165.harvestservice.facade;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
-import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
-import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
-import cz.muni.fi.pa165.harvestservice.data.repository.HarvestRecordRepository;
 import cz.muni.fi.pa165.harvestservice.mappers.HarvestRecordMapper;
-import cz.muni.fi.pa165.harvestservice.service.GrapeTypeService;
 import cz.muni.fi.pa165.harvestservice.service.HarvestRecordService;
-import cz.muni.fi.pa165.harvestservice.service.VineyardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

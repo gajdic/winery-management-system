@@ -34,7 +34,7 @@ public class VineyardFacade {
         return vineyardMapper.mapToDto(vineyardService.findById(id));
     }
 
-     public VineyardViewDto findByName(String name) {
+    public VineyardViewDto findByName(String name) {
         return vineyardMapper.mapToDto(vineyardService.findByName(name));
      }
 
