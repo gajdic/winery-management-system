@@ -1,38 +1,121 @@
 # Winery Management System
 
-Winery Management System is a microservice-based Spring Boot application for managing grape harvests, wine production,
-cellar inventory, and customer sales in a winery.
+## Project Description
 
-## Project description
+Winery Management System is a microservice-based Spring Boot application for winery operations management.
+The goal is to support the complete flow from grape harvest to wine production, inventory handling, and customer sales.
 
-The system helps a winery owner keep track of annual grape harvests, define wine recipes, estimate how much wine can be
-produced from available grapes, manage bottle stock, and process customer purchases. Buyers can browse wines, buy
-bottles, and leave feedback about the wine quality and their experience.
+The system covers:
+
+- yearly harvest evidence (grape type, vineyard, date, quantity, quality),
+- wine recipe and production planning,
+- bottle inventory and reservation management,
+- customer profiles, purchases, and wine reviews.
 
 ## Microservices
 
-The project is split into four executable Maven modules:
+The system is split into 4 executable Maven modules:
 
-- `customer-service` - customer profiles, purchase history, and feedback.
-- `harvest-service` - harvest records, vineyard locations, quantities, and grape quality.
-- `production-service` - wine recipes, production planning, batch tracking, and blend quality evaluation.
-- `inventory-service` - bottle stock, reservations, and sold bottle tracking.
+1. `customer-service`
+   Handles customer-related operations:
 
-Each module can be run as a separate Spring Boot application.
+- customer profile management,
+- purchase history,
+- wine reviews and feedback.
 
-### Production service
+2. `harvest-service`
+   Handles harvest domain:
 
-The `production-service` implements two non-trivial business functions beyond CRUD:
+- vineyards and grape types management,
+- harvest records,
+- harvest summaries.
 
-1. **Production planning** - computes how many bottles can be produced from available harvest lots for a selected
-   recipe, determines whether the request is fully feasible, and identifies the limiting grape variety.
-2. **Blend quality evaluation** - computes a weighted quality score for the available harvest lots against a recipe and
-   recommends whether the blend is suitable for standard or premium production.
+3. `production-service`
+   Handles production domain:
 
-## Use case diagram
+- wine recipe management,
+- production planning from available harvest lots,
+- blend quality evaluation,
+- production batch lifecycle.
 
-TODO
+4. `inventory-service`
+   Handles stock domain:
 
-## DTO class diagram
+- bottle stock tracking,
+- reservation tracking,
+- available/reserved quantity changes.
 
-TODO
+## Non-trivial Business Functionalities
+
+Implemented business functionality beyond CRUD:
+
+1. `production-service`
+
+- production feasibility planning from recipe composition and available harvest lots (requested vs feasible bottle count, producible liters, limiting grape type),
+- weighted blend quality evaluation with recommendation output based on quality target,
+- creation of planned production batches from computed production plan.
+
+2. `harvest-service`
+
+- harvest quantity aggregation by year (`summary/by-year`),
+- harvest quantity aggregation by vineyard (`summary/by-vineyard`),
+- domain validation linking harvest records to existing vineyard and grape type entities.
+
+3. `inventory-service`
+
+- stock removal guarded by available (non-reserved) quantity checks,
+- reservation status transitions with stock/reserved quantity adjustments,
+- stock lookup by wine and reservation filtering by customer/wine/date interval.
+
+4. `customer-service`
+
+- purchase history filtering by quantity interval (`min`/`max`) with input normalization,
+- total spending computation per customer (sum of quantity × price per bottle),
+- customer/wine based review and purchase history retrieval workflows.
+
+## Executable Modules
+
+Executable Spring Boot modules:
+
+- `customer-service`
+- `harvest-service`
+- `production-service`
+- `inventory-service`
+
+## Build And Run
+
+Build whole project:
+
+```bash
+mvn clean install
+```
+
+Run one service module (example):
+
+```bash
+mvn -pl harvest-service spring-boot:run
+```
+
+You can run other modules analogically:
+
+```bash
+mvn -pl customer-service spring-boot:run
+mvn -pl production-service spring-boot:run
+mvn -pl inventory-service spring-boot:run
+```
+
+## Use Case Diagram
+
+PlantUML source: `usecase.uml`  
+Rendered image:
+
+![Use Case Diagram](usecase.png)
+
+## DTO Class Diagram
+
+To be added in the next README update (M1 documentation completion).
+
+## GenAI Usage Disclosure
+
+GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and documentation drafting).
+All generated suggestions were manually reviewed and adjusted by team members before integration.
