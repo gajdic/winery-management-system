@@ -4,33 +4,52 @@ stages:
   - build
   - run
 
+# ---------------- BUILD ----------------
+
 build_customer:
   stage: build
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - mvn -pl customer-service -am clean install
 
 build_harvest:
   stage: build
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - mvn -pl harvest-service -am clean install
 
 build_inventory:
   stage: build
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - mvn -pl inventory-service -am clean install
 
 build_production:
   stage: build
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - mvn -pl production-service -am clean install
+
+# ---------------- RUN ----------------
 
 run_customer:
   stage: run
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - cd customer-service
     - mvn spring-boot:run > log.txt 2>&1 &
@@ -40,6 +59,9 @@ run_customer:
 run_harvest:
   stage: run
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - cd harvest-service
     - mvn spring-boot:run > log.txt 2>&1 &
@@ -49,6 +71,9 @@ run_harvest:
 run_inventory:
   stage: run
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - cd inventory-service
     - mvn spring-boot:run > log.txt 2>&1 &
@@ -58,6 +83,9 @@ run_inventory:
 run_production:
   stage: run
   tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
   script:
     - cd production-service
     - mvn spring-boot:run > log.txt 2>&1 &
