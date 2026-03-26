@@ -24,8 +24,20 @@ public class VineyardService {
             throw new IllegalArgumentException("Vineyard cannot be null.");
         }
 
+        if (vineyard.getId() == null) {
+            throw new IllegalArgumentException("Vineyard id cannot be null.");
+        }
+
         if (vineyard.getName() == null || vineyard.getName().isBlank()) {
             throw new IllegalArgumentException("Vineyard name cannot be null or blank.");
+        }
+
+        if (vineyard.getLocation() == null || vineyard.getLocation().isBlank()) {
+            throw new IllegalArgumentException("Location cannot be null or blank.");
+        }
+
+        if (vineyard.getAreaSize() <= 0) {
+            throw new IllegalArgumentException("Area size must be greater than 0.");
         }
 
         return vineyardRepository.save(vineyard);
