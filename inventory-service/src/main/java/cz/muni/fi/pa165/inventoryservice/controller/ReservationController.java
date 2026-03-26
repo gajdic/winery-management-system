@@ -26,7 +26,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDetailedViewDto> create(@RequestBody Reservation reservation) {
+    public ResponseEntity<ReservationDetailedViewDto> create(@RequestBody ReservationDetailedViewDto reservation) {
         ReservationDetailedViewDto created = reservationFacade.create(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -55,7 +55,7 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationDetailedViewDto> update(@PathVariable UUID id, @RequestBody Reservation reservation) {
+    public ResponseEntity<ReservationDetailedViewDto> update(@PathVariable UUID id, @RequestBody ReservationDetailedViewDto reservation) {
         reservation.setId(id);
         ReservationDetailedViewDto updated = reservationFacade.update(reservation);
         return ResponseEntity.ok(updated);

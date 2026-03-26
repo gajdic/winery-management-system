@@ -1,11 +1,21 @@
 package cz.muni.fi.pa165.inventoryservice.api;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.UUID;
 
 public class StockDetailedViewDto {
+    @NotNull
     private UUID id;
+
+    @NotNull
     private UUID wineId;
+
+    @Min(0)
     private int quantity;
+
+    @Min(0)
     private int reservedQuantity;
 
     public int getQuantity() {

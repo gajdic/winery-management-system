@@ -24,7 +24,7 @@ public class StockController {
     }
 
     @PostMapping
-    public ResponseEntity<StockDetailedViewDto> create(@RequestBody Stock stock) {
+    public ResponseEntity<StockDetailedViewDto> create(@RequestBody StockDetailedViewDto stock) {
         StockDetailedViewDto created = stockFacade.create(stock);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -54,9 +54,6 @@ public class StockController {
 
     @PostMapping("/{id}/add")
     public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
-        if (change == null || change.getQuantity() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
         try {
             StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
             return ResponseEntity.ok(updated);
@@ -70,9 +67,6 @@ public class StockController {
 
     @PostMapping("/{id}/remove")
     public ResponseEntity<StockDetailedViewDto> removeFromStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
-        if (change == null || change.getQuantity() <= 0) {
-            return ResponseEntity.badRequest().build();
-        }
         try {
             StockDetailedViewDto updated = stockFacade.removeFromStock(id, change.getQuantity());
             return ResponseEntity.ok(updated);
@@ -85,7 +79,7 @@ public class StockController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody Stock stock) {
+    public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody StockDetailedViewDto stock) {
         stock.setId(id);
         StockDetailedViewDto updated = stockFacade.update(stock);
         return ResponseEntity.ok(updated);

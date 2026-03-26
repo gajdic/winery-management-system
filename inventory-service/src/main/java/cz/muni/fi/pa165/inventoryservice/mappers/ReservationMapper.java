@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
+    Reservation mapToEntity(ReservationDetailedViewDto reservation);
 
     ReservationBasicViewDto mapToDto(Reservation reservation);
 

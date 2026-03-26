@@ -21,8 +21,8 @@ public class StockFacade {
         this.stockMapper = stockMapper;
     }
 
-    public StockDetailedViewDto create(Stock stock) {
-        return stockMapper.mapToDetailViewDto(stockService.create(stock));
+    public StockDetailedViewDto create(StockDetailedViewDto stock) {
+        return stockMapper.mapToDetailViewDto(stockService.create(stockMapper.mapToEntity(stock)));
     }
 
     public StockDetailedViewDto findById(UUID id) {
@@ -47,8 +47,8 @@ public class StockFacade {
         return stockMapper.mapToList(stockService.findAll());
     }
 
-    public StockDetailedViewDto update(Stock stock) {
-        return stockMapper.mapToDetailViewDto(stockService.update(stock));
+    public StockDetailedViewDto update(StockDetailedViewDto stock) {
+        return stockMapper.mapToDetailViewDto(stockService.update(stockMapper.mapToEntity(stock)));
     }
 
     public boolean delete(UUID id) {

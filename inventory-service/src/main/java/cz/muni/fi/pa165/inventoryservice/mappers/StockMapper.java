@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface StockMapper {
+    Stock mapToEntity(StockDetailedViewDto stock);
 
     StockDetailedViewDto mapToDetailViewDto(Stock stock);
 

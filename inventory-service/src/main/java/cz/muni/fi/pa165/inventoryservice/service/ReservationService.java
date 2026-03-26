@@ -44,13 +44,17 @@ public class ReservationService {
         }
         var reservation = reservationRepository.updateStatus(id, status);
 
+        var stockId = stockRepository.findByWine(reservation.getWineId())
+            .orElseThrow(() -> new IllegalArgumentException("Stock not found for wine: " + reservation.getWineId()))
+            .getId();
+
         switch (reservation.getStatus()) {
             case COMPLETED -> {
-                stockRepository.updateQuantity(reservation.getWineId(), -reservation.getQuantity());
-                stockRepository.updateReservedQuantity(reservation.getWineId(), -reservation.getQuantity());
+                stockRepository.updateQuantity(stockId, -reservation.getQuantity());
+                stockRepository.updateReservedQuantity(stockId, -reservation.getQuantity());
             }
             case CANCELED -> {
-                stockRepository.updateReservedQuantity(reservation.getWineId(), -reservation.getQuantity());
+                stockRepository.updateReservedQuantity(stockId, -reservation.getQuantity());
             }
         }
 

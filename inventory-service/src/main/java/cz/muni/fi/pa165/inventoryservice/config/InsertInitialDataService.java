@@ -50,7 +50,7 @@ public class InsertInitialDataService {
 
     private Stock createStock(UUID wineId, int quantity) {
         Stock stock = new Stock();
-        stock.setId(wineId);
+        stock.setId(UUID.randomUUID());
         stock.setWineId(wineId);
         stock.setQuantity(quantity);
         stock.setReservedQuantity(0);
@@ -59,6 +59,7 @@ public class InsertInitialDataService {
 
     private void createReservation(Stock stock, int quantity, ReservationStatus status, LocalDate createdAt) {
         Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID());
         reservation.setCustomerId(UUID.randomUUID());
         reservation.setWineId(stock.getId());
         reservation.setQuantity(quantity);
