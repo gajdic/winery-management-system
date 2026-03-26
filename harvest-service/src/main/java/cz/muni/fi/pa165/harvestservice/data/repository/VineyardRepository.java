@@ -16,5 +16,7 @@ public interface VineyardRepository {
 
     List<Vineyard> findAll();
 
+    Vineyard update(Vineyard vineyard);
+
     void deleteById(UUID id);
 }

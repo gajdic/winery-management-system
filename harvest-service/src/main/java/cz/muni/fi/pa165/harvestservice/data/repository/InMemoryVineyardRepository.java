@@ -43,6 +43,20 @@ public class InMemoryVineyardRepository implements VineyardRepository {
     }
 
     @Override
+    public Vineyard update(Vineyard vineyard) {
+        if (vineyard == null) {
+            throw new IllegalArgumentException("Vineyard cannot be null");
+        }
+
+        if (vineyard.getId() == null || !storage.containsKey(vineyard.getId())) {
+            throw new IllegalArgumentException("Vineyard with id " + vineyard.getId() + " does not exist");
+        }
+
+        storage.put(vineyard.getId(), vineyard);
+        return vineyard;
+    }
+
+    @Override
     public void deleteById(UUID id) {
         storage.remove(id);
     }

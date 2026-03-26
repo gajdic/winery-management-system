@@ -46,6 +46,20 @@ public class InMemoryGrapeTypeRepository implements GrapeTypeRepository {
     }
 
     @Override
+    public GrapeType update(GrapeType grapeType) {
+        if (grapeType == null) {
+            throw new IllegalArgumentException("Grape type cannot be null");
+        }
+
+        if (grapeType.getId() == null || !storage.containsKey(grapeType.getId())) {
+            throw new IllegalArgumentException("Grape type with id " + grapeType.getId() + " does not exist");
+        }
+
+        storage.put(grapeType.getId(), grapeType);
+        return grapeType;
+    }
+
+    @Override
     public void deleteById(UUID id) {
         storage.remove(id);
     }

@@ -16,5 +16,7 @@ public interface GrapeTypeRepository {
 
     List<GrapeType> findAll();
 
+    GrapeType update(GrapeType grapeType);
+
     void deleteById(UUID id);
 }

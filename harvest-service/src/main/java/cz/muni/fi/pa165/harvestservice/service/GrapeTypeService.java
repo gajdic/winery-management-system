@@ -57,15 +57,13 @@ public class GrapeTypeService {
             throw new IllegalArgumentException("Grape type name cannot be null or blank");
         }
 
-        GrapeType existing = grapeTypeRepository.findById(grapeType.getId())
-            .orElseThrow(() -> new ResourceNotFoundException(
+        try {
+            return grapeTypeRepository.update(grapeType);
+        } catch (IllegalArgumentException ex) {
+            throw new ResourceNotFoundException(
                 "Grape type with id: " + grapeType.getId() + " was not found."
-            ));
-
-        existing.setName(grapeType.getName());
-        existing.setDescription(grapeType.getDescription());
-
-        return grapeTypeRepository.save(existing);
+            );
+        }
     }
 
     public void deleteById(UUID id) {

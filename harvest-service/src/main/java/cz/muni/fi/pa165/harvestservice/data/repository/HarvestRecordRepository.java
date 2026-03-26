@@ -20,5 +20,7 @@ public interface HarvestRecordRepository {
 
     List<HarvestRecord> findByYear(int year);
 
+    HarvestRecord update(HarvestRecord harvestRecord);
+
     void deleteById(UUID id);
 }

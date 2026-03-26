@@ -61,6 +61,20 @@ public class InMemoryHarvestRecordRepository implements HarvestRecordRepository 
     }
 
     @Override
+    public HarvestRecord update(HarvestRecord harvestRecord) {
+        if (harvestRecord == null) {
+            throw new IllegalArgumentException("HarvestRecord cannot be null");
+        }
+
+        if (harvestRecord.getId() == null || !storage.containsKey(harvestRecord.getId())) {
+            throw new IllegalArgumentException("HarvestRecord with id " + harvestRecord.getId() + " does not exist");
+        }
+
+        storage.put(harvestRecord.getId(), harvestRecord);
+        return harvestRecord;
+    }
+
+    @Override
     public void deleteById(UUID id) {
         storage.remove(id);
     }

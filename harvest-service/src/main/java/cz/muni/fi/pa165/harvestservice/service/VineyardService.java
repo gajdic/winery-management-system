@@ -78,17 +78,13 @@ public class VineyardService {
             throw new IllegalArgumentException("Area size must be greater than 0.");
         }
 
-        Vineyard existing = vineyardRepository.findById(vineyard.getId())
-            .orElseThrow(() -> new ResourceNotFoundException(
+        try {
+            return vineyardRepository.update(vineyard);
+        } catch (IllegalArgumentException ex) {
+            throw new ResourceNotFoundException(
                 "Vineyard with id: " + vineyard.getId() + " was not found."
-            ));
-
-        existing.setName(vineyard.getName());
-        existing.setLocation(vineyard.getLocation());
-        existing.setAreaSize(vineyard.getAreaSize());
-        existing.setDescription(vineyard.getDescription());
-
-        return vineyardRepository.save(existing);
+            );
+        }
     }
 
     public void deleteById(UUID id) {

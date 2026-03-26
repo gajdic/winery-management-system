@@ -131,11 +131,6 @@ public class HarvestRecordService {
             throw new IllegalArgumentException("Grape type cannot be null.");
         }
 
-        HarvestRecord existing = harvestRecordRepository.findById(harvestRecord.getId())
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Harvest record with id " + harvestRecord.getId() + " was not found."
-            ));
-
         Vineyard vineyard = vineyardRepository.findById(harvestRecord.getVineyard().getId())
             .orElseThrow(() -> new ResourceNotFoundException(
                 "Vineyard with id " + harvestRecord.getVineyard().getId() + " was not found."
@@ -158,13 +153,16 @@ public class HarvestRecordService {
             throw new IllegalArgumentException("Quality must be between 1 and 10.");
         }
 
-        existing.setVineyard(vineyard);
-        existing.setGrapeType(grapeType);
-        existing.setHarvestDate(harvestRecord.getHarvestDate());
-        existing.setQuantity(harvestRecord.getQuantity());
-        existing.setQuality(harvestRecord.getQuality());
+        harvestRecord.setVineyard(vineyard);
+        harvestRecord.setGrapeType(grapeType);
 
-        return harvestRecordRepository.save(existing);
+        try {
+            return harvestRecordRepository.update(harvestRecord);
+        } catch (IllegalArgumentException ex) {
+            throw new ResourceNotFoundException(
+                "Harvest record with id " + harvestRecord.getId() + " was not found."
+            );
+        }
     }
 
     public void deleteById(UUID id) {
