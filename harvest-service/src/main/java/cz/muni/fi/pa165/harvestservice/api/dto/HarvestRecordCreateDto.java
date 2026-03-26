@@ -1,9 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.api.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -17,6 +14,7 @@ public class HarvestRecordCreateDto {
     private UUID vineyardId;
 
     @NotNull(message = "Harvest date cannot be null")
+    @PastOrPresent
     private LocalDate harvestDate;
 
     @Positive(message = "Quantity must be greater than 0")
