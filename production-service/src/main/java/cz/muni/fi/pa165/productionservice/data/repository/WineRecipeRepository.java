@@ -1,0 +1,17 @@
+package cz.muni.fi.pa165.productionservice.data.repository;
+
+import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface WineRecipeRepository {
+    WineRecipe save(WineRecipe wineRecipe);
+
+    Optional<WineRecipe> findById(UUID id);
+
+    List<WineRecipe> findAll();
+
+    Optional<WineRecipe> deleteById(UUID id);
+}
