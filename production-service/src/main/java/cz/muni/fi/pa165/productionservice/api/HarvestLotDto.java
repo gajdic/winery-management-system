@@ -12,6 +12,7 @@ public class HarvestLotDto {
     private String vineyardLocation;
 
     @NotNull
+    @PastOrPresent
     private LocalDate harvestDate;
 
     @PositiveOrZero
