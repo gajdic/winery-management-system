@@ -3,7 +3,6 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
-import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -2,7 +2,6 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
-import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.facade.StockFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
