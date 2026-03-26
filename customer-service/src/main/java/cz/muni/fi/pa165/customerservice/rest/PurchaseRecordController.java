@@ -4,6 +4,8 @@ import cz.muni.fi.pa165.customerservice.api.PurchaseRecordCreateDto;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
 import cz.muni.fi.pa165.customerservice.facade.PurchaseRecordFacade;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,45 +22,47 @@ public class PurchaseRecordController {
     }
 
     @PostMapping
-    public PurchaseRecordDto createPurchase(@Valid @RequestBody PurchaseRecordCreateDto dto) {
-        return purchaseRecordFacade.createPurchase(dto);
+    public ResponseEntity<PurchaseRecordDto> createPurchase(@Valid @RequestBody PurchaseRecordCreateDto dto) {
+        PurchaseRecordDto created = purchaseRecordFacade.createPurchase(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public PurchaseRecordDto getPurchase(@PathVariable UUID id) {
-        return purchaseRecordFacade.getPurchase(id);
+    public ResponseEntity<PurchaseRecordDto> getPurchase(@PathVariable UUID id) {
+        return ResponseEntity.ok(purchaseRecordFacade.getPurchase(id));
     }
 
     @GetMapping
-    public List<PurchaseRecordDto> getAllPurchases() {
-        return purchaseRecordFacade.getAllPurchases();
+    public ResponseEntity<List<PurchaseRecordDto>> getAllPurchases() {
+        return ResponseEntity.ok(purchaseRecordFacade.getAllPurchases());
     }
 
     @GetMapping("/customer/{customerId}")
-    public List<PurchaseRecordDto> getByCustomerId(@PathVariable UUID customerId) {
-        return purchaseRecordFacade.getByCustomerId(customerId);
+    public ResponseEntity<List<PurchaseRecordDto>> getByCustomerId(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(purchaseRecordFacade.getByCustomerId(customerId));
     }
 
     @GetMapping("/wine/{wineId}")
-    public List<PurchaseRecordDto> getByWineId(@PathVariable UUID wineId) {
-        return purchaseRecordFacade.getByWineId(wineId);
+    public ResponseEntity<List<PurchaseRecordDto>> getByWineId(@PathVariable UUID wineId) {
+        return ResponseEntity.ok(purchaseRecordFacade.getByWineId(wineId));
     }
 
     @GetMapping("/quantity")
-    public List<PurchaseRecordDto> getByQuantity(
+    public ResponseEntity<List<PurchaseRecordDto>> getByQuantity(
         @RequestParam(required = false) Integer min,
         @RequestParam(required = false) Integer max) {
 
-        return purchaseRecordFacade.getByQuantity(min, max);
+        return ResponseEntity.ok(purchaseRecordFacade.getByQuantity(min, max));
     }
 
     @GetMapping("/customer/{customerId}/total-spent")
-    public double getTotalSpentByCustomer(@PathVariable UUID customerId) {
-        return purchaseRecordFacade.getTotalSpentByCustomer(customerId);
+    public ResponseEntity<Double> getTotalSpent(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(purchaseRecordFacade.getTotalSpentByCustomer(customerId));
     }
 
     @DeleteMapping("/{id}")
-    public void deletePurchase(@PathVariable UUID id) {
+    public ResponseEntity<Void> deletePurchase(@PathVariable UUID id) {
         purchaseRecordFacade.deletePurchase(id);
+        return ResponseEntity.noContent().build();
     }
 }

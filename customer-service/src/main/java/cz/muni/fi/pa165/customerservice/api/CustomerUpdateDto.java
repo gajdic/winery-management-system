@@ -11,6 +11,7 @@ public class CustomerUpdateDto {
     private String name;
 
     @Email
+    @NotBlank
     private String email;
 
     @Valid

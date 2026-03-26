@@ -5,6 +5,8 @@ import cz.muni.fi.pa165.customerservice.api.CustomerDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerUpdateDto;
 import cz.muni.fi.pa165.customerservice.facade.CustomerFacade;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,28 +23,34 @@ public class CustomerController {
     }
 
     @PostMapping
-    public CustomerDto createCustomer(@Valid @RequestBody CustomerCreateDto dto) {
-        return customerFacade.createCustomer(dto);
+    public ResponseEntity<CustomerDto> createCustomer(@Valid @RequestBody CustomerCreateDto dto) {
+        CustomerDto created = customerFacade.createCustomer(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public CustomerDto getCustomer(@PathVariable UUID id) {
-        return customerFacade.getCustomer(id);
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable UUID id) {
+        CustomerDto customer = customerFacade.getCustomer(id);
+        return ResponseEntity.ok(customer);
     }
 
     @GetMapping
-    public List<CustomerDto> getAllCustomers() {
-        return customerFacade.getAllCustomers();
+    public ResponseEntity<List<CustomerDto>> getAllCustomers() {
+        return ResponseEntity.ok(customerFacade.getAllCustomers());
     }
 
     @PutMapping("/{id}")
-    public CustomerDto updateCustomer(@PathVariable UUID id,
-                                      @Valid @RequestBody CustomerUpdateDto dto) {
-        return customerFacade.updateCustomer(id, dto);
+    public ResponseEntity<CustomerDto> updateCustomer(
+        @PathVariable UUID id,
+        @Valid @RequestBody CustomerUpdateDto dto) {
+
+        CustomerDto updated = customerFacade.updateCustomer(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id) {
         customerFacade.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
     }
 }

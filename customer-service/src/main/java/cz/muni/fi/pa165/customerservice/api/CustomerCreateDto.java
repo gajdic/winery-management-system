@@ -11,6 +11,7 @@ public class CustomerCreateDto {
     private String name;
 
     @Email
+    @NotBlank
     private String email;
 
     @Valid

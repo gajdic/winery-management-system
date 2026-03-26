@@ -1,6 +1,5 @@
 package cz.muni.fi.pa165.customerservice.api;
 
-import cz.muni.fi.pa165.customerservice.data.model.customer.Address;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,13 +20,9 @@ public class CustomerDto {
 
     @Valid
     @NotNull
-    private Address address;
+    private AddressDto address;
 
-    public CustomerDto(UUID id, String name, String email, Address address) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.address = address;
+    public CustomerDto() {
     }
 
     public UUID getId() {
@@ -54,11 +49,11 @@ public class CustomerDto {
         this.email = email;
     }
 
-    public Address getAddress() {
+    public AddressDto getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(AddressDto address) {
         this.address = address;
     }
 }

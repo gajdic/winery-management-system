@@ -8,12 +8,16 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.UUID;
+
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
 
     ReviewDto mapToDto(Review review);
 
     Review mapToEntity(ReviewCreateDto dto);
+
+    Review mapToEntity(UUID id, ReviewUpdateDto dto);
 
     @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(ReviewUpdateDto dto,@MappingTarget Review review);

@@ -20,12 +20,38 @@ public class PurchaseRecordService {
     }
 
     public PurchaseRecord save(PurchaseRecord purchaseRecord) {
+        if (purchaseRecord == null) {
+            throw new IllegalArgumentException("PurchaseRecord cannot be null");
+        }
+
+        if (purchaseRecord.getCustomerId() == null) {
+            throw new IllegalArgumentException("CustomerId cannot be null");
+        }
+
+        if (purchaseRecord.getWineId() == null) {
+            throw new IllegalArgumentException("WineId cannot be null");
+        }
+
+        if (purchaseRecord.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+
+        if (purchaseRecord.getPricePerBottle() < 0) {
+            throw new IllegalArgumentException("Price per bottle must be >= 0");
+        }
+
         purchaseRecord.setPurchaseDate(LocalDateTime.now());
+
         return purchaseRecordRepository.save(purchaseRecord);
     }
 
     public PurchaseRecord findById(UUID id) {
-        return purchaseRecordRepository.findById(id).orElse(null);
+        if (id == null) {
+            throw new IllegalArgumentException("PurchaseRecord id cannot be null");
+        }
+
+        return purchaseRecordRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("PurchaseRecord not found: " + id));
     }
 
     public List<PurchaseRecord> findAll() {
@@ -33,10 +59,18 @@ public class PurchaseRecordService {
     }
 
     public List<PurchaseRecord> findByCustomerId(UUID customerId) {
+        if (customerId == null) {
+            throw new IllegalArgumentException("CustomerId cannot be null");
+        }
+
         return purchaseRecordRepository.findByCustomerId(customerId);
     }
 
     public List<PurchaseRecord> findByWineId(UUID wineId) {
+        if (wineId == null) {
+            throw new IllegalArgumentException("WineId cannot be null");
+        }
+
         return purchaseRecordRepository.findByWineId(wineId);
     }
 
@@ -52,6 +86,10 @@ public class PurchaseRecordService {
     }
 
     public double getTotalSpentByCustomer(UUID customerId) {
+        if (customerId == null) {
+            throw new IllegalArgumentException("CustomerId cannot be null");
+        }
+
         return purchaseRecordRepository.findByCustomerId(customerId).stream()
             .mapToDouble(p -> p.getQuantity() * p.getPricePerBottle())
             .sum();

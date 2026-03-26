@@ -41,10 +41,10 @@ public class CustomerFacade {
             .collect(Collectors.toList());
     }
 
+
     public CustomerDto updateCustomer(UUID id, CustomerUpdateDto dto) {
-        Customer customer = customerService.findById(id);
-        customerMapper.updateEntityFromDto(dto, customer);
-        Customer updated = customerService.save(customer);
+        Customer updated = customerService.update(id, customerMapper.mapToEntity(id, dto));
+
         return customerMapper.mapToDto(updated);
     }
 

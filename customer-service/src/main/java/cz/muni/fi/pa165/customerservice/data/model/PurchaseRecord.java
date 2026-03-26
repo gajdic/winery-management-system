@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PurchaseRecord {
@@ -70,5 +71,29 @@ public class PurchaseRecord {
 
     public void setPurchaseDate(LocalDateTime purchaseDate) {
         this.purchaseDate = purchaseDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PurchaseRecord that = (PurchaseRecord) o;
+        return quantity == that.quantity && Double.compare(pricePerBottle, that.pricePerBottle) == 0 && Objects.equals(id, that.id) && Objects.equals(customerId, that.customerId) && Objects.equals(wineId, that.wineId) && Objects.equals(purchaseDate, that.purchaseDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, customerId, wineId, quantity, pricePerBottle, purchaseDate);
+    }
+
+    @Override
+    public String toString() {
+        return "PurchaseRecord{" +
+            "id=" + id +
+            ", customerId=" + customerId +
+            ", wineId=" + wineId +
+            ", quantity=" + quantity +
+            ", pricePerBottle=" + pricePerBottle +
+            ", purchaseDate=" + purchaseDate +
+            '}';
     }
 }

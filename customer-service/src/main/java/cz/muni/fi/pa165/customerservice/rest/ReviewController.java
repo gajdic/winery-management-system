@@ -3,11 +3,10 @@ package cz.muni.fi.pa165.customerservice.rest;
 import cz.muni.fi.pa165.customerservice.api.ReviewCreateDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewUpdateDto;
-import cz.muni.fi.pa165.customerservice.data.model.Review;
 import cz.muni.fi.pa165.customerservice.facade.ReviewFacade;
-import cz.muni.fi.pa165.customerservice.mappers.ReviewMapper;
-import cz.muni.fi.pa165.customerservice.service.ReviewService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,38 +23,42 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ReviewDto createReview(@Valid @RequestBody ReviewCreateDto dto) {
-        return reviewFacade.createReview(dto);
+    public ResponseEntity<ReviewDto> createReview(@Valid @RequestBody ReviewCreateDto dto) {
+        ReviewDto created = reviewFacade.createReview(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public ReviewDto getReview(@PathVariable UUID id) {
-        return reviewFacade.getReview(id);
+    public ResponseEntity<ReviewDto> getReview(@PathVariable UUID id) {
+        return ResponseEntity.ok(reviewFacade.getReview(id));
     }
 
     @GetMapping
-    public List<ReviewDto> getAllReviews() {
-        return reviewFacade.getAllReviews();
+    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+        return ResponseEntity.ok(reviewFacade.getAllReviews());
     }
 
     @GetMapping("/customer/{customerId}")
-    public List<ReviewDto> getByCustomer(@PathVariable UUID customerId) {
-        return reviewFacade.getReviewsByCustomer(customerId);
+    public ResponseEntity<List<ReviewDto>> getByCustomer(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(reviewFacade.getReviewsByCustomer(customerId));
     }
 
     @GetMapping("/wine/{wineId}")
-    public List<ReviewDto> getByWine(@PathVariable UUID wineId) {
-        return reviewFacade.getReviewsByWine(wineId);
+    public ResponseEntity<List<ReviewDto>> getByWine(@PathVariable UUID wineId) {
+        return ResponseEntity.ok(reviewFacade.getReviewsByWine(wineId));
     }
 
     @PutMapping("/{id}")
-    public ReviewDto updateReview(@PathVariable UUID id,
-                                  @Valid @RequestBody ReviewUpdateDto dto) {
-        return reviewFacade.updateReview(id, dto);
+    public ResponseEntity<ReviewDto> updateReview(
+        @PathVariable UUID id,
+        @Valid @RequestBody ReviewUpdateDto dto) {
+
+        return ResponseEntity.ok(reviewFacade.updateReview(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReview(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteReview(@PathVariable UUID id) {
         reviewFacade.deleteReview(id);
+        return ResponseEntity.noContent().build();
     }
 }

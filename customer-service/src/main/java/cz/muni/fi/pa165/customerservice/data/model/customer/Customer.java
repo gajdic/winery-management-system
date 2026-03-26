@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.model.customer;
 
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Customer {
@@ -49,5 +50,27 @@ public class Customer {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(id, customer.id) && Objects.equals(name, customer.name) && Objects.equals(email, customer.email) && Objects.equals(address, customer.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, address);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", email='" + email + '\'' +
+            ", address=" + address +
+            '}';
     }
 }

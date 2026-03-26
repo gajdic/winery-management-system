@@ -56,9 +56,7 @@ public class ReviewFacade {
     }
 
     public ReviewDto updateReview(UUID id, ReviewUpdateDto dto) {
-        Review review = reviewService.findById(id);
-        reviewMapper.updateEntityFromDto(dto, review);
-        Review updated = reviewService.save(review);
+        Review updated = reviewService.update(id, reviewMapper.mapToEntity(id, dto));
         return reviewMapper.mapToDto(updated);
     }
 

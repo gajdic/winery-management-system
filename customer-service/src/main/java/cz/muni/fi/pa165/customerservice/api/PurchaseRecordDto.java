@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.customerservice.api;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,6 +27,7 @@ public class PurchaseRecordDto {
     private double pricePerBottle;
 
     @DateTimeFormat
+    @PastOrPresent
     private LocalDateTime purchaseDate;
 
     // getters and setters

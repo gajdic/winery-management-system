@@ -10,17 +10,17 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+import java.util.UUID;
+
+@Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface CustomerMapper {
 
     CustomerDto mapToDto(Customer customer);
 
     Customer mapToEntity(CustomerCreateDto dto);
 
+    Customer mapToEntity(UUID id, CustomerUpdateDto dto);
+
     @Mapping(target = "id", ignore = true)
     void updateEntityFromDto(CustomerUpdateDto dto, @MappingTarget Customer customer);
-
-    AddressDto mapToDto(Address address);
-
-    Address mapToEntity(AddressDto dto);
 }
