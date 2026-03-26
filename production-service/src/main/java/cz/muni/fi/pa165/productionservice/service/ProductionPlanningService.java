@@ -23,6 +23,9 @@ public class ProductionPlanningService {
         if (recipe.getGrapeComponents() == null || recipe.getGrapeComponents().isEmpty()) {
             throw new IllegalArgumentException("Recipe must contain at least one grape component.");
         }
+        if (recipe.getBottleVolumeLiters() <= 0) {
+            throw new IllegalArgumentException("Bottle volume must be greater than zero.");
+        }
 
         double requestedLiters = desiredBottleCount * recipe.getBottleVolumeLiters();
 
