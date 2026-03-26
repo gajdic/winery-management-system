@@ -23,6 +23,10 @@ public interface GrapeTypeMapper {
     @Mapping(target = "id", ignore = true)
     GrapeType mapToEntity(GrapeTypeCreateDto dto);
 
+    // id + update dto -> entity
+    @Mapping(target = "id", source = "id")
+    GrapeType mapToEntity(java.util.UUID id, GrapeTypeUpdateDto dto);
+
     // update dto -> existing entity
     @Mapping(target = "id", ignore = true)
     void updateEntity(GrapeTypeUpdateDto dto, @MappingTarget GrapeType grapeType);

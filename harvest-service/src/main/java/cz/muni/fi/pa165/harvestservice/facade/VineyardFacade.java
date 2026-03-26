@@ -43,9 +43,8 @@ public class VineyardFacade {
     }
 
     public VineyardViewDto update(UUID id, VineyardUpdateDto dto) {
-        Vineyard existingVineyard = vineyardService.findById(id);
-        vineyardMapper.updateEntity(dto, existingVineyard);
-        Vineyard updated = vineyardService.update(existingVineyard);
+        Vineyard vineyard = vineyardMapper.mapToEntity(id, dto);
+        Vineyard updated = vineyardService.update(vineyard);
         return vineyardMapper.mapToDto(updated);
     }
 

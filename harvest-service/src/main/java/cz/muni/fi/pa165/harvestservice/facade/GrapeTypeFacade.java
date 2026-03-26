@@ -43,9 +43,8 @@ public class GrapeTypeFacade {
     }
 
     public GrapeTypeViewDto update(UUID id, GrapeTypeUpdateDto dto) {
-        GrapeType existing = grapeTypeService.findById(id);
-        grapeTypeMapper.updateEntity(dto, existing);
-        GrapeType updated = grapeTypeService.update(existing);
+        GrapeType grapeType = grapeTypeMapper.mapToEntity(id, dto);
+        GrapeType updated = grapeTypeService.update(grapeType);
         return grapeTypeMapper.mapToDto(updated);
     }
 

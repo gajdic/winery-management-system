@@ -23,6 +23,10 @@ public interface VineyardMapper {
     @Mapping(target = "id", ignore = true)
     Vineyard mapToEntity(VineyardCreateDto dto);
 
+    // id + update dto -> entity
+    @Mapping(target = "id", source = "id")
+    Vineyard mapToEntity(java.util.UUID id, VineyardUpdateDto dto);
+
     // update dto -> existing entity
     @Mapping(target = "id", ignore = true)
     void updateEntity(VineyardUpdateDto dto, @MappingTarget Vineyard vineyard);
