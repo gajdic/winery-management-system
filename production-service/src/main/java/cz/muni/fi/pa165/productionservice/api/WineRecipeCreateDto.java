@@ -20,7 +20,7 @@ public class WineRecipeCreateDto {
     @NotBlank
     private String tastingNotes;
 
-    @PositiveOrZero
+    @Positive
     private double bottleVolumeLiters;
 
     @Valid

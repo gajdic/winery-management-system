@@ -22,7 +22,7 @@ public class WineRecipeDto {
     private double alcoholPercentage;
     private String tastingNotes;
 
-    @PositiveOrZero
+    @Positive
     private double bottleVolumeLiters;
 
     @Valid
