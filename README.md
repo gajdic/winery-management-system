@@ -11,7 +11,6 @@ The system covers:
 - bottle inventory and reservation management,
 - customer profiles, purchases, and wine reviews.
 
-
 The system is split into 4 executable Maven modules:
 
 1. `customer-service`
@@ -45,7 +44,7 @@ Implemented business functionality beyond CRUD:
 
 1. `customer-service`
 - purchase history filtering by quantity interval (`min`/`max`) with input normalization,
-- total spending computation per customer (sum of quantity × price per bottle),
+- total spending computation per customer (sum of quantity x price per bottle),
 - customer/wine based review and purchase history retrieval workflows.
 
 2. `harvest-service`
@@ -71,7 +70,19 @@ Executable Spring Boot modules:
 - `production-service`
 - `inventory-service`
 
+## Technology Stack
+
+The project is built with:
+- Java
+- Spring Boot
+- Maven
+- MapStruct
+- springdoc-openapi
+- in-memory repositories for M1 persistence
+
 ## Build And Run
+
+For Milestone 1, the project uses in-memory data storage and does not rely on JPA/database persistence.
 
 Build whole project:
 
@@ -93,16 +104,44 @@ mvn -pl production-service spring-boot:run
 mvn -pl inventory-service spring-boot:run
 ```
 
+Alternatively, you can enter a concrete service module directory and run:
+
+```bash
+mvn spring-boot:run
+```
+
 ## Use Case Diagram
 
 PlantUML source: `useCase.puml`
 Rendered image:
 
-![Use Case Diagram](useCase.png)
+![Use Case Diagram](diagrams/use-case/useCase.png)
 
 ## DTO Class Diagram
 
-To be added in the next README update (M1 documentation completion).
+DTO class diagrams are available in [`diagrams/class`](diagrams/class):
+- `customer-service-dto.puml`
+- `harvest-service-dto.puml`
+- `production-service-dto.puml`
+- `inventory-service-dto.puml`
+
+Rendered `.png` exports are stored next to the PlantUML sources.
+
+### Customer Service
+
+![Customer Service DTO Class Diagram](diagrams/class/customer-service-dto.png)
+
+### Harvest Service
+
+![Harvest Service DTO Class Diagram](diagrams/class/harvest-service-dto.png)
+
+### Production Service
+
+![Production Service DTO Class Diagram](diagrams/class/production-service-dto.png)
+
+### Inventory Service
+
+![Inventory Service DTO Class Diagram](diagrams/class/inventory-service-dto.png)
 
 ## GenAI Usage Disclosure
 

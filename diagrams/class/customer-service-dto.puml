@@ -1,0 +1,115 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor #ffffff
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowThickness 1
+hide empty members
+
+title Customer Service - DTO Class Diagram
+
+package "Create/Update DTOs" {
+  together {
+    class CustomerCreateDto {
+      +name: String
+      +email: String
+      +address: AddressDto
+    }
+    class CustomerUpdateDto {
+      +name: String
+      +email: String
+      +address: AddressDto
+    }
+  }
+
+  together {
+    class PurchaseRecordCreateDto {
+      +customerId: UUID
+      +wineId: UUID
+      +quantity: int
+      +pricePerBottle: double
+    }
+    class ReviewCreateDto {
+      +wineId: UUID
+      +customerID: UUID
+      +rating: int
+      +comment: String
+    }
+    class ReviewUpdateDto {
+      +wineId: UUID
+      +customerId: UUID
+      +rating: int
+      +comment: String
+    }
+  }
+}
+
+package "Read DTOs" {
+  together {
+    class CustomerDto {
+      +id: UUID
+      +name: String
+      +email: String
+      +address: AddressDto
+    }
+    class AddressDto {
+      +street: String
+      +city: String
+      +postCode: String
+      +country: String
+    }
+  }
+
+  together {
+    class PurchaseRecordDto {
+      +id: UUID
+      +customerId: UUID
+      +wineId: UUID
+      +quantity: int
+      +pricePerBottle: double
+      +purchaseDate: LocalDateTime
+    }
+    class ReviewDto {
+      +id: UUID
+      +wineId: UUID
+      +customerID: UUID
+      +rating: int
+      +comment: String
+    }
+  }
+}
+
+CustomerCreateDto "1" *-- "1" AddressDto : address
+CustomerUpdateDto "1" *-- "1" AddressDto : address
+CustomerDto "1" *-- "1" AddressDto : address
+
+note bottom of PurchaseRecordCreateDto
+  customerId, wineId:
+  UUID references to external services or entities
+end note
+
+note bottom of PurchaseRecordDto
+  customerId, wineId:
+  UUID references to external services or entities
+end note
+
+note bottom of ReviewCreateDto
+  customerID, wineId:
+  UUID references to external services or entities
+end note
+
+note bottom of ReviewUpdateDto
+  customerId, wineId:
+  UUID references to external services or entities
+end note
+
+note bottom of ReviewDto
+  customerID, wineId:
+  UUID references to external services or entities
+end note
+
+@enduml

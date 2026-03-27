@@ -1,0 +1,195 @@
+@startuml
+left to right direction
+skinparam backgroundColor #ffffff
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowThickness 1
+hide empty members
+
+title Production Service - DTO Class Diagram
+
+package "Create/Update DTOs" {
+  together {
+    class GrapeComponentDto {
+      +grapeType: String
+      +kilogramsPerLiter: double
+      +preferredQuality: int
+    }
+    class AdditionalIngredientDto {
+      +name: String
+      +quantityPerLiter: double
+      +unit: String
+    }
+  }
+
+  together {
+    class WineRecipeCreateDto {
+      +name: String
+      +productionYear: int
+      +alcoholPercentage: double
+      +tastingNotes: String
+      +bottleVolumeLiters: double
+      +grapeComponents: List<GrapeComponentDto>
+      +additionalIngredients: List<AdditionalIngredientDto>
+    }
+    class WineRecipeUpdateDto {
+      +name: String
+      +productionYear: int
+      +alcoholPercentage: double
+      +tastingNotes: String
+      +bottleVolumeLiters: double
+      +grapeComponents: List<GrapeComponentDto>
+      +additionalIngredients: List<AdditionalIngredientDto>
+    }
+    class WineRecipeDto {
+      +id: UUID
+      +name: String
+      +productionYear: int
+      +alcoholPercentage: double
+      +tastingNotes: String
+      +bottleVolumeLiters: double
+      +grapeComponents: List<GrapeComponentDto>
+      +additionalIngredients: List<AdditionalIngredientDto>
+    }
+  }
+}
+
+package "Read DTOs" {
+  together {
+    class ProductionPlanRequestDto {
+      +recipeId: UUID
+      +desiredBottleCount: int
+      +availableHarvests: List<HarvestLotDto>
+    }
+    class QualityEvaluationRequestDto {
+      +recipeId: UUID
+      +harvestLots: List<HarvestLotDto>
+    }
+  }
+
+  together {
+    class ProductionPlanDto {
+      +recipeId: UUID
+      +requestedBottleCount: int
+      +feasibleBottleCount: int
+      +producibleLiters: double
+      +fullyFeasible: boolean
+      +limitingGrapeType: String
+      +estimatedBlendQuality: int
+    }
+    class QualityEvaluationDto {
+      +recipeId: UUID
+      +weightedQualityScore: int
+      +recipeQualityTargetMet: boolean
+      +recommendation: String
+    }
+  }
+
+  class HarvestLotDto {
+    +grapeType: String
+    +vineyardLocation: String
+    +harvestDate: LocalDate
+    +availableKilograms: double
+    +qualityScore: int
+  }
+}
+
+package "Supporting DTOs" {
+  together {
+    class ProductionBatchCreateDto {
+      +recipeId: UUID
+      +desiredBottleCount: int
+    }
+    class ProductionBatchCreateRequestDto {
+      +batch: ProductionBatchCreateDto
+      +harvestLots: List<HarvestLotDto>
+    }
+    class ProductionBatchDto {
+      +id: UUID
+      +recipeId: UUID
+      +plannedLiters: double
+      +plannedBottleCount: int
+      +actualBottleCount: int
+      +status: BatchStatus
+      +createdAt: LocalDateTime
+    }
+  }
+}
+
+package "Error DTOs" {
+  together {
+    class ApiErrorDto {
+      +timestamp: Instant
+      +status: int
+      +error: String
+      +message: String
+      +path: String
+    }
+    class ValidationErrorDto {
+      +fieldErrors: Map<String, String>
+    }
+  }
+}
+
+enum BatchStatus
+
+ValidationErrorDto --|> ApiErrorDto
+
+WineRecipeCreateDto "1" *-- "0..*" GrapeComponentDto : grapeComponents
+WineRecipeCreateDto "1" *-- "0..*" AdditionalIngredientDto : additionalIngredients
+WineRecipeUpdateDto "1" *-- "0..*" GrapeComponentDto : grapeComponents
+WineRecipeUpdateDto "1" *-- "0..*" AdditionalIngredientDto : additionalIngredients
+WineRecipeDto "1" *-- "0..*" GrapeComponentDto : grapeComponents
+WineRecipeDto "1" *-- "0..*" AdditionalIngredientDto : additionalIngredients
+
+ProductionPlanRequestDto "1" *-- "0..*" HarvestLotDto : availableHarvests
+QualityEvaluationRequestDto "1" *-- "0..*" HarvestLotDto : harvestLots
+ProductionBatchCreateRequestDto "1" *-- "1" ProductionBatchCreateDto : batch
+ProductionBatchCreateRequestDto "1" *-- "0..*" HarvestLotDto : harvestLots
+
+ProductionBatchDto --> BatchStatus : status
+
+GrapeComponentDto -[hidden]down- AdditionalIngredientDto
+WineRecipeCreateDto -[hidden]down- WineRecipeUpdateDto
+WineRecipeUpdateDto -[hidden]down- WineRecipeDto
+ProductionPlanRequestDto -[hidden]down- QualityEvaluationRequestDto
+ProductionPlanDto -[hidden]down- QualityEvaluationDto
+ProductionBatchCreateDto -[hidden]down- ProductionBatchDto
+ProductionPlanRequestDto -[hidden]right- HarvestLotDto
+ProductionBatchCreateRequestDto -[hidden]right- HarvestLotDto
+
+note bottom of ProductionPlanRequestDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+note bottom of ProductionPlanDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+note bottom of QualityEvaluationRequestDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+note bottom of QualityEvaluationDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+note bottom of ProductionBatchCreateDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+note bottom of ProductionBatchDto
+  recipeId:
+  UUID reference to an external service or entity
+end note
+
+@enduml
