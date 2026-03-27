@@ -1,0 +1,57 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor #ffffff
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowThickness 1
+hide empty members
+
+title Inventory Service - DTO Class Diagram
+
+package "Read DTOs" {
+  class StockQuantityChangeDto {
+    +quantity: int
+  }
+  class StockDetailedViewDto {
+    +id: UUID
+    +wineId: UUID
+    +quantity: int
+    +reservedQuantity: int
+  }
+}
+
+package "Create/Update DTOs" {
+  together {
+    class ReservationBasicViewDto {
+      +id: UUID
+      +status: ReservationStatus
+      +createdAt: LocalDate
+    }
+    class ReservationDetailedViewDto {
+      +wineId: UUID
+      +customerId: UUID
+      +quantity: int
+    }
+  }
+}
+
+enum ReservationStatus
+
+ReservationDetailedViewDto --|> ReservationBasicViewDto
+ReservationBasicViewDto --> ReservationStatus : status
+
+note bottom of ReservationDetailedViewDto
+  customerId, wineId:
+  UUID references to external services or entities
+end note
+
+note bottom of StockDetailedViewDto
+  wineId:
+  UUID reference to an external service or entity
+end note
+
+@enduml

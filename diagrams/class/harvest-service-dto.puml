@@ -1,0 +1,110 @@
+@startuml
+top to bottom direction
+skinparam backgroundColor #ffffff
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype polyline
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ArrowThickness 1
+hide empty members
+
+title Harvest Service - DTO Class Diagram
+
+package "Create/Update DTOs" {
+  together {
+    class GrapeTypeCreateDto {
+      +name: String
+      +description: String
+    }
+    class GrapeTypeUpdateDto {
+      +name: String
+      +description: String
+    }
+  }
+
+  together {
+    class VineyardCreateDto {
+      +name: String
+      +location: String
+      +areaSize: double
+      +description: String
+    }
+    class VineyardUpdateDto {
+      +name: String
+      +location: String
+      +areaSize: double
+      +description: String
+    }
+  }
+
+  together {
+    class HarvestRecordCreateDto {
+      +grapeTypeId: UUID
+      +vineyardId: UUID
+      +harvestDate: LocalDate
+      +quantity: double
+      +quality: int
+    }
+    class HarvestRecordUpdateDto {
+      +grapeTypeId: UUID
+      +vineyardId: UUID
+      +harvestDate: LocalDate
+      +quantity: double
+      +quality: int
+    }
+  }
+}
+
+package "Read DTOs" {
+  together {
+    class GrapeTypeViewDto {
+      +id: UUID
+      +name: String
+      +description: String
+    }
+    class VineyardViewDto {
+      +id: UUID
+      +name: String
+      +location: String
+      +areaSize: double
+      +description: String
+    }
+  }
+
+  together {
+    class HarvestRecordViewDto {
+      +id: UUID
+      +grapeTypeId: UUID
+      +grapeTypeName: String
+      +vineyardId: UUID
+      +vineyardName: String
+      +harvestDate: LocalDate
+      +quantity: double
+      +quality: int
+    }
+    class HarvestSummaryDto {
+      +groupByValue: String
+      +totalQuantity: double
+    }
+  }
+}
+
+note bottom of HarvestRecordCreateDto
+  grapeTypeId, vineyardId:
+  UUID references to external services or entities
+end note
+
+note bottom of HarvestRecordUpdateDto
+  grapeTypeId, vineyardId:
+  UUID references to external services or entities
+end note
+
+note bottom of HarvestRecordViewDto
+  grapeTypeId, vineyardId:
+  UUID references to external services or entities;
+  names are included for API response readability
+end note
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam backgroundColor #ffffff
+
+skinparam actor {
+  BackgroundColor #E8F0FE
+  BorderColor #144594
+  FontColor #1E3A8A
+}
+
+skinparam usecase {
+  BackgroundColor #a2fdff
+  BorderColor #0f0bf5
+  FontColor #000000
+}
+
+skinparam rectangle {
+  BackgroundColor #e9fefe
+  BorderColor #324a7b
+  FontColor #111827
+}
+
+skinparam ArrowColor #374151
+
+actor "Winery Owner" as Owner
+actor "Customer" as Customer
+
+rectangle "Winery Management System" {
+  usecase "Record Harvest" as UC1
+  usecase "Manage Vineyards\nand Grape Types" as UC2
+  usecase "Manage\nWine Recipes" as UC3
+  usecase "Plan Production from\nHarvest Lots" as UC4
+  usecase "Manage Production\nBatches" as UC5
+  usecase "Manage Inventory\nStock" as UC6
+  usecase "Generate Operational\nReports" as UC7
+
+  usecase "Browse Available Wines" as UC8
+  usecase "Reserve Bottles" as UC9
+  usecase "Complete Purchase" as UC10
+  usecase "View Purchase History" as UC11
+  usecase "Submit Wine Review" as UC12
+}
+
+Owner --> UC1
+Owner --> UC2
+Owner --> UC3
+Owner --> UC4
+Owner --> UC5
+Owner --> UC6
+Owner --> UC7
+
+UC8 <-- Customer
+UC9 <-- Customer
+UC10 <-- Customer
+UC11 <-- Customer
+UC12 <-- Customer
+
+UC10 ..> UC9 : <<include>>
+
+@enduml
