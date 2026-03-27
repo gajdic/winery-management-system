@@ -77,6 +77,11 @@ public class CustomerService {
     }
 
     public void deleteById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Customer id cannot be null");
+        }
+
+        findById(id);
         customerRepository.deleteById(id);
     }
 }

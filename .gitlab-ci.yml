@@ -53,7 +53,7 @@ run_customer:
   script:
     - cd customer-service
     - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 30
+    - sleep 60
     - grep "Started" log.txt
 
 run_harvest:
