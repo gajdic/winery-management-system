@@ -16,9 +16,11 @@ public interface ReviewMapper {
     @Mapping(target = "customerID", source = "customerId")
     ReviewDto mapToDto(Review review);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "customerId", source = "customerID")
     Review mapToEntity(ReviewCreateDto dto);
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "customerId", source = "dto.customerID")
     Review mapToEntity(UUID id, ReviewUpdateDto dto);
 

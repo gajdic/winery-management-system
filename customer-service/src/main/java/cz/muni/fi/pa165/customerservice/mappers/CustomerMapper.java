@@ -17,8 +17,10 @@ public interface CustomerMapper {
 
     CustomerDto mapToDto(Customer customer);
 
+    @Mapping(target = "id", ignore = true)
     Customer mapToEntity(CustomerCreateDto dto);
 
+    @Mapping(target = "id", source = "id")
     Customer mapToEntity(UUID id, CustomerUpdateDto dto);
 
     @Mapping(target = "id", ignore = true)
