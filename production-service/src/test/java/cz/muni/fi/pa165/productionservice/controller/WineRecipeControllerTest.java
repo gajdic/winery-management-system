@@ -28,7 +28,7 @@ class WineRecipeControllerTest {
     private WineRecipeController wineRecipeController;
 
     @Test
-    void createRecipe_returnsCreated() {
+    void createRecipe_validRequest_returnsCreated() {
         WineRecipeCreateDto request = new WineRecipeCreateDto();
         WineRecipeDto responseDto = new WineRecipeDto();
 
@@ -43,7 +43,7 @@ class WineRecipeControllerTest {
     }
 
     @Test
-    void getRecipes_returnsOk() {
+    void getRecipes_noInput_returnsOk() {
         List<WineRecipeDto> list = List.of(
             new WineRecipeDto(),
             new WineRecipeDto()
@@ -60,7 +60,7 @@ class WineRecipeControllerTest {
     }
 
     @Test
-    void getRecipe_returnsOk() {
+    void getRecipe_existingId_returnsOk() {
         UUID id = UUID.randomUUID();
         WineRecipeDto dto = new WineRecipeDto();
 
@@ -75,7 +75,7 @@ class WineRecipeControllerTest {
     }
 
     @Test
-    void updateRecipe_returnsOk() {
+    void updateRecipe_validRequest_returnsOk() {
         UUID id = UUID.randomUUID();
         WineRecipeUpdateDto request = new WineRecipeUpdateDto();
         WineRecipeDto responseDto = new WineRecipeDto();
@@ -91,7 +91,7 @@ class WineRecipeControllerTest {
     }
 
     @Test
-    void deleteRecipe_returnsNoContent() {
+    void deleteRecipe_existingId_returnsNoContent() {
         UUID id = UUID.randomUUID();
 
         ResponseEntity<Void> response =

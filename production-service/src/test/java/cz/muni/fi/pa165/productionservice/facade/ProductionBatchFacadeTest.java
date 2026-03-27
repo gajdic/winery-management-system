@@ -48,7 +48,7 @@ class ProductionBatchFacadeTest {
     private ProductionBatchFacade productionBatchFacade;
 
     @Test
-    void createBatch_returnsDto() {
+    void createBatch_validRequest_returnsDto() {
         UUID recipeId = UUID.randomUUID();
 
         ProductionBatchCreateDto dto = new ProductionBatchCreateDto();
@@ -94,7 +94,7 @@ class ProductionBatchFacadeTest {
     }
 
     @Test
-    void findAllBatches_returnsMappedList() {
+    void findAllBatches_noInput_returnsMappedList() {
         ProductionBatch b1 = new ProductionBatch();
         ProductionBatch b2 = new ProductionBatch();
 
@@ -114,7 +114,7 @@ class ProductionBatchFacadeTest {
     }
 
     @Test
-    void findBatch_returnsDto() {
+    void findBatch_existingId_returnsDto() {
         UUID id = UUID.randomUUID();
 
         ProductionBatch batch = new ProductionBatch();
@@ -129,7 +129,7 @@ class ProductionBatchFacadeTest {
     }
 
     @Test
-    void updateBatchStatus_returnsDto() {
+    void updateBatchStatus_validStatus_returnsDto() {
         UUID id = UUID.randomUUID();
 
         ProductionBatch batch = new ProductionBatch();
@@ -148,7 +148,7 @@ class ProductionBatchFacadeTest {
     }
 
     @Test
-    void deleteBatch_callsService() {
+    void deleteBatch_existingId_callsService() {
         UUID id = UUID.randomUUID();
 
         productionBatchFacade.deleteBatch(id);

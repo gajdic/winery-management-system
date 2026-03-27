@@ -29,7 +29,7 @@ class ProductionBatchControllerTest {
     private ProductionBatchController productionBatchController;
 
     @Test
-    void createBatch_returnsCreated() {
+    void createBatch_validRequest_returnsCreated() {
         ProductionBatchCreateRequestDto request = new ProductionBatchCreateRequestDto();
         request.setBatch(new ProductionBatchCreateDto());
         request.setHarvestLots(List.of());
@@ -49,7 +49,7 @@ class ProductionBatchControllerTest {
     }
 
     @Test
-    void getBatches_returnsOk() {
+    void getBatches_noInput_returnsOk() {
         List<ProductionBatchDto> list = List.of(
             new ProductionBatchDto(),
             new ProductionBatchDto()
@@ -65,7 +65,7 @@ class ProductionBatchControllerTest {
     }
 
     @Test
-    void getBatch_returnsOk() {
+    void getBatch_existingId_returnsOk() {
         UUID id = UUID.randomUUID();
         ProductionBatchDto dto = new ProductionBatchDto();
 
@@ -79,7 +79,7 @@ class ProductionBatchControllerTest {
     }
 
     @Test
-    void deleteBatch_returnsNoContent() {
+    void deleteBatch_existingId_returnsNoContent() {
         UUID id = UUID.randomUUID();
 
         ResponseEntity<Void> response =
@@ -90,7 +90,7 @@ class ProductionBatchControllerTest {
     }
 
     @Test
-    void updateBatchStatus_returnsOk() {
+    void updateBatchStatus_validStatus_returnsOk() {
         UUID id = UUID.randomUUID();
         ProductionBatchDto dto = new ProductionBatchDto();
 

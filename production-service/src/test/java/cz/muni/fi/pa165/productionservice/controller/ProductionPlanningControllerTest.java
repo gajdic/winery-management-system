@@ -26,7 +26,7 @@ class ProductionPlanningControllerTest {
     private ProductionPlanningController productionPlanningController;
 
     @Test
-    void planProduction_returnsOk() {
+    void planProduction_validRequest_returnsOk() {
         ProductionPlanRequestDto request = new ProductionPlanRequestDto();
         ProductionPlanDto responseDto = new ProductionPlanDto();
 
@@ -41,7 +41,7 @@ class ProductionPlanningControllerTest {
     }
 
     @Test
-    void evaluateQuality_returnsOk() {
+    void evaluateQuality_validRequest_returnsOk() {
         QualityEvaluationRequestDto request = new QualityEvaluationRequestDto();
         QualityEvaluationDto responseDto = new QualityEvaluationDto();
 

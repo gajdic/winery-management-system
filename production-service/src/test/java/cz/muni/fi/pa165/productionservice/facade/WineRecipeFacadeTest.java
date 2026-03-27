@@ -31,7 +31,7 @@ class WineRecipeFacadeTest {
     private WineRecipeFacade wineRecipeFacade;
 
     @Test
-    void createRecipe_callsServiceAndReturnsDto() {
+    void createRecipe_validRequest_callsServiceAndReturnsDto() {
         WineRecipeCreateDto createDto = new WineRecipeCreateDto();
         WineRecipe entity = new WineRecipe();
         WineRecipeDto resultDto = new WineRecipeDto();
@@ -60,7 +60,7 @@ class WineRecipeFacadeTest {
     }
 
     @Test
-    void findAllRecipes_returnsMappedDtos() {
+    void findAllRecipes_noInput_returnsMappedDtos() {
         WineRecipe entity1 = new WineRecipe();
         WineRecipe entity2 = new WineRecipe();
 
@@ -78,7 +78,7 @@ class WineRecipeFacadeTest {
     }
 
     @Test
-    void updateRecipe_callsServiceAndReturnsDto() {
+    void updateRecipe_validRequest_callsServiceAndReturnsDto() {
         UUID id = UUID.randomUUID();
         WineRecipeUpdateDto updateDto = new WineRecipeUpdateDto();
         WineRecipe updatedEntity = new WineRecipe();
@@ -96,7 +96,7 @@ class WineRecipeFacadeTest {
     }
 
     @Test
-    void deleteRecipe_callsService() {
+    void deleteRecipe_existingId_callsService() {
         UUID id = UUID.randomUUID();
 
         wineRecipeFacade.deleteRecipe(id);

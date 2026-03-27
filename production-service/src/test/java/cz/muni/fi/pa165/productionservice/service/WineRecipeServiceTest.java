@@ -67,7 +67,7 @@ class WineRecipeServiceTest {
     }
 
     @Test
-    void findAll_returnsList() {
+    void findAll_noInput_returnsAllRecipes() {
         List<WineRecipe> recipes = List.of(new WineRecipe(), new WineRecipe());
 
         Mockito.when(wineRecipeRepository.findAll()).thenReturn(recipes);

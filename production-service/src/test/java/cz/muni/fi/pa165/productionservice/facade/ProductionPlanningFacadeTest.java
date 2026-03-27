@@ -38,7 +38,7 @@ class ProductionPlanningFacadeTest {
     private ProductionPlanningFacade productionPlanningFacade;
 
     @Test
-    void planProduction_returnsProductionPlanDto() {
+    void planProduction_validRequest_returnsProductionPlanDto() {
         UUID recipeId = UUID.randomUUID();
 
         ProductionPlanRequestDto request = new ProductionPlanRequestDto();
@@ -72,7 +72,7 @@ class ProductionPlanningFacadeTest {
     }
 
     @Test
-    void evaluateQuality_returnsQualityEvaluationDto() {
+    void evaluateQuality_validRequest_returnsQualityEvaluationDto() {
         UUID recipeId = UUID.randomUUID();
 
         QualityEvaluationRequestDto request = new QualityEvaluationRequestDto();

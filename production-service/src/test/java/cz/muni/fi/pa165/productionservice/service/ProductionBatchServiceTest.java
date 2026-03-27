@@ -75,7 +75,7 @@ class ProductionBatchServiceTest {
     }
 
     @Test
-    void findAll_returnsList() {
+    void findAll_noInput_returnsAllBathes() {
         List<ProductionBatch> batches = List.of(new ProductionBatch(), new ProductionBatch());
 
         Mockito.when(productionBatchRepository.findAll()).thenReturn(batches);
