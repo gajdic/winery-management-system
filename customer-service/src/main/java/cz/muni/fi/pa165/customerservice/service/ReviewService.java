@@ -18,6 +18,9 @@ public class ReviewService {
     private InMemoryReviewRepository reviewRepository;
 
     public Review save(Review review) {
+        if (review == null) {
+            throw new IllegalArgumentException("Review cannot be null");
+        }
         if (review.getRating() < 0 || review.getRating() > 5) {
             throw new IllegalArgumentException("Rating must be between 0 and 5");
         }
@@ -32,6 +35,9 @@ public class ReviewService {
     }
 
     public Review update(UUID id, Review updatedData) {
+        if (updatedData == null) {
+            throw new IllegalArgumentException("Review cannot be null");
+        }
         if (updatedData.getRating() < 0 || updatedData.getRating() > 5) {
             throw new IllegalArgumentException("Rating must be between 0 and 5");
         }
@@ -51,6 +57,9 @@ public class ReviewService {
     }
 
     public Review findById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Review id cannot be null");
+        }
         return reviewRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
     }
