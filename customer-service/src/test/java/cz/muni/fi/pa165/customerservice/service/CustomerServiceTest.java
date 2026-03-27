@@ -138,6 +138,18 @@ class CustomerServiceTest {
     }
 
     @Test
+    void update_nullId_throwsIllegalArgumentException() {
+        Customer customer = createCustomer();
+
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> customerService.update(null, customer));
+
+        assertThat(exception.getMessage()).isEqualTo("Customer id cannot be null");
+        Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
     void update_customerWithNullName_throwsIllegalArgumentException() {
         Customer customer = createCustomer();
         customer.setName(null);
@@ -253,12 +265,49 @@ class CustomerServiceTest {
     }
 
     @Test
+    void findAll_emptyRepository_returnsEmptyList() {
+        Mockito.when(customerRepository.findAll()).thenReturn(List.of());
+
+        List<Customer> customers = customerService.findAll();
+
+        assertThat(customers).isEmpty();
+        Mockito.verify(customerRepository).findAll();
+    }
+
+    @Test
     void deleteById_callsRepositoryDeleteById() {
         UUID customerId = UUID.randomUUID();
+        Customer customer = createCustomer();
+        customer.setId(customerId);
+        Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
         customerService.deleteById(customerId);
 
+        Mockito.verify(customerRepository).findById(customerId);
         Mockito.verify(customerRepository).deleteById(customerId);
+    }
+
+    @Test
+    void deleteById_nullId_throwsIllegalArgumentException() {
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> customerService.deleteById(null));
+
+        assertThat(exception.getMessage()).isEqualTo("Customer id cannot be null");
+        Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(customerRepository, Mockito.never()).deleteById(Mockito.any());
+    }
+
+    @Test
+    void deleteById_nonExistingId_throwsIllegalArgumentException() {
+        UUID customerId = UUID.randomUUID();
+        Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> customerService.deleteById(customerId));
+
+        assertThat(exception.getMessage()).isEqualTo("Customer not found: " + customerId);
+        Mockito.verify(customerRepository).findById(customerId);
+        Mockito.verify(customerRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     private Customer createCustomer() {

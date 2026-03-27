@@ -124,6 +124,18 @@ class ReviewServiceTest {
     }
 
     @Test
+    void update_nullId_throwsIllegalArgumentException() {
+        Review review = createReview();
+
+        IllegalArgumentException exception =
+            assertThrows(IllegalArgumentException.class, () -> reviewService.update(null, review));
+
+        assertThat(exception.getMessage()).isEqualTo("Review id cannot be null");
+        Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
     void update_ratingBelowZero_throwsIllegalArgumentException() {
         Review review = createReview();
         review.setRating(-1);
@@ -288,7 +300,33 @@ class ReviewServiceTest {
     }
 
     @Test
+    void findAll_emptyRepository_returnsEmptyList() {
+        Mockito.when(reviewRepository.findAll()).thenReturn(List.of());
+
+        var foundReviews = reviewService.findAll();
+
+        assertThat(foundReviews).isEmpty();
+        Mockito.verify(reviewRepository).findAll();
+    }
+
+    @Test
     void deleteById_callsRepositoryDeleteById() {
+        UUID reviewId = UUID.randomUUID();
+
+        reviewService.deleteById(reviewId);
+
+        Mockito.verify(reviewRepository).deleteById(reviewId);
+    }
+
+    @Test
+    void deleteById_nullId_callsRepositoryDeleteByIdWithNull() {
+        reviewService.deleteById(null);
+
+        Mockito.verify(reviewRepository).deleteById(null);
+    }
+
+    @Test
+    void deleteById_nonExistingId_stillCallsRepositoryDeleteById() {
         UUID reviewId = UUID.randomUUID();
 
         reviewService.deleteById(reviewId);

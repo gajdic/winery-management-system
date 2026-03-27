@@ -156,6 +156,16 @@ class PurchaseRecordServiceTest {
     }
 
     @Test
+    void findAll_emptyRepository_returnsEmptyList() {
+        Mockito.when(purchaseRecordRepository.findAll()).thenReturn(List.of());
+
+        List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findAll();
+
+        assertThat(foundPurchaseRecords).isEmpty();
+        Mockito.verify(purchaseRecordRepository).findAll();
+    }
+
+    @Test
     void findByCustomerId_existingCustomerId_returnsMatchingPurchaseRecords() {
         UUID customerId = UUID.randomUUID();
         List<PurchaseRecord> purchaseRecords = List.of(
@@ -268,6 +278,27 @@ class PurchaseRecordServiceTest {
     }
 
     @Test
+    void findByQuantity_bothBoundsNull_usesDefaultBounds() {
+        List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
+        Mockito.when(purchaseRecordRepository.findByQuantity(0, Integer.MAX_VALUE)).thenReturn(purchaseRecords);
+
+        List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(null, null);
+
+        assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
+        Mockito.verify(purchaseRecordRepository).findByQuantity(0, Integer.MAX_VALUE);
+    }
+
+    @Test
+    void findByQuantity_validBoundsWithNoMatches_returnsEmptyList() {
+        Mockito.when(purchaseRecordRepository.findByQuantity(2, 7)).thenReturn(List.of());
+
+        List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(2, 7);
+
+        assertThat(foundPurchaseRecords).isEmpty();
+        Mockito.verify(purchaseRecordRepository).findByQuantity(2, 7);
+    }
+
+    @Test
     void findByQuantity_minGreaterThanMax_throwsIllegalArgumentException() {
         IllegalArgumentException exception =
             assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.findByQuantity(10, 5));
@@ -313,6 +344,22 @@ class PurchaseRecordServiceTest {
 
     @Test
     void deleteById_callsRepositoryDeleteById() {
+        UUID purchaseRecordId = UUID.randomUUID();
+
+        purchaseRecordService.deleteById(purchaseRecordId);
+
+        Mockito.verify(purchaseRecordRepository).deleteById(purchaseRecordId);
+    }
+
+    @Test
+    void deleteById_nullId_callsRepositoryDeleteByIdWithNull() {
+        purchaseRecordService.deleteById(null);
+
+        Mockito.verify(purchaseRecordRepository).deleteById(null);
+    }
+
+    @Test
+    void deleteById_nonExistingId_stillCallsRepositoryDeleteById() {
         UUID purchaseRecordId = UUID.randomUUID();
 
         purchaseRecordService.deleteById(purchaseRecordId);
