@@ -1,0 +1,137 @@
+package cz.muni.fi.pa165.productionservice.service;
+
+import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
+import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
+import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
+import cz.muni.fi.pa165.productionservice.exception.ResourceNotFoundException;
+import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
+class WineRecipeServiceTest {
+
+    @Mock
+    private WineRecipeRepository wineRecipeRepository;
+
+    @Mock
+    private WineRecipeMapper wineRecipeMapper;
+
+    @InjectMocks
+    private WineRecipeService wineRecipeService;
+
+    @Test
+    void create_validRecipe_returnsSavedRecipe() {
+        WineRecipe recipe = new WineRecipe();
+        Mockito.when(wineRecipeRepository.save(recipe)).thenReturn(recipe);
+
+        WineRecipe result = wineRecipeService.create(recipe);
+
+        assertThat(result).isEqualTo(recipe);
+    }
+
+    @Test
+    void findById_existingId_returnsRecipe() {
+        UUID id = UUID.randomUUID();
+        WineRecipe recipe = new WineRecipe();
+
+        Mockito.when(wineRecipeRepository.findById(id))
+            .thenReturn(Optional.of(recipe));
+
+        WineRecipe result = wineRecipeService.findById(id);
+
+        assertThat(result).isEqualTo(recipe);
+    }
+
+    @Test
+    void findById_nonExistingId_throwsException() {
+        UUID id = UUID.randomUUID();
+
+        Mockito.when(wineRecipeRepository.findById(id))
+            .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            wineRecipeService.findById(id);
+        });
+    }
+
+    @Test
+    void findAll_returnsList() {
+        List<WineRecipe> recipes = List.of(new WineRecipe(), new WineRecipe());
+
+        Mockito.when(wineRecipeRepository.findAll()).thenReturn(recipes);
+
+        List<WineRecipe> result = wineRecipeService.findAll();
+
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    void update_existingId_updatesAndReturnsRecipe() {
+        UUID id = UUID.randomUUID();
+        WineRecipe existing = new WineRecipe();
+        WineRecipeUpdateDto dto = new WineRecipeUpdateDto();
+
+        Mockito.when(wineRecipeRepository.findById(id))
+            .thenReturn(Optional.of(existing));
+
+        Mockito.when(wineRecipeRepository.save(existing))
+            .thenReturn(existing);
+
+        WineRecipe result = wineRecipeService.update(id, dto);
+
+        assertThat(result).isEqualTo(existing);
+
+        Mockito.verify(wineRecipeMapper)
+            .updateEntityFromDto(dto, existing);
+    }
+
+    @Test
+    void update_nonExistingId_throwsException() {
+        UUID id = UUID.randomUUID();
+        WineRecipeUpdateDto dto = new WineRecipeUpdateDto();
+
+        Mockito.when(wineRecipeRepository.findById(id))
+            .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            wineRecipeService.update(id, dto);
+        });
+    }
+
+    @Test
+    void delete_existingId_returnsDeletedRecipe() {
+        UUID id = UUID.randomUUID();
+        WineRecipe recipe = new WineRecipe();
+
+        Mockito.when(wineRecipeRepository.deleteById(id))
+            .thenReturn(Optional.of(recipe));
+
+        WineRecipe result = wineRecipeService.deleteById(id);
+
+        assertThat(result).isEqualTo(recipe);
+    }
+
+    @Test
+    void delete_nonExistingId_throwsException() {
+        UUID id = UUID.randomUUID();
+
+        Mockito.when(wineRecipeRepository.deleteById(id))
+            .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            wineRecipeService.deleteById(id);
+        });
+    }
+}
