@@ -11,7 +11,6 @@ The system covers:
 - bottle inventory and reservation management,
 - customer profiles, purchases, and wine reviews.
 
-## Microservices
 
 The system is split into 4 executable Maven modules:
 
@@ -96,7 +95,7 @@ mvn -pl inventory-service spring-boot:run
 
 ## Use Case Diagram
 
-PlantUML source: `usecase.uml`  
+PlantUML source: `usecase.uml`
 Rendered image:
 
 ![Use Case Diagram](usecase.png)
