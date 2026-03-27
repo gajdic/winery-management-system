@@ -30,7 +30,7 @@ actor "Customer" as Customer
 rectangle "Winery Management System" {
   usecase "Record Harvest" as UC1
   usecase "Manage Vineyards\nand Grape Types" as UC2
-  usecase "Create and Update\nWine Recipes" as UC3
+  usecase "Manage\nWine Recipes" as UC3
   usecase "Plan Production from\nHarvest Lots" as UC4
   usecase "Manage Production\nBatches" as UC5
   usecase "Manage Inventory\nStock" as UC6

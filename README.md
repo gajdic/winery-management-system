@@ -95,10 +95,10 @@ mvn -pl inventory-service spring-boot:run
 
 ## Use Case Diagram
 
-PlantUML source: `usecase.uml`
+PlantUML source: `useCase.puml`
 Rendered image:
 
-![Use Case Diagram](usecase.png)
+![Use Case Diagram](useCase.png)
 
 ## DTO Class Diagram
 
