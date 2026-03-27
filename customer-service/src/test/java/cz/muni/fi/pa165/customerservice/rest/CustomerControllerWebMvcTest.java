@@ -37,9 +37,11 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void createCustomer_validRequest_returnsCreatedCustomer() throws Exception {
+        // Arrange
         CustomerDto customerDto = createCustomerDto(UUID.randomUUID(), "John Doe", "john.doe@example.com");
         when(customerFacade.createCustomer(any())).thenReturn(customerDto);
 
+        // Act + Assert
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreateCustomerRequestJson()))
@@ -52,6 +54,7 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void createCustomer_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreateCustomerRequestJson()))
@@ -60,10 +63,12 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void getCustomer_existingId_returnsCustomer() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         CustomerDto customerDto = createCustomerDto(customerId, "John Doe", "john.doe@example.com");
         when(customerFacade.getCustomer(customerId)).thenReturn(customerDto);
 
+        // Act + Assert
         mockMvc.perform(get("/customers/{id}", customerId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(customerId.toString()))
@@ -73,9 +78,11 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void getCustomer_nonExistingId_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         when(customerFacade.getCustomer(customerId)).thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
 
+        // Act + Assert
         mockMvc.perform(get("/customers/{id}", customerId))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
@@ -84,10 +91,12 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void getAllCustomers_returnsAllCustomers() throws Exception {
+        // Arrange
         CustomerDto firstCustomer = createCustomerDto(UUID.randomUUID(), "John Doe", "john.doe@example.com");
         CustomerDto secondCustomer = createCustomerDto(UUID.randomUUID(), "Jane Doe", "jane.doe@example.com");
         when(customerFacade.getAllCustomers()).thenReturn(List.of(firstCustomer, secondCustomer));
 
+        // Act + Assert
         mockMvc.perform(get("/customers"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(firstCustomer.getId().toString()))
@@ -98,10 +107,12 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void updateCustomer_validRequest_returnsUpdatedCustomer() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         CustomerDto updatedCustomer = createCustomerDto(customerId, "Jane Doe", "jane.doe@example.com");
         when(customerFacade.updateCustomer(eq(customerId), any())).thenReturn(updatedCustomer);
 
+        // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
@@ -113,10 +124,12 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void updateCustomer_nonExistingId_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         when(customerFacade.updateCustomer(eq(customerId), any()))
             .thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
 
+        // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
@@ -127,6 +140,7 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void updateCustomer_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(put("/customers/{id}", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreateCustomerRequestJson()))
@@ -135,21 +149,26 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void deleteCustomer_existingId_returnsNoContent() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         doNothing().when(customerFacade).deleteCustomer(customerId);
 
+        // Act + Assert
         mockMvc.perform(delete("/customers/{id}", customerId))
             .andExpect(status().isNoContent());
 
+        // Assert
         verify(customerFacade).deleteCustomer(customerId);
     }
 
     @Test
     void deleteCustomer_nonExistingId_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         doThrow(new IllegalArgumentException("Customer not found: " + customerId))
             .when(customerFacade).deleteCustomer(customerId);
 
+        // Act + Assert
         mockMvc.perform(delete("/customers/{id}", customerId))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
@@ -158,12 +177,14 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void getCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/customers/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void updateCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(put("/customers/not-a-uuid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
@@ -172,14 +193,17 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void deleteCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(delete("/customers/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getAllCustomers_emptyList_returnsEmptyArray() throws Exception {
+        // Arrange
         when(customerFacade.getAllCustomers()).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/customers"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -188,9 +212,11 @@ class CustomerControllerWebMvcTest {
 
     @Test
     void getCustomer_unexpectedError_returnsInternalServerError() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         when(customerFacade.getCustomer(customerId)).thenThrow(new RuntimeException("Unexpected failure"));
 
+        // Act + Assert
         mockMvc.perform(get("/customers/{id}", customerId))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value("500 INTERNAL_SERVER_ERROR"))

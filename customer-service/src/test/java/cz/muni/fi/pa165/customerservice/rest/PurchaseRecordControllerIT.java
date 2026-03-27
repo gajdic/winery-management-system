@@ -32,9 +32,12 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getPurchase_existingPurchase_returnsPurchaseDto() throws Exception {
+        // Arrange
         PurchaseRecord purchase = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 3, 12.5, LocalDateTime.of(2026, 3, 1, 10, 15));
+        // Act
         purchase = purchaseRecordRepository.save(purchase);
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/{id}", purchase.getId())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -48,8 +51,10 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getPurchase_nonExistingPurchase_returnsNotFound() throws Exception {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/{id}", purchaseId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isNotFound())
@@ -59,9 +64,12 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getAllPurchases_returnsPurchasesIncludingInsertedPurchase() throws Exception {
+        // Arrange
         PurchaseRecord purchase = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 2, 9.99, LocalDateTime.of(2026, 3, 2, 8, 0));
+        // Act
         purchaseRecordRepository.save(purchase);
 
+        // Act + Assert
         mockMvc.perform(get("/purchases")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -70,9 +78,11 @@ class PurchaseRecordControllerIT {
 
     @Test
     void createPurchase_validRequest_returnsCreatedPurchaseDto() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         UUID wineId = UUID.randomUUID();
 
+        // Act + Assert
         mockMvc.perform(post("/purchases")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreatePurchaseJson(customerId, wineId, 4, 15.75)))
@@ -87,6 +97,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void createPurchase_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(post("/purchases")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -102,10 +113,13 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByCustomerId_existingCustomer_returnsMatchingPurchases() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
+        // Act
         purchaseRecordRepository.save(createPurchaseRecord(customerId, UUID.randomUUID(), 1, 10.0, LocalDateTime.of(2026, 3, 3, 9, 0)));
         purchaseRecordRepository.save(createPurchaseRecord(customerId, UUID.randomUUID(), 5, 6.5, LocalDateTime.of(2026, 3, 3, 10, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}", customerId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -114,6 +128,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByCustomerId_nonExistingCustomer_returnsEmptyArray() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -123,9 +138,12 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByWineId_existingWine_returnsMatchingPurchases() throws Exception {
+        // Arrange
         UUID wineId = UUID.randomUUID();
+        // Act
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), wineId, 2, 18.0, LocalDateTime.of(2026, 3, 4, 9, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/wine/{wineId}", wineId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -134,6 +152,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByWineId_nonExistingWine_returnsEmptyArray() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/wine/{wineId}", UUID.randomUUID())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -143,10 +162,12 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_returnsPurchasesWithinRange() throws Exception {
+        // Arrange + Act
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 1, 5.0, LocalDateTime.of(2026, 3, 5, 9, 0)));
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 4, 8.0, LocalDateTime.of(2026, 3, 5, 10, 0)));
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 7, 11.0, LocalDateTime.of(2026, 3, 5, 11, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "2")
                 .param("max", "5")
@@ -157,8 +178,10 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_onlyMinProvided_usesDefaultMax() throws Exception {
+        // Arrange + Act
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 6, 8.0, LocalDateTime.of(2026, 3, 5, 12, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "5")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -168,8 +191,10 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_onlyMaxProvided_usesDefaultMin() throws Exception {
+        // Arrange + Act
         purchaseRecordRepository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 1, 8.0, LocalDateTime.of(2026, 3, 5, 13, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("max", "2")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -179,6 +204,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_nonExistingRange_returnsEmptyArray() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "50")
                 .param("max", "60")
@@ -190,6 +216,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_invalidRange_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "10")
                 .param("max", "5")
@@ -201,10 +228,13 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getTotalSpent_existingCustomer_returnsCalculatedTotal() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
+        // Act
         purchaseRecordRepository.save(createPurchaseRecord(customerId, UUID.randomUUID(), 2, 10.0, LocalDateTime.of(2026, 3, 6, 8, 0)));
         purchaseRecordRepository.save(createPurchaseRecord(customerId, UUID.randomUUID(), 3, 5.5, LocalDateTime.of(2026, 3, 6, 9, 0)));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}/total-spent", customerId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -213,45 +243,54 @@ class PurchaseRecordControllerIT {
 
     @Test
     void deletePurchase_existingPurchase_returnsNoContent() throws Exception {
+        // Arrange
         PurchaseRecord purchase = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 2, 7.0, LocalDateTime.of(2026, 3, 7, 12, 0));
+        // Act
         purchase = purchaseRecordRepository.save(purchase);
 
+        // Act + Assert
         mockMvc.perform(delete("/purchases/{id}", purchase.getId()))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void deletePurchase_nonExistingPurchase_returnsNoContent() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(delete("/purchases/{id}", UUID.randomUUID()))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void getPurchase_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByCustomerId_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/customer/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByWineId_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/wine/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getTotalSpent_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/customer/not-a-uuid/total-spent"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByQuantity_invalidMinType_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "abc")
                 .param("max", "5"))
@@ -260,6 +299,7 @@ class PurchaseRecordControllerIT {
 
     @Test
     void getByQuantity_invalidMaxType_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "1")
                 .param("max", "xyz"))

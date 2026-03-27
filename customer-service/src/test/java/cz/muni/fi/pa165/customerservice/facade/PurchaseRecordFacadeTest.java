@@ -33,6 +33,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void createPurchase_validDto_mapsSavesAndReturnsDto() {
+        // Arrange
         PurchaseRecordCreateDto createDto = createPurchaseRecordCreateDto();
         PurchaseRecord purchaseRecord = createPurchaseRecord();
         PurchaseRecord savedPurchaseRecord = createPurchaseRecord();
@@ -50,8 +51,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.save(purchaseRecord)).thenReturn(savedPurchaseRecord);
         Mockito.when(purchaseRecordMapper.mapToDto(savedPurchaseRecord)).thenReturn(purchaseRecordDto);
 
+        // Act
         PurchaseRecordDto createdPurchase = purchaseRecordFacade.createPurchase(createDto);
 
+        // Assert
         assertThat(createdPurchase).isEqualTo(purchaseRecordDto);
         Mockito.verify(purchaseRecordMapper).mapToEntity(createDto);
         Mockito.verify(purchaseRecordService).save(purchaseRecord);
@@ -60,6 +63,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getPurchase_existingId_returnsMappedDto() {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         PurchaseRecord purchaseRecord = createPurchaseRecord();
         purchaseRecord.setId(purchaseId);
@@ -75,8 +79,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.findById(purchaseId)).thenReturn(purchaseRecord);
         Mockito.when(purchaseRecordMapper.mapToDto(purchaseRecord)).thenReturn(purchaseRecordDto);
 
+        // Act
         PurchaseRecordDto foundPurchase = purchaseRecordFacade.getPurchase(purchaseId);
 
+        // Assert
         assertThat(foundPurchase).isEqualTo(purchaseRecordDto);
         Mockito.verify(purchaseRecordService).findById(purchaseId);
         Mockito.verify(purchaseRecordMapper).mapToDto(purchaseRecord);
@@ -84,6 +90,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getAllPurchases_returnsMappedDtos() {
+        // Arrange
         PurchaseRecord firstPurchase = createPurchaseRecord();
         firstPurchase.setId(UUID.randomUUID());
         PurchaseRecord secondPurchase = createPurchaseRecord(
@@ -116,8 +123,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordMapper.mapToDto(firstPurchase)).thenReturn(firstDto);
         Mockito.when(purchaseRecordMapper.mapToDto(secondPurchase)).thenReturn(secondDto);
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getAllPurchases();
 
+        // Assert
         assertThat(purchases).containsExactly(firstDto, secondDto);
         Mockito.verify(purchaseRecordService).findAll();
         Mockito.verify(purchaseRecordMapper).mapToDto(firstPurchase);
@@ -126,10 +135,13 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getAllPurchases_emptyList_returnsEmptyListWithoutMapping() {
+        // Arrange
         Mockito.when(purchaseRecordService.findAll()).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getAllPurchases();
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findAll();
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -137,6 +149,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByCustomerId_existingCustomerId_returnsMappedDtos() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         PurchaseRecord purchaseRecord = createPurchaseRecord(
             customerId,
@@ -158,8 +171,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.findByCustomerId(customerId)).thenReturn(List.of(purchaseRecord));
         Mockito.when(purchaseRecordMapper.mapToDto(purchaseRecord)).thenReturn(purchaseRecordDto);
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByCustomerId(customerId);
 
+        // Assert
         assertThat(purchases).containsExactly(purchaseRecordDto);
         Mockito.verify(purchaseRecordService).findByCustomerId(customerId);
         Mockito.verify(purchaseRecordMapper).mapToDto(purchaseRecord);
@@ -167,11 +182,14 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByCustomerId_nonExistingCustomerId_returnsEmptyListWithoutMapping() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(purchaseRecordService.findByCustomerId(customerId)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByCustomerId(customerId);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByCustomerId(customerId);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -179,6 +197,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByWineId_existingWineId_returnsMappedDtos() {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         PurchaseRecord purchaseRecord = createPurchaseRecord(
             UUID.randomUUID(),
@@ -200,8 +219,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.findByWineId(wineId)).thenReturn(List.of(purchaseRecord));
         Mockito.when(purchaseRecordMapper.mapToDto(purchaseRecord)).thenReturn(purchaseRecordDto);
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByWineId(wineId);
 
+        // Assert
         assertThat(purchases).containsExactly(purchaseRecordDto);
         Mockito.verify(purchaseRecordService).findByWineId(wineId);
         Mockito.verify(purchaseRecordMapper).mapToDto(purchaseRecord);
@@ -209,11 +230,14 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByWineId_nonExistingWineId_returnsEmptyListWithoutMapping() {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         Mockito.when(purchaseRecordService.findByWineId(wineId)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByWineId(wineId);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByWineId(wineId);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -221,6 +245,7 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByQuantity_validRange_returnsMappedDtos() {
+        // Arrange
         PurchaseRecord purchaseRecord = createPurchaseRecord();
         purchaseRecord.setId(UUID.randomUUID());
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
@@ -235,8 +260,10 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.findByQuantity(2, 7)).thenReturn(List.of(purchaseRecord));
         Mockito.when(purchaseRecordMapper.mapToDto(purchaseRecord)).thenReturn(purchaseRecordDto);
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByQuantity(2, 7);
 
+        // Assert
         assertThat(purchases).containsExactly(purchaseRecordDto);
         Mockito.verify(purchaseRecordService).findByQuantity(2, 7);
         Mockito.verify(purchaseRecordMapper).mapToDto(purchaseRecord);
@@ -244,10 +271,13 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByQuantity_emptyResult_returnsEmptyListWithoutMapping() {
+        // Arrange
         Mockito.when(purchaseRecordService.findByQuantity(2, 7)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByQuantity(2, 7);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByQuantity(2, 7);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -255,10 +285,13 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByQuantity_nullMin_delegatesToServiceWithNullMin() {
+        // Arrange
         Mockito.when(purchaseRecordService.findByQuantity(null, 5)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByQuantity(null, 5);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByQuantity(null, 5);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -266,10 +299,13 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByQuantity_nullMax_delegatesToServiceWithNullMax() {
+        // Arrange
         Mockito.when(purchaseRecordService.findByQuantity(2, null)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByQuantity(2, null);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByQuantity(2, null);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -277,10 +313,13 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getByQuantity_bothBoundsNull_delegatesToServiceWithNullBounds() {
+        // Arrange
         Mockito.when(purchaseRecordService.findByQuantity(null, null)).thenReturn(List.of());
 
+        // Act
         List<PurchaseRecordDto> purchases = purchaseRecordFacade.getByQuantity(null, null);
 
+        // Assert
         assertThat(purchases).isEmpty();
         Mockito.verify(purchaseRecordService).findByQuantity(null, null);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
@@ -288,17 +327,21 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getTotalSpentByCustomer_existingCustomerId_returnsCalculatedValue() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(purchaseRecordService.getTotalSpentByCustomer(customerId)).thenReturn(66.0);
 
+        // Act
         double totalSpent = purchaseRecordFacade.getTotalSpentByCustomer(customerId);
 
+        // Assert
         assertThat(totalSpent).isEqualTo(66.0);
         Mockito.verify(purchaseRecordService).getTotalSpentByCustomer(customerId);
     }
 
     @Test
     void createPurchase_serviceThrowsException_propagatesException() {
+        // Arrange
         PurchaseRecordCreateDto createDto = createPurchaseRecordCreateDto();
         PurchaseRecord purchaseRecord = createPurchaseRecord();
 
@@ -306,10 +349,12 @@ class PurchaseRecordFacadeTest {
         Mockito.when(purchaseRecordService.save(purchaseRecord))
             .thenThrow(new IllegalArgumentException("Quantity must be greater than 0"));
 
+        // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.createPurchase(createDto))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Quantity must be greater than 0");
 
+        // Assert
         Mockito.verify(purchaseRecordMapper).mapToEntity(createDto);
         Mockito.verify(purchaseRecordService).save(purchaseRecord);
         Mockito.verify(purchaseRecordMapper, Mockito.never()).mapToDto(Mockito.any());
@@ -317,50 +362,62 @@ class PurchaseRecordFacadeTest {
 
     @Test
     void getPurchase_serviceThrowsException_propagatesException() {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         Mockito.when(purchaseRecordService.findById(purchaseId))
             .thenThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId));
 
+        // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.getPurchase(purchaseId))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("PurchaseRecord not found: " + purchaseId);
 
+        // Assert
         Mockito.verify(purchaseRecordService).findById(purchaseId);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
     }
 
     @Test
     void getByQuantity_serviceThrowsException_propagatesException() {
+        // Arrange
         Mockito.when(purchaseRecordService.findByQuantity(10, 5))
             .thenThrow(new IllegalArgumentException("Min cannot be greater than max"));
 
+        // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.getByQuantity(10, 5))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Min cannot be greater than max");
 
+        // Assert
         Mockito.verify(purchaseRecordService).findByQuantity(10, 5);
         Mockito.verifyNoInteractions(purchaseRecordMapper);
     }
 
     @Test
     void deletePurchase_callsServiceDeleteById() {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
 
+        // Act
         purchaseRecordFacade.deletePurchase(purchaseId);
 
+        // Assert
         Mockito.verify(purchaseRecordService).deleteById(purchaseId);
     }
 
     @Test
     void deletePurchase_serviceThrowsException_propagatesException() {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         Mockito.doThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId))
             .when(purchaseRecordService).deleteById(purchaseId);
 
+        // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.deletePurchase(purchaseId))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("PurchaseRecord not found: " + purchaseId);
 
+        // Assert
         Mockito.verify(purchaseRecordService).deleteById(purchaseId);
     }
 

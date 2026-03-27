@@ -21,10 +21,13 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void save_purchaseRecordWithoutId_assignsIdAndStoresPurchaseRecord() {
+        // Arrange
         PurchaseRecord purchaseRecord = createPurchaseRecord();
 
+        // Act
         PurchaseRecord savedPurchaseRecord = repository.save(purchaseRecord);
 
+        // Assert
         assertThat(savedPurchaseRecord.getId()).isNotNull();
         assertThat(repository.findById(savedPurchaseRecord.getId())).contains(savedPurchaseRecord);
         assertThat(repository.findAll()).containsExactly(savedPurchaseRecord);
@@ -32,17 +35,22 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void save_nullPurchaseRecord_throwsIllegalArgumentException() {
+        // Arrange
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> repository.save(null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("PurchaseRecord cannot be null");
     }
 
     @Test
     void save_purchaseRecordWithExistingId_updatesStoredPurchaseRecord() {
+        // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
         PurchaseRecord originalPurchaseRecord = createPurchaseRecord();
         originalPurchaseRecord.setId(purchaseRecordId);
+        // Act
         repository.save(originalPurchaseRecord);
 
         PurchaseRecord updatedPurchaseRecord = createPurchaseRecord();
@@ -50,8 +58,10 @@ class InMemoryPurchaseRecordRepositoryTest {
         updatedPurchaseRecord.setQuantity(20);
         updatedPurchaseRecord.setPricePerBottle(19.99);
 
+        // Act
         PurchaseRecord savedPurchaseRecord = repository.save(updatedPurchaseRecord);
 
+        // Assert
         assertThat(savedPurchaseRecord.getId()).isEqualTo(purchaseRecordId);
         assertThat(repository.findAll()).containsExactly(updatedPurchaseRecord);
         assertThat(repository.findById(purchaseRecordId)).contains(updatedPurchaseRecord);
@@ -59,51 +69,63 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void save_purchaseRecordWithExistingId_preservesOnlyLatestValue() {
+        // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
         PurchaseRecord originalPurchaseRecord = createPurchaseRecord();
         originalPurchaseRecord.setId(purchaseRecordId);
+        // Act
         repository.save(originalPurchaseRecord);
 
         PurchaseRecord updatedPurchaseRecord = createPurchaseRecord();
         updatedPurchaseRecord.setId(purchaseRecordId);
         updatedPurchaseRecord.setQuantity(99);
 
+        // Act
         repository.save(updatedPurchaseRecord);
 
+        // Assert
         assertThat(repository.findAll()).hasSize(1);
         assertThat(repository.findById(purchaseRecordId)).contains(updatedPurchaseRecord);
     }
 
     @Test
     void findById_existingId_returnsPurchaseRecord() {
+        // Arrange + Act
         PurchaseRecord savedPurchaseRecord = repository.save(createPurchaseRecord());
 
         var foundPurchaseRecord = repository.findById(savedPurchaseRecord.getId());
 
+        // Assert
         assertThat(foundPurchaseRecord).contains(savedPurchaseRecord);
     }
 
     @Test
     void findById_nonExistingId_returnsEmptyOptional() {
+        // Arrange + Act
         var foundPurchaseRecord = repository.findById(UUID.randomUUID());
 
+        // Assert
         assertThat(foundPurchaseRecord).isEmpty();
     }
 
     @Test
     void findById_nullId_returnsEmptyOptional() {
+        // Arrange + Act
         var foundPurchaseRecord = repository.findById(null);
 
+        // Assert
         assertThat(foundPurchaseRecord).isEmpty();
     }
 
     @Test
     void findAll_emptyRepository_returnsEmptyList() {
+        // Arrange + Assert
         assertThat(repository.findAll()).isEmpty();
     }
 
     @Test
     void findAll_multiplePurchaseRecords_returnsAllPurchaseRecords() {
+        // Arrange
         PurchaseRecord firstPurchaseRecord = createPurchaseRecord();
         PurchaseRecord secondPurchaseRecord = createPurchaseRecord(
             UUID.randomUUID(),
@@ -113,9 +135,11 @@ class InMemoryPurchaseRecordRepositoryTest {
             LocalDateTime.of(2026, 3, 20, 9, 15)
         );
 
+        // Act
         PurchaseRecord savedFirst = repository.save(firstPurchaseRecord);
         PurchaseRecord savedSecond = repository.save(secondPurchaseRecord);
 
+        // Assert
         assertThat(repository.findAll())
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -123,15 +147,18 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void findByCustomerId_existingCustomerId_returnsMatchingPurchaseRecords() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         PurchaseRecord matchingFirst = createPurchaseRecord(customerId, UUID.randomUUID(), 5, 10.00, LocalDateTime.now());
         PurchaseRecord matchingSecond = createPurchaseRecord(customerId, UUID.randomUUID(), 8, 15.00, LocalDateTime.now().minusDays(1));
         PurchaseRecord nonMatching = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 2, 7.50, LocalDateTime.now().minusDays(2));
 
+        // Act
         PurchaseRecord savedFirst = repository.save(matchingFirst);
         PurchaseRecord savedSecond = repository.save(matchingSecond);
         repository.save(nonMatching);
 
+        // Assert
         assertThat(repository.findByCustomerId(customerId))
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -139,29 +166,36 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void findByCustomerId_nonExistingCustomerId_returnsEmptyList() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Assert
         assertThat(repository.findByCustomerId(UUID.randomUUID())).isEmpty();
     }
 
     @Test
     void findByCustomerId_nullCustomerId_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByCustomerId(null));
     }
 
     @Test
     void findByWineId_existingWineId_returnsMatchingPurchaseRecords() {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         PurchaseRecord matchingFirst = createPurchaseRecord(UUID.randomUUID(), wineId, 5, 10.00, LocalDateTime.now());
         PurchaseRecord matchingSecond = createPurchaseRecord(UUID.randomUUID(), wineId, 8, 15.00, LocalDateTime.now().minusDays(1));
         PurchaseRecord nonMatching = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 2, 7.50, LocalDateTime.now().minusDays(2));
 
+        // Act
         PurchaseRecord savedFirst = repository.save(matchingFirst);
         PurchaseRecord savedSecond = repository.save(matchingSecond);
         repository.save(nonMatching);
 
+        // Assert
         assertThat(repository.findByWineId(wineId))
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -169,32 +203,39 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void findByWineId_nonExistingWineId_returnsEmptyList() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Assert
         assertThat(repository.findByWineId(UUID.randomUUID())).isEmpty();
     }
 
     @Test
     void findByWineId_nullWineId_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByWineId(null));
     }
 
     @Test
     void findByQuantity_matchingRange_returnsMatchingPurchaseRecords() {
+        // Arrange
         PurchaseRecord belowRange = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 1, 6.50, LocalDateTime.now());
         PurchaseRecord atLowerBound = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 3, 8.00, LocalDateTime.now().minusDays(1));
         PurchaseRecord withinRange = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 5, 9.50, LocalDateTime.now().minusDays(2));
         PurchaseRecord atUpperBound = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 7, 12.00, LocalDateTime.now().minusDays(3));
         PurchaseRecord aboveRange = createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 9, 14.00, LocalDateTime.now().minusDays(4));
 
+        // Act
         repository.save(belowRange);
         PurchaseRecord savedLowerBound = repository.save(atLowerBound);
         PurchaseRecord savedWithinRange = repository.save(withinRange);
         PurchaseRecord savedUpperBound = repository.save(atUpperBound);
         repository.save(aboveRange);
 
+        // Assert
         assertThat(repository.findByQuantity(3, 7))
             .hasSize(3)
             .containsExactlyInAnyOrder(savedLowerBound, savedWithinRange, savedUpperBound);
@@ -202,41 +243,51 @@ class InMemoryPurchaseRecordRepositoryTest {
 
     @Test
     void findByQuantity_nonMatchingRange_returnsEmptyList() {
+        // Arrange + Act
         repository.save(createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 2, 7.50, LocalDateTime.now()));
 
+        // Assert
         assertThat(repository.findByQuantity(5, 10)).isEmpty();
     }
 
     @Test
     void findByQuantity_nullMin_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByQuantity(null, 5));
     }
 
     @Test
     void findByQuantity_nullMax_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createPurchaseRecord());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByQuantity(1, null));
     }
 
     @Test
     void deleteById_existingId_removesPurchaseRecord() {
+        // Arrange + Act
         PurchaseRecord savedPurchaseRecord = repository.save(createPurchaseRecord());
 
         repository.deleteById(savedPurchaseRecord.getId());
 
+        // Assert
         assertThat(repository.findById(savedPurchaseRecord.getId())).isEmpty();
         assertThat(repository.findAll()).isEmpty();
     }
 
     @Test
     void deleteById_nonExistingId_doesNothing() {
+        // Arrange + Act
         PurchaseRecord savedPurchaseRecord = repository.save(createPurchaseRecord());
 
         repository.deleteById(UUID.randomUUID());
 
+        // Assert
         assertThat(repository.findAll()).containsExactly(savedPurchaseRecord);
     }
 

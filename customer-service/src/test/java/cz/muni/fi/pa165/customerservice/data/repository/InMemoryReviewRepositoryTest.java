@@ -20,10 +20,13 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void save_reviewWithoutId_assignsIdAndStoresReview() {
+        // Arrange
         Review review = createReview();
 
+        // Act
         Review savedReview = repository.save(review);
 
+        // Assert
         assertThat(savedReview.getId()).isNotNull();
         assertThat(repository.findById(savedReview.getId())).contains(savedReview);
         assertThat(repository.findAll()).containsExactly(savedReview);
@@ -31,16 +34,20 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void save_nullReview_throwsIllegalArgumentException() {
+        // Arrange + Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repository.save(null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Review cannot be null");
     }
 
     @Test
     void save_reviewWithExistingId_updatesStoredReview() {
+        // Arrange
         UUID reviewId = UUID.randomUUID();
         Review originalReview = createReview();
         originalReview.setId(reviewId);
+        // Act
         repository.save(originalReview);
 
         Review updatedReview = createReview();
@@ -48,8 +55,10 @@ class InMemoryReviewRepositoryTest {
         updatedReview.setComment("Updated comment");
         updatedReview.setRating(3);
 
+        // Act
         Review savedReview = repository.save(updatedReview);
 
+        // Assert
         assertThat(savedReview.getId()).isEqualTo(reviewId);
         assertThat(repository.findAll()).containsExactly(updatedReview);
         assertThat(repository.findById(reviewId)).contains(updatedReview);
@@ -57,9 +66,11 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void save_reviewWithExistingId_preservesOnlyLatestValue() {
+        // Arrange
         UUID reviewId = UUID.randomUUID();
         Review originalReview = createReview();
         originalReview.setId(reviewId);
+        // Act
         repository.save(originalReview);
 
         Review updatedReview = createReview();
@@ -67,46 +78,57 @@ class InMemoryReviewRepositoryTest {
         updatedReview.setComment("Latest comment");
         updatedReview.setRating(2);
 
+        // Act
         repository.save(updatedReview);
 
+        // Assert
         assertThat(repository.findAll()).hasSize(1);
         assertThat(repository.findById(reviewId)).contains(updatedReview);
     }
 
     @Test
     void findById_existingId_returnsReview() {
+        // Arrange + Act
         Review savedReview = repository.save(createReview());
 
         var foundReview = repository.findById(savedReview.getId());
 
+        // Assert
         assertThat(foundReview).contains(savedReview);
     }
 
     @Test
     void findById_nonExistingId_returnsEmptyOptional() {
+        // Arrange + Act
         var foundReview = repository.findById(UUID.randomUUID());
 
+        // Assert
         assertThat(foundReview).isEmpty();
     }
 
     @Test
     void findById_nullId_returnsEmptyOptional() {
+        // Arrange + Act
         var foundReview = repository.findById(null);
 
+        // Assert
         assertThat(foundReview).isEmpty();
     }
 
     @Test
     void findByCustomerId_existingCustomerId_returnsMatchingReviews() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Review matchingFirst = createReview(customerId, UUID.randomUUID(), 5, "Excellent");
         Review matchingSecond = createReview(customerId, UUID.randomUUID(), 4, "Very good");
         Review nonMatching = createReview(UUID.randomUUID(), UUID.randomUUID(), 2, "Average");
 
+        // Act
         Review savedFirst = repository.save(matchingFirst);
         Review savedSecond = repository.save(matchingSecond);
         repository.save(nonMatching);
 
+        // Assert
         assertThat(repository.findByCustomerId(customerId))
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -114,29 +136,36 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void findByCustomerId_nonExistingCustomerId_returnsEmptyList() {
+        // Arrange + Act
         repository.save(createReview());
 
+        // Assert
         assertThat(repository.findByCustomerId(UUID.randomUUID())).isEmpty();
     }
 
     @Test
     void findByCustomerId_nullCustomerId_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createReview());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByCustomerId(null));
     }
 
     @Test
     void findByWineId_existingWineId_returnsMatchingReviews() {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         Review matchingFirst = createReview(UUID.randomUUID(), wineId, 5, "Excellent");
         Review matchingSecond = createReview(UUID.randomUUID(), wineId, 4, "Very good");
         Review nonMatching = createReview(UUID.randomUUID(), UUID.randomUUID(), 2, "Average");
 
+        // Act
         Review savedFirst = repository.save(matchingFirst);
         Review savedSecond = repository.save(matchingSecond);
         repository.save(nonMatching);
 
+        // Assert
         assertThat(repository.findByWineId(wineId))
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -144,31 +173,39 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void findByWineId_nonExistingWineId_returnsEmptyList() {
+        // Arrange + Act
         repository.save(createReview());
 
+        // Assert
         assertThat(repository.findByWineId(UUID.randomUUID())).isEmpty();
     }
 
     @Test
     void findByWineId_nullWineId_throwsNullPointerException() {
+        // Arrange + Act
         repository.save(createReview());
 
+        // Act + Assert
         assertThrows(NullPointerException.class, () -> repository.findByWineId(null));
     }
 
     @Test
     void findAll_emptyRepository_returnsEmptyList() {
+        // Arrange + Assert
         assertThat(repository.findAll()).isEmpty();
     }
 
     @Test
     void findAll_multipleReviews_returnsAllReviews() {
+        // Arrange
         Review firstReview = createReview();
         Review secondReview = createReview(UUID.randomUUID(), UUID.randomUUID(), 1, "Poor");
 
+        // Act
         Review savedFirst = repository.save(firstReview);
         Review savedSecond = repository.save(secondReview);
 
+        // Assert
         assertThat(repository.findAll())
             .hasSize(2)
             .containsExactlyInAnyOrder(savedFirst, savedSecond);
@@ -176,20 +213,24 @@ class InMemoryReviewRepositoryTest {
 
     @Test
     void deleteById_existingId_removesReview() {
+        // Arrange + Act
         Review savedReview = repository.save(createReview());
 
         repository.deleteById(savedReview.getId());
 
+        // Assert
         assertThat(repository.findById(savedReview.getId())).isEmpty();
         assertThat(repository.findAll()).isEmpty();
     }
 
     @Test
     void deleteById_nonExistingId_doesNothing() {
+        // Arrange + Act
         Review savedReview = repository.save(createReview());
 
         repository.deleteById(UUID.randomUUID());
 
+        // Assert
         assertThat(repository.findAll()).containsExactly(savedReview);
     }
 

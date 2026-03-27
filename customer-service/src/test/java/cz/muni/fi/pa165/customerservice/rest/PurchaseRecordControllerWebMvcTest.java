@@ -38,9 +38,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void createPurchase_validRequest_returnsCreatedPurchase() throws Exception {
+        // Arrange
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 4, 12.0, LocalDateTime.of(2026, 3, 10, 11, 0));
         when(purchaseRecordFacade.createPurchase(any())).thenReturn(dto);
 
+        // Act + Assert
         mockMvc.perform(post("/purchases")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreatePurchaseRequestJson(dto.getCustomerId(), dto.getWineId(), 4, 12.0)))
@@ -54,6 +56,7 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void createPurchase_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(post("/purchases")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreatePurchaseRequestJson()))
@@ -62,9 +65,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getPurchase_existingId_returnsPurchase() throws Exception {
+        // Arrange
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 2, 7.5, LocalDateTime.of(2026, 3, 10, 12, 0));
         when(purchaseRecordFacade.getPurchase(dto.getId())).thenReturn(dto);
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/{id}", dto.getId()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(dto.getId().toString()))
@@ -74,10 +79,12 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getPurchase_nonExistingId_returnsNotFound() throws Exception {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         when(purchaseRecordFacade.getPurchase(purchaseId))
             .thenThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/{id}", purchaseId))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
@@ -86,10 +93,12 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getAllPurchases_returnsAllPurchases() throws Exception {
+        // Arrange
         PurchaseRecordDto first = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 1, 5.0, LocalDateTime.of(2026, 3, 10, 13, 0));
         PurchaseRecordDto second = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 3, 8.0, LocalDateTime.of(2026, 3, 10, 14, 0));
         when(purchaseRecordFacade.getAllPurchases()).thenReturn(List.of(first, second));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(first.getId().toString()))
@@ -98,8 +107,10 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getAllPurchases_emptyList_returnsEmptyArray() throws Exception {
+        // Arrange
         when(purchaseRecordFacade.getAllPurchases()).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/purchases"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -108,10 +119,12 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByCustomerId_returnsMatchingPurchases() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), customerId, UUID.randomUUID(), 2, 9.0, LocalDateTime.of(2026, 3, 10, 15, 0));
         when(purchaseRecordFacade.getByCustomerId(customerId)).thenReturn(List.of(dto));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}", customerId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].customerId").value(customerId.toString()));
@@ -119,9 +132,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByCustomerId_nonExistingCustomer_returnsEmptyArray() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         when(purchaseRecordFacade.getByCustomerId(customerId)).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}", customerId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -130,10 +145,12 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByWineId_returnsMatchingPurchases() throws Exception {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), wineId, 2, 9.0, LocalDateTime.of(2026, 3, 10, 16, 0));
         when(purchaseRecordFacade.getByWineId(wineId)).thenReturn(List.of(dto));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/wine/{wineId}", wineId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].wineId").value(wineId.toString()));
@@ -141,9 +158,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByWineId_nonExistingWine_returnsEmptyArray() throws Exception {
+        // Arrange
         UUID wineId = UUID.randomUUID();
         when(purchaseRecordFacade.getByWineId(wineId)).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/wine/{wineId}", wineId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
@@ -152,9 +171,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_returnsMatchingPurchases() throws Exception {
+        // Arrange
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 4, 9.0, LocalDateTime.of(2026, 3, 10, 17, 0));
         when(purchaseRecordFacade.getByQuantity(2, 5)).thenReturn(List.of(dto));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "2")
                 .param("max", "5"))
@@ -164,9 +185,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_onlyMinProvided_usesDefaultMax() throws Exception {
+        // Arrange
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 6, 9.0, LocalDateTime.of(2026, 3, 10, 17, 30));
         when(purchaseRecordFacade.getByQuantity(5, null)).thenReturn(List.of(dto));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "5"))
             .andExpect(status().isOk())
@@ -175,9 +198,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_onlyMaxProvided_usesDefaultMin() throws Exception {
+        // Arrange
         PurchaseRecordDto dto = createPurchaseDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 1, 9.0, LocalDateTime.of(2026, 3, 10, 17, 45));
         when(purchaseRecordFacade.getByQuantity(null, 2)).thenReturn(List.of(dto));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("max", "2"))
             .andExpect(status().isOk())
@@ -186,8 +211,10 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_nonExistingRange_returnsEmptyArray() throws Exception {
+        // Arrange
         when(purchaseRecordFacade.getByQuantity(50, 60)).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "50")
                 .param("max", "60"))
@@ -198,8 +225,10 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_invalidRange_returnsBadRequest() throws Exception {
+        // Arrange
         when(purchaseRecordFacade.getByQuantity(10, 5)).thenThrow(new IllegalArgumentException("Min cannot be greater than max"));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "10")
                 .param("max", "5"))
@@ -210,9 +239,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getTotalSpent_returnsTotal() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         when(purchaseRecordFacade.getTotalSpentByCustomer(customerId)).thenReturn(42.5);
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/customer/{customerId}/total-spent", customerId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", closeTo(42.5, 0.001)));
@@ -220,41 +251,49 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void deletePurchase_existingId_returnsNoContent() throws Exception {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         doNothing().when(purchaseRecordFacade).deletePurchase(purchaseId);
 
+        // Act + Assert
         mockMvc.perform(delete("/purchases/{id}", purchaseId))
             .andExpect(status().isNoContent());
 
+        // Assert
         verify(purchaseRecordFacade).deletePurchase(purchaseId);
     }
 
     @Test
     void getPurchase_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByCustomerId_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/customer/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByWineId_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/wine/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getTotalSpent_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/customer/not-a-uuid/total-spent"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByQuantity_invalidMinType_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "abc")
                 .param("max", "5"))
@@ -263,6 +302,7 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getByQuantity_invalidMaxType_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
                 .param("min", "1")
                 .param("max", "xyz"))
@@ -271,9 +311,11 @@ class PurchaseRecordControllerWebMvcTest {
 
     @Test
     void getPurchase_unexpectedError_returnsInternalServerError() throws Exception {
+        // Arrange
         UUID purchaseId = UUID.randomUUID();
         when(purchaseRecordFacade.getPurchase(purchaseId)).thenThrow(new RuntimeException("Unexpected purchase failure"));
 
+        // Act + Assert
         mockMvc.perform(get("/purchases/{id}", purchaseId))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value("500 INTERNAL_SERVER_ERROR"))

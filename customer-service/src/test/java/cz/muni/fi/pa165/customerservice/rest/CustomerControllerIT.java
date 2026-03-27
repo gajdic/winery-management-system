@@ -32,13 +32,16 @@ class CustomerControllerIT {
 
     @Test
     void getCustomer_existingCustomer_returnsCustomerDto() throws Exception {
+        // Arrange
         Customer customer = new Customer(
             "Integration User",
             "integration." + UUID.randomUUID() + "@example.com",
             new Address("Integration Street 1", "Brno", "60200", "Czech Republic")
         );
+        // Act
         customer = customerRepository.save(customer);
 
+        // Act + Assert
         mockMvc.perform(get("/customers/{id}", customer.getId())
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -50,8 +53,10 @@ class CustomerControllerIT {
 
     @Test
     void getCustomer_nonExistingCustomer_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
+        // Act + Assert
         mockMvc.perform(get("/customers/{id}", customerId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isNotFound())
@@ -61,14 +66,17 @@ class CustomerControllerIT {
 
     @Test
     void getAllCustomers_returnsCustomersIncludingInsertedCustomer() throws Exception {
+        // Arrange
         String email = "all-customers." + UUID.randomUUID() + "@example.com";
         Customer customer = new Customer(
             "All Customers User",
             email,
             new Address("Collection Street 7", "Brno", "60200", "Czech Republic")
         );
+        // Act
         customerRepository.save(customer);
 
+        // Act + Assert
         mockMvc.perform(get("/customers")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
@@ -78,8 +86,10 @@ class CustomerControllerIT {
 
     @Test
     void createCustomer_validRequest_returnsCreatedCustomerDto() throws Exception {
+        // Arrange
         String email = "created." + UUID.randomUUID() + "@example.com";
 
+        // Act + Assert
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -103,6 +113,7 @@ class CustomerControllerIT {
 
     @Test
     void createCustomer_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -117,13 +128,16 @@ class CustomerControllerIT {
 
     @Test
     void updateCustomer_existingCustomer_returnsUpdatedCustomerDto() throws Exception {
+        // Arrange
         Customer customer = new Customer(
             "Before Update",
             "before-update." + UUID.randomUUID() + "@example.com",
             new Address("Before Street 1", "Brno", "60200", "Czech Republic")
         );
+        // Act
         customer = customerRepository.save(customer);
 
+        // Act + Assert
         mockMvc.perform(put("/customers/{id}", customer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -147,8 +161,10 @@ class CustomerControllerIT {
 
     @Test
     void updateCustomer_nonExistingCustomer_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
+        // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -170,13 +186,16 @@ class CustomerControllerIT {
 
     @Test
     void updateCustomer_invalidRequest_returnsBadRequest() throws Exception {
+        // Arrange
         Customer customer = new Customer(
             "Before Invalid Update",
             "before-invalid-update." + UUID.randomUUID() + "@example.com",
             new Address("Before Street 2", "Brno", "60200", "Czech Republic")
         );
+        // Act
         customer = customerRepository.save(customer);
 
+        // Act + Assert
         mockMvc.perform(put("/customers/{id}", customer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -191,13 +210,16 @@ class CustomerControllerIT {
 
     @Test
     void deleteCustomer_existingCustomer_returnsNoContentAndRemovesCustomer() throws Exception {
+        // Arrange
         Customer customer = new Customer(
             "Delete User",
             "delete." + UUID.randomUUID() + "@example.com",
             new Address("Delete Street 4", "Brno", "60200", "Czech Republic")
         );
+        // Act
         customer = customerRepository.save(customer);
 
+        // Act + Assert
         mockMvc.perform(delete("/customers/{id}", customer.getId()))
             .andExpect(status().isNoContent());
 
@@ -206,8 +228,10 @@ class CustomerControllerIT {
 
     @Test
     void deleteCustomer_nonExistingCustomer_returnsNotFound() throws Exception {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
+        // Act + Assert
         mockMvc.perform(delete("/customers/{id}", customerId))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
@@ -216,6 +240,7 @@ class CustomerControllerIT {
 
     @Test
     void getCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(get("/customers/not-a-uuid")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
@@ -223,6 +248,7 @@ class CustomerControllerIT {
 
     @Test
     void updateCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(put("/customers/not-a-uuid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -242,16 +268,20 @@ class CustomerControllerIT {
 
     @Test
     void deleteCustomer_invalidUuid_returnsBadRequest() throws Exception {
+        // Arrange + Act + Assert
         mockMvc.perform(delete("/customers/not-a-uuid"))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getAllCustomers_emptyRepository_returnsEmptyList() throws Exception {
+        // Arrange
         for (Customer customer : customerRepository.findAll()) {
+            // Act
             customerRepository.deleteById(customer.getId());
         }
 
+        // Act + Assert
         mockMvc.perform(get("/customers")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())

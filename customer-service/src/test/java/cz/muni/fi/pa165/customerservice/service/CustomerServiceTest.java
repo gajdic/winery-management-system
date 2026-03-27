@@ -28,80 +28,101 @@ class CustomerServiceTest {
 
     @Test
     void save_validCustomer_callsRepositoryAndReturnsSavedCustomer() {
+        // Arrange
         Customer customer = createCustomer();
         Mockito.when(customerRepository.save(customer)).thenReturn(customer);
 
+        // Act
         Customer savedCustomer = customerService.save(customer);
 
+        // Assert
         assertThat(savedCustomer).isEqualTo(customer);
         Mockito.verify(customerRepository).save(customer);
     }
 
     @Test
     void save_nullCustomer_throwsIllegalArgumentException() {
+        // Arrange + Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void save_customerWithNullName_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setName(null);
 
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer name cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void save_customerWithBlankName_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setName("   ");
 
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer name cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void save_customerWithNullEmail_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setEmail(null);
 
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer email cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void save_customerWithBlankEmail_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setEmail(" ");
 
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer email cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void save_customerWithNullAddress_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setAddress(null);
 
+        // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> customerService.save(customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer address cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void update_validCustomer_updatesExistingCustomerAndReturnsSavedCustomer() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Customer existingCustomer = createCustomer();
         existingCustomer.setId(customerId);
@@ -115,8 +136,10 @@ class CustomerServiceTest {
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
         Mockito.when(customerRepository.save(existingCustomer)).thenReturn(existingCustomer);
 
+        // Act
         Customer updatedCustomer = customerService.update(customerId, updatedData);
 
+        // Assert
         assertThat(updatedCustomer.getId()).isEqualTo(customerId);
         assertThat(updatedCustomer.getName()).isEqualTo("Jane Doe");
         assertThat(updatedCustomer.getEmail()).isEqualTo("jane.doe@example.com");
@@ -127,11 +150,14 @@ class CustomerServiceTest {
 
     @Test
     void update_nullCustomer_throwsIllegalArgumentException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(customerId, null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -139,11 +165,14 @@ class CustomerServiceTest {
 
     @Test
     void update_nullId_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(null, customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer id cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -151,12 +180,15 @@ class CustomerServiceTest {
 
     @Test
     void update_customerWithNullName_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setName(null);
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(UUID.randomUUID(), customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer name cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -164,12 +196,15 @@ class CustomerServiceTest {
 
     @Test
     void update_customerWithBlankName_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setName(" ");
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(UUID.randomUUID(), customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer name cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -177,12 +212,15 @@ class CustomerServiceTest {
 
     @Test
     void update_customerWithNullEmail_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setEmail(null);
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(UUID.randomUUID(), customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer email cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -190,12 +228,15 @@ class CustomerServiceTest {
 
     @Test
     void update_customerWithBlankEmail_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setEmail("   ");
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(UUID.randomUUID(), customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer email cannot be blank");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -203,12 +244,15 @@ class CustomerServiceTest {
 
     @Test
     void update_customerWithNullAddress_throwsIllegalArgumentException() {
+        // Arrange
         Customer customer = createCustomer();
         customer.setAddress(null);
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.update(UUID.randomUUID(), customer));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer address cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).save(Mockito.any());
@@ -216,40 +260,50 @@ class CustomerServiceTest {
 
     @Test
     void findById_existingId_returnsCustomer() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Customer customer = createCustomer();
         customer.setId(customerId);
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
+        // Act
         Customer foundCustomer = customerService.findById(customerId);
 
+        // Assert
         assertThat(foundCustomer).isEqualTo(customer);
         Mockito.verify(customerRepository).findById(customerId);
     }
 
     @Test
     void findById_nullId_throwsIllegalArgumentException() {
+        // Arrange
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.findById(null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer id cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
     }
 
     @Test
     void findById_nonExistingId_throwsIllegalArgumentException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.findById(customerId));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer not found: " + customerId);
         Mockito.verify(customerRepository).findById(customerId);
     }
 
     @Test
     void findAll_returnsAllCustomers() {
+        // Arrange
         Customer firstCustomer = createCustomer();
         Customer secondCustomer = new Customer(
             "Jane Doe",
@@ -258,40 +312,51 @@ class CustomerServiceTest {
         );
         Mockito.when(customerRepository.findAll()).thenReturn(List.of(firstCustomer, secondCustomer));
 
+        // Act
         List<Customer> customers = customerService.findAll();
 
+        // Assert
         assertThat(customers).containsExactly(firstCustomer, secondCustomer);
         Mockito.verify(customerRepository).findAll();
     }
 
     @Test
     void findAll_emptyRepository_returnsEmptyList() {
+        // Arrange
         Mockito.when(customerRepository.findAll()).thenReturn(List.of());
 
+        // Act
         List<Customer> customers = customerService.findAll();
 
+        // Assert
         assertThat(customers).isEmpty();
         Mockito.verify(customerRepository).findAll();
     }
 
     @Test
     void deleteById_callsRepositoryDeleteById() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Customer customer = createCustomer();
         customer.setId(customerId);
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
+        // Act
         customerService.deleteById(customerId);
 
+        // Assert
         Mockito.verify(customerRepository).findById(customerId);
         Mockito.verify(customerRepository).deleteById(customerId);
     }
 
     @Test
     void deleteById_nullId_throwsIllegalArgumentException() {
+        // Arrange
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.deleteById(null));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer id cannot be null");
         Mockito.verify(customerRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(customerRepository, Mockito.never()).deleteById(Mockito.any());
@@ -299,12 +364,15 @@ class CustomerServiceTest {
 
     @Test
     void deleteById_nonExistingId_throwsIllegalArgumentException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
         IllegalArgumentException exception =
+            // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> customerService.deleteById(customerId));
 
+        // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer not found: " + customerId);
         Mockito.verify(customerRepository).findById(customerId);
         Mockito.verify(customerRepository, Mockito.never()).deleteById(Mockito.any());

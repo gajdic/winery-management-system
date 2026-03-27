@@ -35,6 +35,7 @@ class CustomerFacadeTest {
 
     @Test
     void createCustomer_validDto_mapsSavesAndReturnsDto() {
+        // Arrange
         CustomerCreateDto createDto = createCustomerCreateDto();
         Customer customer = createCustomer();
         Customer savedCustomer = createCustomer();
@@ -45,8 +46,10 @@ class CustomerFacadeTest {
         Mockito.when(customerService.save(customer)).thenReturn(savedCustomer);
         Mockito.when(customerMapper.mapToDto(savedCustomer)).thenReturn(customerDto);
 
+        // Act
         CustomerDto createdCustomer = customerFacade.createCustomer(createDto);
 
+        // Assert
         assertThat(createdCustomer).isEqualTo(customerDto);
         Mockito.verify(customerMapper).mapToEntity(createDto);
         Mockito.verify(customerService).save(customer);
@@ -55,6 +58,7 @@ class CustomerFacadeTest {
 
     @Test
     void getCustomer_existingId_returnsMappedDto() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Customer customer = createCustomer();
         customer.setId(customerId);
@@ -63,8 +67,10 @@ class CustomerFacadeTest {
         Mockito.when(customerService.findById(customerId)).thenReturn(customer);
         Mockito.when(customerMapper.mapToDto(customer)).thenReturn(customerDto);
 
+        // Act
         CustomerDto foundCustomer = customerFacade.getCustomer(customerId);
 
+        // Assert
         assertThat(foundCustomer).isEqualTo(customerDto);
         Mockito.verify(customerService).findById(customerId);
         Mockito.verify(customerMapper).mapToDto(customer);
@@ -72,6 +78,7 @@ class CustomerFacadeTest {
 
     @Test
     void getAllCustomers_returnsMappedDtos() {
+        // Arrange
         Customer firstCustomer = createCustomer();
         firstCustomer.setId(UUID.randomUUID());
         Customer secondCustomer = new Customer(
@@ -88,8 +95,10 @@ class CustomerFacadeTest {
         Mockito.when(customerMapper.mapToDto(firstCustomer)).thenReturn(firstDto);
         Mockito.when(customerMapper.mapToDto(secondCustomer)).thenReturn(secondDto);
 
+        // Act
         List<CustomerDto> customers = customerFacade.getAllCustomers();
 
+        // Assert
         assertThat(customers).containsExactly(firstDto, secondDto);
         Mockito.verify(customerService).findAll();
         Mockito.verify(customerMapper).mapToDto(firstCustomer);
@@ -98,10 +107,13 @@ class CustomerFacadeTest {
 
     @Test
     void getAllCustomers_emptyList_returnsEmptyListWithoutMapping() {
+        // Arrange
         Mockito.when(customerService.findAll()).thenReturn(List.of());
 
+        // Act
         List<CustomerDto> customers = customerFacade.getAllCustomers();
 
+        // Assert
         assertThat(customers).isEmpty();
         Mockito.verify(customerService).findAll();
         Mockito.verifyNoInteractions(customerMapper);
@@ -109,6 +121,7 @@ class CustomerFacadeTest {
 
     @Test
     void updateCustomer_validDto_mapsUpdatesAndReturnsDto() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         CustomerUpdateDto updateDto = createCustomerUpdateDto();
         Customer mappedCustomer = createUpdatedCustomer();
@@ -121,8 +134,10 @@ class CustomerFacadeTest {
         Mockito.when(customerService.update(customerId, mappedCustomer)).thenReturn(updatedCustomer);
         Mockito.when(customerMapper.mapToDto(updatedCustomer)).thenReturn(customerDto);
 
+        // Act
         CustomerDto result = customerFacade.updateCustomer(customerId, updateDto);
 
+        // Assert
         assertThat(result).isEqualTo(customerDto);
         Mockito.verify(customerMapper).mapToEntity(customerId, updateDto);
         Mockito.verify(customerService).update(customerId, mappedCustomer);
@@ -131,16 +146,19 @@ class CustomerFacadeTest {
 
     @Test
     void createCustomer_serviceThrowsException_propagatesException() {
+        // Arrange
         CustomerCreateDto createDto = createCustomerCreateDto();
         Customer customer = createCustomer();
 
         Mockito.when(customerMapper.mapToEntity(createDto)).thenReturn(customer);
         Mockito.when(customerService.save(customer)).thenThrow(new IllegalArgumentException("Customer already exists"));
 
+        // Act + Assert
         assertThatThrownBy(() -> customerFacade.createCustomer(createDto))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Customer already exists");
 
+        // Assert
         Mockito.verify(customerMapper).mapToEntity(createDto);
         Mockito.verify(customerService).save(customer);
         Mockito.verify(customerMapper, Mockito.never()).mapToDto(Mockito.any());
@@ -148,19 +166,23 @@ class CustomerFacadeTest {
 
     @Test
     void getCustomer_serviceThrowsException_propagatesException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(customerService.findById(customerId)).thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
 
+        // Act + Assert
         assertThatThrownBy(() -> customerFacade.getCustomer(customerId))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Customer not found: " + customerId);
 
+        // Assert
         Mockito.verify(customerService).findById(customerId);
         Mockito.verifyNoInteractions(customerMapper);
     }
 
     @Test
     void updateCustomer_serviceThrowsException_propagatesException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         CustomerUpdateDto updateDto = createCustomerUpdateDto();
         Customer mappedCustomer = createUpdatedCustomer();
@@ -169,10 +191,12 @@ class CustomerFacadeTest {
         Mockito.when(customerService.update(customerId, mappedCustomer))
             .thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
 
+        // Act + Assert
         assertThatThrownBy(() -> customerFacade.updateCustomer(customerId, updateDto))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Customer not found: " + customerId);
 
+        // Assert
         Mockito.verify(customerMapper).mapToEntity(customerId, updateDto);
         Mockito.verify(customerService).update(customerId, mappedCustomer);
         Mockito.verify(customerMapper, Mockito.never()).mapToDto(Mockito.any());
@@ -180,23 +204,29 @@ class CustomerFacadeTest {
 
     @Test
     void deleteCustomer_callsServiceDeleteById() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
+        // Act
         customerFacade.deleteCustomer(customerId);
 
+        // Assert
         Mockito.verify(customerService).deleteById(customerId);
     }
 
     @Test
     void deleteCustomer_serviceThrowsException_propagatesException() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.doThrow(new IllegalArgumentException("Customer not found: " + customerId))
             .when(customerService).deleteById(customerId);
 
+        // Act + Assert
         assertThatThrownBy(() -> customerFacade.deleteCustomer(customerId))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Customer not found: " + customerId);
 
+        // Assert
         Mockito.verify(customerService).deleteById(customerId);
     }
 
