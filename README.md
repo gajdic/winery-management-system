@@ -44,25 +44,25 @@ Handles stock domain:
 
 Implemented business functionality beyond CRUD:
 
-1. `production-service`
-- production feasibility planning from recipe composition and available harvest lots (requested vs feasible bottle count, producible liters, limiting grape type),
-- weighted blend quality evaluation with recommendation output based on quality target,
-- creation of planned production batches from computed production plan.
+1. `customer-service`
+- purchase history filtering by quantity interval (`min`/`max`) with input normalization,
+- total spending computation per customer (sum of quantity × price per bottle),
+- customer/wine based review and purchase history retrieval workflows.
 
 2. `harvest-service`
 - harvest quantity aggregation by year (`summary/by-year`),
 - harvest quantity aggregation by vineyard (`summary/by-vineyard`),
 - domain validation linking harvest records to existing vineyard and grape type entities.
 
-3. `inventory-service`
+3. `production-service`
+- production feasibility planning from recipe composition and available harvest lots (requested vs feasible bottle count, producible liters, limiting grape type),
+- weighted blend quality evaluation with recommendation output based on quality target,
+- creation of planned production batches from computed production plan.
+
+4. `inventory-service`
 - stock removal guarded by available (non-reserved) quantity checks,
 - reservation status transitions with stock/reserved quantity adjustments,
 - stock lookup by wine and reservation filtering by customer/wine/date interval.
-
-4. `customer-service`
-- purchase history filtering by quantity interval (`min`/`max`) with input normalization,
-- total spending computation per customer (sum of quantity × price per bottle),
-- customer/wine based review and purchase history retrieval workflows.
 
 ## Executable Modules
 
