@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerFacadeTest {
@@ -96,6 +97,17 @@ class CustomerFacadeTest {
     }
 
     @Test
+    void getAllCustomers_emptyList_returnsEmptyListWithoutMapping() {
+        Mockito.when(customerService.findAll()).thenReturn(List.of());
+
+        List<CustomerDto> customers = customerFacade.getAllCustomers();
+
+        assertThat(customers).isEmpty();
+        Mockito.verify(customerService).findAll();
+        Mockito.verifyNoInteractions(customerMapper);
+    }
+
+    @Test
     void updateCustomer_validDto_mapsUpdatesAndReturnsDto() {
         UUID customerId = UUID.randomUUID();
         CustomerUpdateDto updateDto = createCustomerUpdateDto();
@@ -118,10 +130,72 @@ class CustomerFacadeTest {
     }
 
     @Test
+    void createCustomer_serviceThrowsException_propagatesException() {
+        CustomerCreateDto createDto = createCustomerCreateDto();
+        Customer customer = createCustomer();
+
+        Mockito.when(customerMapper.mapToEntity(createDto)).thenReturn(customer);
+        Mockito.when(customerService.save(customer)).thenThrow(new IllegalArgumentException("Customer already exists"));
+
+        assertThatThrownBy(() -> customerFacade.createCustomer(createDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Customer already exists");
+
+        Mockito.verify(customerMapper).mapToEntity(createDto);
+        Mockito.verify(customerService).save(customer);
+        Mockito.verify(customerMapper, Mockito.never()).mapToDto(Mockito.any());
+    }
+
+    @Test
+    void getCustomer_serviceThrowsException_propagatesException() {
+        UUID customerId = UUID.randomUUID();
+        Mockito.when(customerService.findById(customerId)).thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+
+        assertThatThrownBy(() -> customerFacade.getCustomer(customerId))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Customer not found: " + customerId);
+
+        Mockito.verify(customerService).findById(customerId);
+        Mockito.verifyNoInteractions(customerMapper);
+    }
+
+    @Test
+    void updateCustomer_serviceThrowsException_propagatesException() {
+        UUID customerId = UUID.randomUUID();
+        CustomerUpdateDto updateDto = createCustomerUpdateDto();
+        Customer mappedCustomer = createUpdatedCustomer();
+
+        Mockito.when(customerMapper.mapToEntity(customerId, updateDto)).thenReturn(mappedCustomer);
+        Mockito.when(customerService.update(customerId, mappedCustomer))
+            .thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+
+        assertThatThrownBy(() -> customerFacade.updateCustomer(customerId, updateDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Customer not found: " + customerId);
+
+        Mockito.verify(customerMapper).mapToEntity(customerId, updateDto);
+        Mockito.verify(customerService).update(customerId, mappedCustomer);
+        Mockito.verify(customerMapper, Mockito.never()).mapToDto(Mockito.any());
+    }
+
+    @Test
     void deleteCustomer_callsServiceDeleteById() {
         UUID customerId = UUID.randomUUID();
 
         customerFacade.deleteCustomer(customerId);
+
+        Mockito.verify(customerService).deleteById(customerId);
+    }
+
+    @Test
+    void deleteCustomer_serviceThrowsException_propagatesException() {
+        UUID customerId = UUID.randomUUID();
+        Mockito.doThrow(new IllegalArgumentException("Customer not found: " + customerId))
+            .when(customerService).deleteById(customerId);
+
+        assertThatThrownBy(() -> customerFacade.deleteCustomer(customerId))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Customer not found: " + customerId);
 
         Mockito.verify(customerService).deleteById(customerId);
     }

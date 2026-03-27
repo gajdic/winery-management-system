@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewFacadeTest {
@@ -90,6 +91,17 @@ class ReviewFacadeTest {
     }
 
     @Test
+    void getAllReviews_emptyList_returnsEmptyListWithoutMapping() {
+        Mockito.when(reviewService.findAll()).thenReturn(List.of());
+
+        List<ReviewDto> reviews = reviewFacade.getAllReviews();
+
+        assertThat(reviews).isEmpty();
+        Mockito.verify(reviewService).findAll();
+        Mockito.verifyNoInteractions(reviewMapper);
+    }
+
+    @Test
     void getReviewsByCustomer_existingCustomerId_returnsMappedDtos() {
         UUID customerId = UUID.randomUUID();
         Review review = createReview(customerId, UUID.randomUUID(), 5, "Excellent");
@@ -107,6 +119,18 @@ class ReviewFacadeTest {
     }
 
     @Test
+    void getReviewsByCustomer_nonExistingCustomerId_returnsEmptyListWithoutMapping() {
+        UUID customerId = UUID.randomUUID();
+        Mockito.when(reviewService.findByCustomerId(customerId)).thenReturn(List.of());
+
+        List<ReviewDto> reviews = reviewFacade.getReviewsByCustomer(customerId);
+
+        assertThat(reviews).isEmpty();
+        Mockito.verify(reviewService).findByCustomerId(customerId);
+        Mockito.verifyNoInteractions(reviewMapper);
+    }
+
+    @Test
     void getReviewsByWine_existingWineId_returnsMappedDtos() {
         UUID wineId = UUID.randomUUID();
         Review review = createReview(UUID.randomUUID(), wineId, 4, "Very good");
@@ -121,6 +145,18 @@ class ReviewFacadeTest {
         assertThat(reviews).containsExactly(reviewDto);
         Mockito.verify(reviewService).findByWineId(wineId);
         Mockito.verify(reviewMapper).mapToDto(review);
+    }
+
+    @Test
+    void getReviewsByWine_nonExistingWineId_returnsEmptyListWithoutMapping() {
+        UUID wineId = UUID.randomUUID();
+        Mockito.when(reviewService.findByWineId(wineId)).thenReturn(List.of());
+
+        List<ReviewDto> reviews = reviewFacade.getReviewsByWine(wineId);
+
+        assertThat(reviews).isEmpty();
+        Mockito.verify(reviewService).findByWineId(wineId);
+        Mockito.verifyNoInteractions(reviewMapper);
     }
 
     @Test
@@ -146,10 +182,72 @@ class ReviewFacadeTest {
     }
 
     @Test
+    void createReview_serviceThrowsException_propagatesException() {
+        ReviewCreateDto createDto = createReviewCreateDto();
+        Review review = createReview();
+
+        Mockito.when(reviewMapper.mapToEntity(createDto)).thenReturn(review);
+        Mockito.when(reviewService.save(review)).thenThrow(new IllegalArgumentException("Review cannot be null"));
+
+        assertThatThrownBy(() -> reviewFacade.createReview(createDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Review cannot be null");
+
+        Mockito.verify(reviewMapper).mapToEntity(createDto);
+        Mockito.verify(reviewService).save(review);
+        Mockito.verify(reviewMapper, Mockito.never()).mapToDto(Mockito.any());
+    }
+
+    @Test
+    void getReview_serviceThrowsException_propagatesException() {
+        UUID reviewId = UUID.randomUUID();
+        Mockito.when(reviewService.findById(reviewId)).thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+
+        assertThatThrownBy(() -> reviewFacade.getReview(reviewId))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Review not found: " + reviewId);
+
+        Mockito.verify(reviewService).findById(reviewId);
+        Mockito.verifyNoInteractions(reviewMapper);
+    }
+
+    @Test
+    void updateReview_serviceThrowsException_propagatesException() {
+        UUID reviewId = UUID.randomUUID();
+        ReviewUpdateDto updateDto = createReviewUpdateDto();
+        Review mappedReview = createReview(updateDto.getCustomerID(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+
+        Mockito.when(reviewMapper.mapToEntity(reviewId, updateDto)).thenReturn(mappedReview);
+        Mockito.when(reviewService.update(reviewId, mappedReview))
+            .thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+
+        assertThatThrownBy(() -> reviewFacade.updateReview(reviewId, updateDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Review not found: " + reviewId);
+
+        Mockito.verify(reviewMapper).mapToEntity(reviewId, updateDto);
+        Mockito.verify(reviewService).update(reviewId, mappedReview);
+        Mockito.verify(reviewMapper, Mockito.never()).mapToDto(Mockito.any());
+    }
+
+    @Test
     void deleteReview_callsServiceDeleteById() {
         UUID reviewId = UUID.randomUUID();
 
         reviewFacade.deleteReview(reviewId);
+
+        Mockito.verify(reviewService).deleteById(reviewId);
+    }
+
+    @Test
+    void deleteReview_serviceThrowsException_propagatesException() {
+        UUID reviewId = UUID.randomUUID();
+        Mockito.doThrow(new IllegalArgumentException("Review not found: " + reviewId))
+            .when(reviewService).deleteById(reviewId);
+
+        assertThatThrownBy(() -> reviewFacade.deleteReview(reviewId))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Review not found: " + reviewId);
 
         Mockito.verify(reviewService).deleteById(reviewId);
     }
