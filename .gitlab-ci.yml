@@ -65,7 +65,7 @@ run_harvest:
   script:
     - cd harvest-service
     - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 30
+    - sleep 60
     - grep "Started" log.txt
 
 run_inventory:
@@ -77,7 +77,7 @@ run_inventory:
   script:
     - cd inventory-service
     - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 30
+    - sleep 60
     - grep "Started" log.txt
 
 run_production:
@@ -89,5 +89,5 @@ run_production:
   script:
     - cd production-service
     - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 30
+    - sleep 60
     - grep "Started" log.txt
