@@ -24,10 +24,6 @@ public class VineyardService {
             throw new IllegalArgumentException("Vineyard cannot be null.");
         }
 
-        if (vineyard.getId() == null) {
-            throw new IllegalArgumentException("Vineyard id cannot be null.");
-        }
-
         if (vineyard.getName() == null || vineyard.getName().isBlank()) {
             throw new IllegalArgumentException("Vineyard name cannot be null or blank.");
         }
@@ -78,13 +74,12 @@ public class VineyardService {
             throw new IllegalArgumentException("Area size must be greater than 0.");
         }
 
-        try {
-            return vineyardRepository.update(vineyard);
-        } catch (IllegalArgumentException ex) {
-            throw new ResourceNotFoundException(
-                "Vineyard with id: " + vineyard.getId() + " was not found."
-            );
-        }
+        vineyardRepository.findById(vineyard.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Vineyard with id " + vineyard.getId() + " was not found."
+            ));
+
+        return vineyardRepository.save(vineyard);
     }
 
     public void deleteById(UUID id) {

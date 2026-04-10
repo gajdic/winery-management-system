@@ -156,13 +156,12 @@ public class HarvestRecordService {
         harvestRecord.setVineyard(vineyard);
         harvestRecord.setGrapeType(grapeType);
 
-        try {
-            return harvestRecordRepository.update(harvestRecord);
-        } catch (IllegalArgumentException ex) {
-            throw new ResourceNotFoundException(
-                "Harvest record with id " + harvestRecord.getId() + " was not found."
-            );
-        }
+        harvestRecordRepository.findById(harvestRecord.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Harvest record with id: " + harvestRecord.getId() + " was not found."
+            ));
+
+        return harvestRecordRepository.save(harvestRecord);
     }
 
     public void deleteById(UUID id) {
