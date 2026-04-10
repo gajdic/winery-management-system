@@ -141,14 +141,16 @@ class GrapeTypeServiceTest {
     void update_validGrapeType_returnsUpdatedGrapeType() {
         // Arrange
         GrapeType grapeType = TestDataFactory.grapeTypeEntity();
-        Mockito.when(grapeTypeRepository.update(grapeType)).thenReturn(grapeType);
+        Mockito.when(grapeTypeRepository.findById(grapeType.getId())).thenReturn(Optional.of(grapeType));
+        Mockito.when(grapeTypeRepository.save(grapeType)).thenReturn(grapeType);
 
         // Act
         GrapeType result = grapeTypeService.update(grapeType);
 
         // Assert
         assertThat(result).isEqualTo(grapeType);
-        Mockito.verify(grapeTypeRepository).update(grapeType);
+        Mockito.verify(grapeTypeRepository).findById(grapeType.getId());
+        Mockito.verify(grapeTypeRepository).save(grapeType);
     }
 
     @Test
@@ -174,13 +176,14 @@ class GrapeTypeServiceTest {
     void update_grapeTypeNotFound_throwsResourceNotFoundException() {
         // Arrange
         GrapeType grapeType = TestDataFactory.grapeTypeEntity();
-        Mockito.when(grapeTypeRepository.update(grapeType))
-                .thenThrow(new IllegalArgumentException("Grape type not found"));
+        Mockito.when(grapeTypeRepository.findById(grapeType.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> grapeTypeService.update(grapeType))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Grape type with id: " + grapeType.getId() + " was not found.");
+        Mockito.verify(grapeTypeRepository).findById(grapeType.getId());
+        Mockito.verify(grapeTypeRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test

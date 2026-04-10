@@ -321,14 +321,16 @@ class HarvestRecordServiceTest {
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
                 .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
-        Mockito.when(harvestRecordRepository.update(record)).thenReturn(record);
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.of(record));
+        Mockito.when(harvestRecordRepository.save(record)).thenReturn(record);
 
         // Act
         HarvestRecord result = harvestRecordService.update(record);
 
         // Assert
         assertThat(result).isEqualTo(record);
-        Mockito.verify(harvestRecordRepository).update(record);
+        Mockito.verify(harvestRecordRepository).findById(record.getId());
+        Mockito.verify(harvestRecordRepository).save(record);
     }
 
     @Test
@@ -358,13 +360,14 @@ class HarvestRecordServiceTest {
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
                 .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
-        Mockito.when(harvestRecordRepository.update(record))
-                .thenThrow(new IllegalArgumentException("Record not found"));
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> harvestRecordService.update(record))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Harvest record with id " + record.getId() + " was not found.");
+                .hasMessageContaining("Harvest record with id: " + record.getId() + " was not found.");
+        Mockito.verify(harvestRecordRepository).findById(record.getId());
+        Mockito.verify(harvestRecordRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test

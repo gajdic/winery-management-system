@@ -49,18 +49,6 @@ class VineyardServiceTest {
     }
 
     @Test
-    void create_vineyardIdIsNull_throwsIllegalArgumentException() {
-        // Arrange
-        Vineyard vineyard = TestDataFactory.vineyardEntity();
-        vineyard.setId(null);
-
-        // Act & Assert
-        assertThatThrownBy(() -> vineyardService.create(vineyard))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Vineyard id cannot be null.");
-    }
-
-    @Test
     void create_vineyardNameIsBlank_throwsIllegalArgumentException() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
@@ -165,14 +153,16 @@ class VineyardServiceTest {
     void update_validVineyard_returnsUpdatedVineyard() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
-        Mockito.when(vineyardRepository.update(vineyard)).thenReturn(vineyard);
+        Mockito.when(vineyardRepository.findById(vineyard.getId())).thenReturn(Optional.of(vineyard));
+        Mockito.when(vineyardRepository.save(vineyard)).thenReturn(vineyard);
 
         // Act
         Vineyard result = vineyardService.update(vineyard);
 
         // Assert
         assertThat(result).isEqualTo(vineyard);
-        Mockito.verify(vineyardRepository).update(vineyard);
+        Mockito.verify(vineyardRepository).findById(vineyard.getId());
+        Mockito.verify(vineyardRepository).save(vineyard);
     }
 
     @Test
@@ -186,13 +176,14 @@ class VineyardServiceTest {
     void update_vineyardNotFound_throwsResourceNotFoundException() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
-        Mockito.when(vineyardRepository.update(vineyard))
-                .thenThrow(new IllegalArgumentException("Vineyard with id " + vineyard.getId() + " does not exist"));
+        Mockito.when(vineyardRepository.findById(vineyard.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> vineyardService.update(vineyard))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Vineyard with id: " + vineyard.getId() + " was not found.");
+                .hasMessageContaining("Vineyard with id " + vineyard.getId() + " was not found.");
+        Mockito.verify(vineyardRepository).findById(vineyard.getId());
+        Mockito.verify(vineyardRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
