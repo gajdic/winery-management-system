@@ -1,16 +1,34 @@
 package cz.muni.fi.pa165.inventoryservice.data.models;
 
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@Table(name = "reservation")
 public class Reservation extends EntityBase {
+
+    @Column(nullable = false)
     private UUID customerId;
+
+    @Column(nullable = false)
     private UUID wineId;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ReservationStatus status;
+
+    @Column(nullable = false)
     private LocalDate createdAt;
 
     public UUID getCustomerId() {
@@ -83,4 +101,3 @@ public class Reservation extends EntityBase {
                 '}';
     }
 }
-

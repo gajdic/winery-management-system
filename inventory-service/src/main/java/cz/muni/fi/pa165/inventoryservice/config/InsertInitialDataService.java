@@ -50,33 +50,32 @@ public class InsertInitialDataService {
 
     private Stock createStock(UUID wineId, int quantity) {
         Stock stock = new Stock();
-        stock.setId(UUID.randomUUID());
         stock.setWineId(wineId);
         stock.setQuantity(quantity);
         stock.setReservedQuantity(0);
-        return stockRepository.create(stock);
+        return stockRepository.save(stock);
     }
 
     private void createReservation(Stock stock, int quantity, ReservationStatus status, LocalDate createdAt) {
         Reservation reservation = new Reservation();
-        reservation.setId(UUID.randomUUID());
         reservation.setCustomerId(UUID.randomUUID());
-        reservation.setWineId(stock.getId());
+        reservation.setWineId(stock.getWineId());
         reservation.setQuantity(quantity);
         reservation.setStatus(status);
         reservation.setCreatedAt(createdAt);
-        reservationRepository.create(reservation);
+        reservationRepository.save(reservation);
         applyReservationToStock(stock, reservation);
     }
 
     private void applyReservationToStock(Stock stock, Reservation reservation) {
-        UUID stockId = stock.getId();
         switch (reservation.getStatus()) {
-            case PENDING -> stockRepository.updateReservedQuantity(stockId, reservation.getQuantity());
+            case PENDING -> {
+                stock.setReservedQuantity(stock.getReservedQuantity() + reservation.getQuantity());
+                stockRepository.save(stock);
+            }
             case COMPLETED -> {
-                stockRepository.updateReservedQuantity(stockId, reservation.getQuantity());
-                stockRepository.updateQuantity(stockId, -reservation.getQuantity());
-                stockRepository.updateReservedQuantity(stockId, -reservation.getQuantity());
+                stock.setQuantity(stock.getQuantity() - reservation.getQuantity());
+                stockRepository.save(stock);
             }
             case CANCELED -> { }
         }

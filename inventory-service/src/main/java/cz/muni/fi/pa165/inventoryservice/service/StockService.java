@@ -18,7 +18,9 @@ public class StockService {
     }
 
     public Stock create(Stock stock) {
-        return stockRepository.create(stock);
+        if (stock.getId() != null)
+            stock.setId(null);
+        return stockRepository.save(stock);
     }
 
     public Stock findById(UUID id) {
@@ -26,26 +28,32 @@ public class StockService {
     }
 
     public Stock findByWine(UUID wineId) {
-        return stockRepository.findByWine(wineId).orElse(null);
+        return stockRepository.findByWineId(wineId).orElse(null);
     }
 
     public Stock addToStock(UUID id, int quantityToAdd) {
         validatePositiveQuantity(quantityToAdd);
-        return stockRepository.updateQuantity(id, quantityToAdd);
+
+        Stock stock = stockRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+
+        stock.setQuantity(stock.getQuantity() + quantityToAdd);
+        return stockRepository.save(stock);
     }
 
     public Stock removeFromStock(UUID id, int quantityToRemove) {
         validatePositiveQuantity(quantityToRemove);
 
         Stock stock = stockRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
 
         int available = stock.getQuantity() - stock.getReservedQuantity();
         if (quantityToRemove > available) {
             throw new IllegalArgumentException("Cannot remove more bottles than available stock");
         }
 
-        return stockRepository.updateQuantity(id, -quantityToRemove);
+        stock.setQuantity(stock.getQuantity() - quantityToRemove);
+        return stockRepository.save(stock);
     }
 
     public List<Stock> findAll() {
@@ -53,11 +61,15 @@ public class StockService {
     }
 
     public Stock update(Stock stock) {
-        return stockRepository.update(stock);
+        return stockRepository.save(stock);
     }
 
     public boolean delete(UUID id) {
-        return stockRepository.delete(id);
+        if (!stockRepository.existsById(id)) {
+            return false;
+        }
+        stockRepository.deleteById(id);
+        return true;
     }
 
     private void validatePositiveQuantity(int quantity) {
