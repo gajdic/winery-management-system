@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.inventoryservice.service;
 
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
+import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
 import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,9 @@ public class ReservationService {
     }
 
     public Reservation create(Reservation reservation) {
-        return reservationRepository.create(reservation);
+        if (reservation.getId() != null)
+            reservation.setId(null);
+        return reservationRepository.save(reservation);
     }
 
     public Reservation findById(UUID id) {
@@ -35,26 +38,32 @@ public class ReservationService {
     }
 
     public Reservation update(Reservation reservation) {
-        return reservationRepository.update(reservation);
+        return reservationRepository.save(reservation);
     }
 
     public Reservation updateStatus(UUID id, ReservationStatus status) {
         if (status == null) {
             throw new IllegalArgumentException("Status must not be null");
         }
-        var reservation = reservationRepository.updateStatus(id, status);
 
-        var stockId = stockRepository.findByWine(reservation.getWineId())
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found for wine: " + reservation.getWineId()))
-            .getId();
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + id));
 
-        switch (reservation.getStatus()) {
+        reservation.setStatus(status);
+        reservationRepository.save(reservation);
+
+        Stock stock = stockRepository.findByWineId(reservation.getWineId())
+                .orElseThrow(() -> new IllegalArgumentException("Stock not found for wine: " + reservation.getWineId()));
+
+        switch (status) {
             case COMPLETED -> {
-                stockRepository.updateQuantity(stockId, -reservation.getQuantity());
-                stockRepository.updateReservedQuantity(stockId, -reservation.getQuantity());
+                stock.setQuantity(stock.getQuantity() - reservation.getQuantity());
+                stock.setReservedQuantity(stock.getReservedQuantity() - reservation.getQuantity());
+                stockRepository.save(stock);
             }
             case CANCELED -> {
-                stockRepository.updateReservedQuantity(stockId, -reservation.getQuantity());
+                stock.setReservedQuantity(stock.getReservedQuantity() - reservation.getQuantity());
+                stockRepository.save(stock);
             }
         }
 
@@ -66,7 +75,10 @@ public class ReservationService {
     }
 
     public boolean delete(UUID id) {
-        return reservationRepository.delete(id);
+        if (!reservationRepository.existsById(id)) {
+            return false;
+        }
+        reservationRepository.deleteById(id);
+        return true;
     }
-
 }

@@ -1,11 +1,23 @@
 package cz.muni.fi.pa165.inventoryservice.data.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@Table(name = "stock")
 public class Stock extends EntityBase {
+
+    @Column(nullable = false, unique = true)
     private UUID wineId;
+
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(nullable = false)
     private int reservedQuantity;
 
     public UUID getWineId() {

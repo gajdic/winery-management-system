@@ -1,31 +1,20 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class StockRepository extends InMemoryRepository<Stock> {
-    public Optional<Stock> findByWine(UUID wineId) {
-        return storage.values().stream()
-            .filter(stock -> wineId.equals(stock.getWineId()))
-            .findFirst();
-    }
+@Repository
+public interface StockRepository extends JpaRepository<Stock, UUID> {
 
-    public Stock updateQuantity(UUID id, int delta) {
-        Stock stock = findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+    Optional<Stock> findByWineId(UUID wineId);
 
-        stock.setQuantity(stock.getQuantity() + delta);
-        return update(stock);
-    }
-
-    public Stock updateReservedQuantity(UUID id, int delta) {
-        Stock stock = findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
-
-        stock.setReservedQuantity(stock.getReservedQuantity() + delta);
-        return update(stock);
-    }
+    @Query("SELECT s FROM Stock s WHERE (s.quantity - s.reservedQuantity) >= :minAvailable")
+    List<Stock> findAllWithAvailableQuantityAtLeast(@Param("minAvailable") int minAvailable);
 }
-
