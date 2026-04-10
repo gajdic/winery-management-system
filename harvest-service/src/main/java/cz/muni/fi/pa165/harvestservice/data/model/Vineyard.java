@@ -1,55 +1,35 @@
 package cz.muni.fi.pa165.harvestservice.data.model;
 
+import jakarta.persistence.*;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 import java.util.UUID;
 
+@Table
+@Entity
+@Getter
+@Setter
 public class Vineyard {
 
+    @Id
+    @GeneratedValue
+    @Column(nullable = false, updatable = false)
     private UUID id;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "location", nullable = false)
     private String location;
+
+    @Column(name = "area_size")
     private double areaSize;
+
+    @Column(name = "description")
     private String description;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public double getAreaSize() {
-        return areaSize;
-    }
-
-    public void setAreaSize(double areaSize) {
-        this.areaSize = areaSize;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     @Override
     public boolean equals(Object o) {

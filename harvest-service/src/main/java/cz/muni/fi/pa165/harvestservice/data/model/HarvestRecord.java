@@ -1,66 +1,40 @@
 package cz.muni.fi.pa165.harvestservice.data.model;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+@Table
+@Entity
+@Getter
+@Setter
 public class HarvestRecord {
 
+    @Id
+    @GeneratedValue
+    @Column(nullable = false, updatable = false)
     private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "grape_type_id", nullable = false)
     private GrapeType grapeType;
+
+    @ManyToOne
+    @JoinColumn(name = "vineyard_id", nullable = false)
     private Vineyard vineyard;
+
+    @Column(name = "harvest_date")
     private LocalDate harvestDate;
+
+    @Column(name = "quantity")
     private double quantity;
+
+    @Column(name = "quality")
     private double quality;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public GrapeType getGrapeType() {
-        return grapeType;
-    }
-
-    public void setGrapeType(GrapeType grapeType) {
-        this.grapeType = grapeType;
-    }
-
-    public Vineyard getVineyard() {
-        return vineyard;
-    }
-
-    public void setVineyard(Vineyard vineyard) {
-        this.vineyard = vineyard;
-    }
-
-    public LocalDate getHarvestDate() {
-        return harvestDate;
-    }
-
-    public void setHarvestDate(LocalDate harvestDate) {
-        this.harvestDate = harvestDate;
-    }
-
-    public double getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(double quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getQuality() {
-        return quality;
-    }
-
-    public void setQuality(double quality) {
-        this.quality = quality;
-    }
-
 
     @Override
     public boolean equals(Object o) {
