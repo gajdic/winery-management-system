@@ -1,10 +1,8 @@
 package cz.muni.fi.pa165.productionservice.service;
 
-import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
 import cz.muni.fi.pa165.productionservice.exception.ResourceNotFoundException;
-import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +12,10 @@ import java.util.UUID;
 @Service
 public class WineRecipeService {
     private final WineRecipeRepository wineRecipeRepository;
-    private final WineRecipeMapper wineRecipeMapper;
 
     @Autowired
-    public WineRecipeService(WineRecipeRepository wineRecipeRepository, WineRecipeMapper wineRecipeMapper) {
+    public WineRecipeService(WineRecipeRepository wineRecipeRepository) {
         this.wineRecipeRepository = wineRecipeRepository;
-        this.wineRecipeMapper = wineRecipeMapper;
     }
 
     public WineRecipe create(WineRecipe wineRecipe) {
@@ -35,11 +31,18 @@ public class WineRecipeService {
         return wineRecipeRepository.findAll();
     }
 
-    public WineRecipe update(UUID id, WineRecipeUpdateDto dto) {
+    public WineRecipe update(UUID id, WineRecipe updatedRecipe) {
         WineRecipe existingRecipe = wineRecipeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Wine recipe with id " + id + " not found"));
 
-        wineRecipeMapper.updateEntityFromDto(dto, existingRecipe);
+        existingRecipe.setName(updatedRecipe.getName());
+        existingRecipe.setProductionYear(updatedRecipe.getProductionYear());
+        existingRecipe.setAlcoholPercentage(updatedRecipe.getAlcoholPercentage());
+        existingRecipe.setTastingNotes(updatedRecipe.getTastingNotes());
+        existingRecipe.setBottleVolumeLiters(updatedRecipe.getBottleVolumeLiters());
+        existingRecipe.setGrapeComponents(updatedRecipe.getGrapeComponents());
+        existingRecipe.setAdditionalIngredients(updatedRecipe.getAdditionalIngredients());
+
         return wineRecipeRepository.save(existingRecipe);
     }
 
