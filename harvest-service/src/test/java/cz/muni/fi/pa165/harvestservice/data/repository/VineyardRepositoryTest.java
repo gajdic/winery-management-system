@@ -18,6 +18,7 @@ class VineyardRepositoryTest {
 
     @Test
     void findByName_existingName_returnsMatchingVineyard() {
+        // Arrange
         Vineyard sonberk = new Vineyard();
         sonberk.setName("Sonberk");
         sonberk.setLocation("Popice");
@@ -32,8 +33,10 @@ class VineyardRepositoryTest {
         dobra.setDescription("Organic vineyard");
         vineyardRepository.saveAndFlush(dobra);
 
+        // Act
         Optional<Vineyard> result = vineyardRepository.findByName("Sonberk");
 
+        // Assert
         assertThat(result).isPresent();
         assertThat(result.get().getLocation()).isEqualTo("Popice");
         assertThat(result.get().getAreaSize()).isEqualTo(45.0);
@@ -41,6 +44,7 @@ class VineyardRepositoryTest {
 
     @Test
     void findByLocationIgnoreCase_matchingLocationReturnsAllMatches() {
+        // Arrange
         Vineyard first = new Vineyard();
         first.setName("Vineyard One");
         first.setLocation("Mikulov");
@@ -62,8 +66,10 @@ class VineyardRepositoryTest {
         third.setDescription("Third vineyard");
         vineyardRepository.saveAndFlush(third);
 
+        // Act
         List<Vineyard> result = vineyardRepository.findByLocationIgnoreCase("mikulov");
 
+        // Assert
         assertThat(result)
             .hasSize(2)
             .extracting(Vineyard::getName)

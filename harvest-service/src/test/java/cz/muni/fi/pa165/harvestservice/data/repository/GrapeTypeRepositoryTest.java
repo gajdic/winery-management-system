@@ -17,6 +17,7 @@ class GrapeTypeRepositoryTest {
 
     @Test
     void findByName_existingName_returnsMatchingGrapeType() {
+        // Arrange
         GrapeType welschriesling = new GrapeType();
         welschriesling.setName("Welschriesling");
         welschriesling.setDescription("Fresh white grape");
@@ -27,8 +28,10 @@ class GrapeTypeRepositoryTest {
         riesling.setDescription("Aromatic white grape");
         grapeTypeRepository.saveAndFlush(riesling);
 
+        // Act
         Optional<GrapeType> result = grapeTypeRepository.findByName("Welschriesling");
 
+        // Assert
         assertThat(result).isPresent();
         assertThat(result.get().getName()).isEqualTo("Welschriesling");
         assertThat(result.get().getDescription()).isEqualTo("Fresh white grape");
@@ -36,14 +39,17 @@ class GrapeTypeRepositoryTest {
 
     @Test
     void existsByName_existingAndMissingName_returnsExpectedBoolean() {
+        // Arrange
         GrapeType grapeType = new GrapeType();
         grapeType.setName("Pinot Noir");
         grapeType.setDescription("Red grape");
         grapeTypeRepository.saveAndFlush(grapeType);
 
+        // Act
         boolean existing = grapeTypeRepository.existsByName("Pinot Noir");
         boolean missing = grapeTypeRepository.existsByName("Merlot");
 
+        // Assert
         assertThat(existing).isTrue();
         assertThat(missing).isFalse();
     }

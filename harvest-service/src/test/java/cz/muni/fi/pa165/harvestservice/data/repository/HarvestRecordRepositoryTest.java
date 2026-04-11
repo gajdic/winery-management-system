@@ -26,6 +26,7 @@ class HarvestRecordRepositoryTest {
 
     @Test
     void findByVineyardId_existingVineyard_returnsMatchingRecords() {
+        // Arrange
         Vineyard matchingVineyard = vineyardRepository.saveAndFlush(createVineyard("Popice Vineyard", "Popice"));
         Vineyard otherVineyard = vineyardRepository.saveAndFlush(createVineyard("Znojmo Vineyard", "Znojmo"));
         GrapeType grapeType = grapeTypeRepository.saveAndFlush(createGrapeType("Welschriesling"));
@@ -34,8 +35,10 @@ class HarvestRecordRepositoryTest {
         harvestRecordRepository.saveAndFlush(createHarvestRecord(grapeType, matchingVineyard, LocalDate.of(2025, 9, 18)));
         harvestRecordRepository.saveAndFlush(createHarvestRecord(grapeType, otherVineyard, LocalDate.of(2024, 10, 1)));
 
+        // Act
         List<HarvestRecord> result = harvestRecordRepository.findByVineyardId(matchingVineyard.getId());
 
+        // Assert
         assertThat(result)
             .hasSize(2)
             .extracting(HarvestRecord::getVineyard)
@@ -44,6 +47,7 @@ class HarvestRecordRepositoryTest {
 
     @Test
     void findByGrapeTypeId_existingGrapeType_returnsMatchingRecords() {
+        // Arrange
         Vineyard vineyard = vineyardRepository.saveAndFlush(createVineyard("Lednice Vineyard", "Lednice"));
         GrapeType matchingType = grapeTypeRepository.saveAndFlush(createGrapeType("Riesling"));
         GrapeType otherType = grapeTypeRepository.saveAndFlush(createGrapeType("Pinot Noir"));
@@ -52,8 +56,10 @@ class HarvestRecordRepositoryTest {
         harvestRecordRepository.saveAndFlush(createHarvestRecord(matchingType, vineyard, LocalDate.of(2025, 9, 11)));
         harvestRecordRepository.saveAndFlush(createHarvestRecord(otherType, vineyard, LocalDate.of(2024, 9, 12)));
 
+        // Act
         List<HarvestRecord> result = harvestRecordRepository.findByGrapeTypeId(matchingType.getId());
 
+        // Assert
         assertThat(result)
             .hasSize(2)
             .extracting(record -> record.getGrapeType().getName())
@@ -62,6 +68,7 @@ class HarvestRecordRepositoryTest {
 
     @Test
     void findByYear_existingYear_returnsMatchingRecords() {
+        // Arrange
         Vineyard vineyard = vineyardRepository.saveAndFlush(createVineyard("Valtice Vineyard", "Valtice"));
         GrapeType grapeType = grapeTypeRepository.saveAndFlush(createGrapeType("Pálava"));
 
@@ -69,8 +76,10 @@ class HarvestRecordRepositoryTest {
         harvestRecordRepository.saveAndFlush(createHarvestRecord(grapeType, vineyard, LocalDate.of(2024, 10, 2)));
         harvestRecordRepository.saveAndFlush(createHarvestRecord(grapeType, vineyard, LocalDate.of(2025, 9, 25)));
 
+        // Act
         List<HarvestRecord> result = harvestRecordRepository.findByYear(2024);
 
+        // Assert
         assertThat(result)
             .hasSize(2)
             .extracting(HarvestRecord::getHarvestDate)
