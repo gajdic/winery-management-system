@@ -1,11 +1,17 @@
 package cz.muni.fi.pa165.productionservice.data.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.Objects;
 
+@Embeddable
 public class GrapeComponent {
     private String grapeType;
     private double kilogramsPerLiter;
     private int preferredQuality;
+
+    public GrapeComponent() {
+    }
 
     public GrapeComponent(String grapeType, double kilogramsPerLiter, int preferredQuality) {
         this.grapeType = grapeType;

@@ -1,11 +1,17 @@
 package cz.muni.fi.pa165.productionservice.data.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.Objects;
 
+@Embeddable
 public class AdditionalIngredient {
     private String name;
     private double quantityPerLiter;
     private String unit;
+
+    public AdditionalIngredient() {
+    }
 
     public AdditionalIngredient(String name, double quantityPerLiter, String unit) {
         this.name = name;
