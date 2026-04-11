@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.service;
 
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
+import cz.muni.fi.pa165.productionservice.api.QualityRecommendation;
 import cz.muni.fi.pa165.productionservice.data.model.GrapeComponent;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
@@ -145,7 +146,7 @@ class ProductionPlanningServiceTest {
         QualityEvaluationDto result = service.evaluateBlendQuality(recipe, List.of(lot));
 
         assertThat(result.getWeightedQualityScore()).isGreaterThanOrEqualTo(90);
-        assertThat(result.getRecommendation()).contains("Premium");
+        assertThat(result.getRecommendation()).isEqualTo(QualityRecommendation.PREMIUM_BATCH_CANDIDATE);
     }
 
     @Test
@@ -164,6 +165,6 @@ class ProductionPlanningServiceTest {
 
         QualityEvaluationDto result = service.evaluateBlendQuality(recipe, List.of(lot));
 
-        assertThat(result.getRecommendation()).contains("below target");
+        assertThat(result.getRecommendation()).isEqualTo(QualityRecommendation.BELOW_TARGET_QUALITY);
     }
 }

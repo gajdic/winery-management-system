@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.service;
 
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
+import cz.muni.fi.pa165.productionservice.api.QualityRecommendation;
 import cz.muni.fi.pa165.productionservice.data.model.GrapeComponent;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
@@ -86,11 +87,11 @@ public class ProductionPlanningService {
         evaluationDto.setWeightedQualityScore(weightedQuality);
         evaluationDto.setRecipeQualityTargetMet(weightedQuality >= targetQuality);
         if (weightedQuality >= targetQuality + 10) {
-            evaluationDto.setRecommendation("Premium batch candidate.");
+            evaluationDto.setRecommendation(QualityRecommendation.PREMIUM_BATCH_CANDIDATE);
         } else if (weightedQuality >= targetQuality) {
-            evaluationDto.setRecommendation("Suitable for planned production.");
+            evaluationDto.setRecommendation(QualityRecommendation.SUITABLE_FOR_PRODUCTION);
         } else {
-            evaluationDto.setRecommendation("Blend quality is below target, consider using higher-quality harvest lots.");
+            evaluationDto.setRecommendation(QualityRecommendation.BELOW_TARGET_QUALITY);
         }
         return evaluationDto;
     }
