@@ -48,7 +48,8 @@ public class ProductionBatchService {
     }
 
     public ProductionBatch deleteById(UUID id) {
-        return productionBatchRepository.deleteById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Production batch with id " + id + " was not found."));
+        ProductionBatch batch = findById(id);
+        productionBatchRepository.delete(batch);
+        return batch;
     }
 }

@@ -47,7 +47,8 @@ public class WineRecipeService {
     }
 
     public WineRecipe deleteById(UUID id) {
-        return wineRecipeRepository.deleteById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Wine recipe with id " + id + " not found"));
+        WineRecipe recipe = findById(id);
+        wineRecipeRepository.delete(recipe);
+        return recipe;
     }
 }

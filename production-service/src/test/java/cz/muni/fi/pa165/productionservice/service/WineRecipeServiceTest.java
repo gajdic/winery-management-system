@@ -117,23 +117,25 @@ class WineRecipeServiceTest {
         UUID id = UUID.randomUUID();
         WineRecipe recipe = new WineRecipe();
 
-        Mockito.when(wineRecipeRepository.deleteById(id))
+        Mockito.when(wineRecipeRepository.findById(id))
             .thenReturn(Optional.of(recipe));
 
         WineRecipe result = wineRecipeService.deleteById(id);
 
         assertThat(result).isEqualTo(recipe);
+        Mockito.verify(wineRecipeRepository).delete(recipe);
     }
 
     @Test
     void delete_nonExistingId_throwsException() {
         UUID id = UUID.randomUUID();
 
-        Mockito.when(wineRecipeRepository.deleteById(id))
+        Mockito.when(wineRecipeRepository.findById(id))
             .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             wineRecipeService.deleteById(id);
         });
+        Mockito.verify(wineRecipeRepository, Mockito.never()).delete(Mockito.any());
     }
 }

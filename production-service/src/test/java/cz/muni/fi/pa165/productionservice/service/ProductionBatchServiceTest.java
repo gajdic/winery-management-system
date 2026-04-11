@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ProductionBatchServiceTest {
@@ -106,23 +106,25 @@ class ProductionBatchServiceTest {
         UUID id = UUID.randomUUID();
         ProductionBatch batch = new ProductionBatch();
 
-        Mockito.when(productionBatchRepository.deleteById(id))
+        Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.of(batch));
 
         ProductionBatch result = productionBatchService.deleteById(id);
 
         assertThat(result).isEqualTo(batch);
+        Mockito.verify(productionBatchRepository).delete(batch);
     }
 
     @Test
     void delete_nonExistingId_throwsException() {
         UUID id = UUID.randomUUID();
 
-        Mockito.when(productionBatchRepository.deleteById(id))
+        Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             productionBatchService.deleteById(id);
         });
+        Mockito.verify(productionBatchRepository, Mockito.never()).delete(Mockito.any());
     }
 }
