@@ -38,7 +38,7 @@ public class WineRecipeFacade {
     }
 
     public WineRecipeDto updateRecipe(UUID id, WineRecipeUpdateDto dto) {
-        return wineRecipeMapper.mapToDto(wineRecipeService.update(id, dto));
+        return wineRecipeMapper.mapToDto(wineRecipeService.update(id, wineRecipeMapper.mapToEntity(dto)));
     }
 
     public void deleteRecipe(UUID id) {

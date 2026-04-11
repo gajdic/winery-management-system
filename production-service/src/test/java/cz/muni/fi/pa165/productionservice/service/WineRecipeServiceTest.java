@@ -1,10 +1,8 @@
 package cz.muni.fi.pa165.productionservice.service;
 
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
-import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
-import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
+import cz.muni.fi.pa165.productionservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,9 +22,6 @@ class WineRecipeServiceTest {
 
     @Mock
     private WineRecipeRepository wineRecipeRepository;
-
-    @Mock
-    private WineRecipeMapper wineRecipeMapper;
 
     @InjectMocks
     private WineRecipeService wineRecipeService;
@@ -81,7 +76,12 @@ class WineRecipeServiceTest {
     void update_existingId_updatesAndReturnsRecipe() {
         UUID id = UUID.randomUUID();
         WineRecipe existing = new WineRecipe();
-        WineRecipeUpdateDto dto = new WineRecipeUpdateDto();
+        WineRecipe updatedRecipe = new WineRecipe();
+        updatedRecipe.setName("Updated Riesling");
+        updatedRecipe.setProductionYear(2025);
+        updatedRecipe.setAlcoholPercentage(12.5);
+        updatedRecipe.setTastingNotes("Fresh citrus notes");
+        updatedRecipe.setBottleVolumeLiters(0.75);
 
         Mockito.when(wineRecipeRepository.findById(id))
             .thenReturn(Optional.of(existing));
@@ -89,24 +89,26 @@ class WineRecipeServiceTest {
         Mockito.when(wineRecipeRepository.save(existing))
             .thenReturn(existing);
 
-        WineRecipe result = wineRecipeService.update(id, dto);
+        WineRecipe result = wineRecipeService.update(id, updatedRecipe);
 
         assertThat(result).isEqualTo(existing);
-
-        Mockito.verify(wineRecipeMapper)
-            .updateEntityFromDto(dto, existing);
+        assertThat(existing.getName()).isEqualTo("Updated Riesling");
+        assertThat(existing.getProductionYear()).isEqualTo(2025);
+        assertThat(existing.getAlcoholPercentage()).isEqualTo(12.5);
+        assertThat(existing.getTastingNotes()).isEqualTo("Fresh citrus notes");
+        assertThat(existing.getBottleVolumeLiters()).isEqualTo(0.75);
     }
 
     @Test
     void update_nonExistingId_throwsException() {
         UUID id = UUID.randomUUID();
-        WineRecipeUpdateDto dto = new WineRecipeUpdateDto();
+        WineRecipe updatedRecipe = new WineRecipe();
 
         Mockito.when(wineRecipeRepository.findById(id))
             .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
-            wineRecipeService.update(id, dto);
+            wineRecipeService.update(id, updatedRecipe);
         });
     }
 
