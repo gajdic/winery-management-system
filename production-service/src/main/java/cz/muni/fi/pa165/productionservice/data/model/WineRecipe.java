@@ -89,12 +89,12 @@ public class WineRecipe {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         WineRecipe that = (WineRecipe) o;
-        return productionYear == that.productionYear && Double.compare(alcoholPercentage, that.alcoholPercentage) == 0 && Double.compare(bottleVolumeLiters, that.bottleVolumeLiters) == 0 && Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(tastingNotes, that.tastingNotes) && Objects.equals(grapeComponents, that.grapeComponents) && Objects.equals(additionalIngredients, that.additionalIngredients);
+        return productionYear == that.productionYear && Double.compare(alcoholPercentage, that.alcoholPercentage) == 0 && Double.compare(bottleVolumeLiters, that.bottleVolumeLiters) == 0 && Objects.equals(name, that.name) && Objects.equals(tastingNotes, that.tastingNotes) && Objects.equals(grapeComponents, that.grapeComponents) && Objects.equals(additionalIngredients, that.additionalIngredients);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, productionYear, alcoholPercentage, tastingNotes, bottleVolumeLiters, grapeComponents, additionalIngredients);
+        return Objects.hash(name, productionYear, alcoholPercentage, tastingNotes, bottleVolumeLiters, grapeComponents, additionalIngredients);
     }
 
     @Override
