@@ -1,9 +1,9 @@
 package cz.muni.fi.pa165.productionservice.api.error;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class ApiErrorDto {
-    private Instant timestamp;
+    private LocalDateTime timestamp;
     private int status;
     private String error;
     private String message;
@@ -12,7 +12,7 @@ public class ApiErrorDto {
     public ApiErrorDto() {
     }
 
-    public ApiErrorDto(Instant timestamp, int status, String error, String message, String path) {
+    public ApiErrorDto(LocalDateTime timestamp, int status, String error, String message, String path) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
@@ -20,11 +20,11 @@ public class ApiErrorDto {
         this.path = path;
     }
 
-    public Instant getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

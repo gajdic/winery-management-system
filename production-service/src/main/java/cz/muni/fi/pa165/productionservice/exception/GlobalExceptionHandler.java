@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
         }
 
         ValidationErrorDto response = new ValidationErrorDto(
-            Instant.now(),
+            LocalDateTime.now(),
             HttpStatus.BAD_REQUEST.value(),
             HttpStatus.BAD_REQUEST.getReasonPhrase(),
             "Validation failed",
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
         String path
     ) {
         ApiErrorDto response = new ApiErrorDto(
-            Instant.now(),
+            LocalDateTime.now(),
             status.value(),
             status.getReasonPhrase(),
             message,

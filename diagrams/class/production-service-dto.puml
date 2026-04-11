@@ -123,7 +123,7 @@ package "Supporting DTOs" {
 package "Error DTOs" {
   together {
     class ApiErrorDto {
-      +timestamp: Instant
+      +timestamp: LocalDateTime
       +status: int
       +error: String
       +message: String
