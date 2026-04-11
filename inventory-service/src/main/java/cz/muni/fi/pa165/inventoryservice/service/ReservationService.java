@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
@@ -45,7 +46,7 @@ public class ReservationService {
         var reservation = reservationRepository.updateStatus(id, status);
 
         var stockId = stockRepository.findByWine(reservation.getWineId())
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found for wine: " + reservation.getWineId()))
+            .orElseThrow(() -> new ResourceNotFoundException("Stock not found for wine: " + reservation.getWineId()))
             .getId();
 
         switch (reservation.getStatus()) {

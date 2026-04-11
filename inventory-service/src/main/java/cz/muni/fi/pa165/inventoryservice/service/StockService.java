@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class StockService {
         validatePositiveQuantity(quantityToRemove);
 
         Stock stock = stockRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
 
         int available = stock.getQuantity() - stock.getReservedQuantity();
         if (quantityToRemove > available) {

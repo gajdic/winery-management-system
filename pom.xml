@@ -19,6 +19,7 @@
   <description>Winery Management System</description>
 
   <modules>
+    <module>common-service</module>
     <module>customer-service</module>
     <module>harvest-service</module>
     <module>production-service</module>

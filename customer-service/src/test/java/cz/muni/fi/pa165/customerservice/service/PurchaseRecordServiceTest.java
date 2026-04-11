@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
 import cz.muni.fi.pa165.customerservice.data.repository.PurchaseRecordRepository;
 import org.junit.jupiter.api.Test;
@@ -157,14 +158,14 @@ class PurchaseRecordServiceTest {
     }
 
     @Test
-    void findById_nonExistingId_throwsIllegalArgumentException() {
+    void findById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
         Mockito.when(purchaseRecordRepository.findById(purchaseRecordId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
             // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.findById(purchaseRecordId));
+            assertThrows(ResourceNotFoundException.class, () -> purchaseRecordService.findById(purchaseRecordId));
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("PurchaseRecord not found: " + purchaseRecordId);

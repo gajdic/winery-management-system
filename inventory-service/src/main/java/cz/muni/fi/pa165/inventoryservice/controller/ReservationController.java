@@ -62,15 +62,8 @@ public class ReservationController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<ReservationDetailedViewDto> updateStatus(@PathVariable UUID id, @RequestParam ReservationStatus status) {
-        try {
-            ReservationDetailedViewDto updated = reservationFacade.updateStatus(id, status);
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.badRequest().build();
-        }
+        ReservationDetailedViewDto updated = reservationFacade.updateStatus(id, status);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

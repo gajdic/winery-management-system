@@ -13,6 +13,11 @@
   <name>customer-service</name>
   <dependencies>
     <dependency>
+      <groupId>cz.muni.fi.pa165</groupId>
+      <artifactId>common-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
     </dependency>

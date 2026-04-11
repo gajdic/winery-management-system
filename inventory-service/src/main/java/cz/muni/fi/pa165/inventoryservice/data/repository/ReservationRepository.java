@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 
@@ -11,7 +12,7 @@ public class ReservationRepository extends InMemoryRepository<Reservation> {
 
     public Reservation updateStatus(UUID id, ReservationStatus status) {
         Reservation reservation = super.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Reservation not found: " + id));
         reservation.setStatus(status);
         return super.update(reservation);
     }

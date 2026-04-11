@@ -3,13 +3,14 @@ package cz.muni.fi.pa165.productionservice.api;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class HarvestLotDto {
-    @NotBlank
-    private String grapeType;
+    @NotNull
+    private UUID grapeTypeId;
 
-    @NotBlank
-    private String vineyardLocation;
+    @NotNull
+    private UUID vineyardId;
 
     @NotNull
     @PastOrPresent
@@ -22,20 +23,20 @@ public class HarvestLotDto {
     @Max(100)
     private int qualityScore;
 
-    public String getGrapeType() {
-        return grapeType;
+    public UUID getGrapeTypeId() {
+        return grapeTypeId;
     }
 
-    public void setGrapeType(String grapeType) {
-        this.grapeType = grapeType;
+    public void setGrapeTypeId(UUID grapeTypeId) {
+        this.grapeTypeId = grapeTypeId;
     }
 
-    public String getVineyardLocation() {
-        return vineyardLocation;
+    public UUID getVineyardId() {
+        return vineyardId;
     }
 
-    public void setVineyardLocation(String vineyardLocation) {
-        this.vineyardLocation = vineyardLocation;
+    public void setVineyardId(UUID vineyardId) {
+        this.vineyardId = vineyardId;
     }
 
     public LocalDate getHarvestDate() {

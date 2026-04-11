@@ -25,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 class ProductionPlanningFacadeTest {
 
+    private static final UUID MERLOT_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID VINEYARD_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
+
     @Mock
     private ProductionPlanningService productionPlanningService;
 
@@ -49,8 +52,8 @@ class ProductionPlanningFacadeTest {
         ProductionPlanDto expectedDto = new ProductionPlanDto();
 
         List<HarvestLot> harvestEntities = List.of(new HarvestLot(
-            "Merlot",
-            "Vineyard A",
+            MERLOT_ID,
+            VINEYARD_ID,
             LocalDate.now(),
             100.0,
             85
@@ -82,7 +85,7 @@ class ProductionPlanningFacadeTest {
         QualityEvaluationDto expectedDto = new QualityEvaluationDto();
 
         List<HarvestLot> harvestEntities = List.of(
-            new HarvestLot("Merlot", "Vineyard A", LocalDate.now(), 100.0, 85)
+            new HarvestLot(MERLOT_ID, VINEYARD_ID, LocalDate.now(), 100.0, 85)
         );
 
         Mockito.when(wineRecipeService.findById(recipeId)).thenReturn(recipe);

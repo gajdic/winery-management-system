@@ -1,9 +1,11 @@
 package cz.muni.fi.pa165.harvestservice.util;
 
+import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeBasicDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
+import cz.muni.fi.pa165.harvestservice.api.dto.VineyardBasicDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
@@ -22,10 +24,10 @@ public class TestDataFactory {
     public static Vineyard vineyardEntity() {
         Vineyard vineyard = new Vineyard();
         vineyard.setId(VINEYARD_ID);
-        vineyard.setName("Moravské vinice");
+        vineyard.setName("Moravsk\u00e9 vinice");
         vineyard.setLocation("Brno, Morava");
         vineyard.setAreaSize(5.5);
-        vineyard.setDescription("Nejstarší vinice na Moravě");
+        vineyard.setDescription("Nejstar\u0161\u00ed vinice na Morav\u011b");
         return vineyard;
     }
 
@@ -33,7 +35,7 @@ public class TestDataFactory {
         GrapeType grapeType = new GrapeType();
         grapeType.setId(GRAPE_TYPE_ID);
         grapeType.setName("Welschriesling");
-        grapeType.setDescription("Oblíbená odrůda na Moravě");
+        grapeType.setDescription("Obl\u00edben\u00e1 odr\u016fda na Morav\u011b");
         return grapeType;
     }
 
@@ -50,55 +52,53 @@ public class TestDataFactory {
 
     public static VineyardViewDto vineyardViewDto() {
         return new VineyardViewDto(
-                VINEYARD_ID,
-                "Moravské vinice",
-                "Brno, Morava",
-                5.5,
-                "Nejstarší vinice na Moravě"
+            VINEYARD_ID,
+            "Moravsk\u00e9 vinice",
+            "Brno, Morava",
+            5.5,
+            "Nejstar\u0161\u00ed vinice na Morav\u011b"
         );
     }
 
     public static VineyardCreateDto vineyardCreateDto() {
         return new VineyardCreateDto(
-                "Moravské vinice",
-                "Brno, Morava",
-                5.5,
-                "Nejstarší vinice na Moravě"
+            "Moravsk\u00e9 vinice",
+            "Brno, Morava",
+            5.5,
+            "Nejstar\u0161\u00ed vinice na Morav\u011b"
         );
     }
 
     public static GrapeTypeViewDto grapeTypeViewDto() {
         return new GrapeTypeViewDto(
-                GRAPE_TYPE_ID,
-                "Welschriesling",
-                "Oblíbená odrůda na Moravě"
+            GRAPE_TYPE_ID,
+            "Welschriesling",
+            "Obl\u00edben\u00e1 odr\u016fda na Morav\u011b"
         );
     }
 
     public static GrapeTypeCreateDto grapeTypeCreateDto() {
-        return new GrapeTypeCreateDto("Welschriesling", "Oblíbená odrůda na Moravě");
+        return new GrapeTypeCreateDto("Welschriesling", "Obl\u00edben\u00e1 odr\u016fda na Morav\u011b");
     }
 
     public static HarvestRecordViewDto harvestRecordViewDto() {
         return new HarvestRecordViewDto(
-                HARVEST_RECORD_ID,
-                GRAPE_TYPE_ID,
-                "Welschriesling",
-                VINEYARD_ID,
-                "Moravské vinice",
-                LocalDate.of(2024, 9, 15),
-                1500.0,
-                8
+            HARVEST_RECORD_ID,
+            new GrapeTypeBasicDto(GRAPE_TYPE_ID, "Welschriesling"),
+            new VineyardBasicDto(VINEYARD_ID, "Moravsk\u00e9 vinice"),
+            LocalDate.of(2024, 9, 15),
+            1500.0,
+            8
         );
     }
 
     public static HarvestRecordCreateDto harvestRecordCreateDto() {
         return new HarvestRecordCreateDto(
-                GRAPE_TYPE_ID,
-                VINEYARD_ID,
-                LocalDate.of(2024, 9, 15),
-                1500.0,
-                8
+            GRAPE_TYPE_ID,
+            VINEYARD_ID,
+            LocalDate.of(2024, 9, 15),
+            1500.0,
+            8
         );
     }
 }

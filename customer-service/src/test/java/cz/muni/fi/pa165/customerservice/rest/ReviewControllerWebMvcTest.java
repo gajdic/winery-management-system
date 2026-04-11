@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
 import cz.muni.fi.pa165.customerservice.facade.ReviewFacade;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class ReviewControllerWebMvcTest {
     void getReview_nonExistingId_returnsNotFound() throws Exception {
         // Arrange
         UUID reviewId = UUID.randomUUID();
-        when(reviewFacade.getReview(reviewId)).thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+        when(reviewFacade.getReview(reviewId)).thenThrow(new ResourceNotFoundException("Review not found: " + reviewId));
 
         // Act + Assert
         mockMvc.perform(get("/reviews/{id}", reviewId))
@@ -202,7 +203,7 @@ class ReviewControllerWebMvcTest {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         when(reviewFacade.updateReview(eq(reviewId), any()))
-            .thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+            .thenThrow(new ResourceNotFoundException("Review not found: " + reviewId));
 
         // Act + Assert
         mockMvc.perform(put("/reviews/{id}", reviewId)
@@ -240,7 +241,7 @@ class ReviewControllerWebMvcTest {
     void deleteReview_nonExistingId_returnsNotFound() throws Exception {
         // Arrange
         UUID reviewId = UUID.randomUUID();
-        doThrow(new IllegalArgumentException("Review not found: " + reviewId))
+        doThrow(new ResourceNotFoundException("Review not found: " + reviewId))
             .when(reviewFacade).deleteReview(reviewId);
 
         // Act + Assert

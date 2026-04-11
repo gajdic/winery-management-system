@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
 import cz.muni.fi.pa165.customerservice.data.repository.InMemoryReviewRepository;
 import org.junit.jupiter.api.Test;
@@ -254,14 +255,14 @@ class ReviewServiceTest {
     }
 
     @Test
-    void findById_nonExistingId_throwsIllegalArgumentException() {
+    void findById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         Mockito.when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
             // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> reviewService.findById(reviewId));
+            assertThrows(ResourceNotFoundException.class, () -> reviewService.findById(reviewId));
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("Review not found: " + reviewId);

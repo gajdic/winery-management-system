@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/production")
+@RequestMapping("/production")
 @Tag(name = "Production Planning", description = "Endpoints for production planning and quality evaluation")
 public class ProductionPlanningController {
     private final ProductionPlanningFacade productionPlanningFacade;

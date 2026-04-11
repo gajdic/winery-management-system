@@ -53,28 +53,14 @@ public class StockController {
 
     @PostMapping("/{id}/add")
     public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
-        try {
-            StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.badRequest().build();
-        }
+        StockDetailedViewDto updated = stockFacade.addToStock(id, change.getQuantity());
+        return ResponseEntity.ok(updated);
     }
 
     @PostMapping("/{id}/remove")
     public ResponseEntity<StockDetailedViewDto> removeFromStock(@PathVariable UUID id, @RequestBody StockQuantityChangeDto change) {
-        try {
-            StockDetailedViewDto updated = stockFacade.removeFromStock(id, change.getQuantity());
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException ex) {
-            if (ex.getMessage() != null && ex.getMessage().contains("not found")) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.badRequest().build();
-        }
+        StockDetailedViewDto updated = stockFacade.removeFromStock(id, change.getQuantity());
+        return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/{id}")

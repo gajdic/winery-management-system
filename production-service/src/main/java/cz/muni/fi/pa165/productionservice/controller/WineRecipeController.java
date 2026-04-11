@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/production/recipes")
+@RequestMapping("/production/recipes")
 @Tag(name = "Wine Recipe", description = "Endpoints for managing wine recipes")
 public class WineRecipeController {
     private final WineRecipeFacade wineRecipeFacade;

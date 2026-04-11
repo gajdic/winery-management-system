@@ -81,10 +81,14 @@ class WineRecipeFacadeTest {
     void updateRecipe_validRequest_callsServiceAndReturnsDto() {
         UUID id = UUID.randomUUID();
         WineRecipeUpdateDto updateDto = new WineRecipeUpdateDto();
+        WineRecipe updateEntity = new WineRecipe();
         WineRecipe updatedEntity = new WineRecipe();
         WineRecipeDto resultDto = new WineRecipeDto();
 
-        Mockito.when(wineRecipeService.update(id, updateDto))
+        Mockito.when(wineRecipeMapper.mapToEntity(updateDto))
+            .thenReturn(updateEntity);
+
+        Mockito.when(wineRecipeService.update(id, updateEntity))
             .thenReturn(updatedEntity);
 
         Mockito.when(wineRecipeMapper.mapToDto(updatedEntity))

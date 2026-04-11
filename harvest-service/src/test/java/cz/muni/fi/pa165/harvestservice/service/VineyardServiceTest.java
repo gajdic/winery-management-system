@@ -2,7 +2,7 @@ package cz.muni.fi.pa165.harvestservice.service;
 
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +46,21 @@ class VineyardServiceTest {
         assertThatThrownBy(() -> vineyardService.create(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Vineyard cannot be null.");
+    }
+
+    @Test
+    void create_vineyardIdIsNull_returnsSavedVineyard() {
+        // Arrange
+        Vineyard vineyard = TestDataFactory.vineyardEntity();
+        vineyard.setId(null);
+        Mockito.when(vineyardRepository.save(vineyard)).thenReturn(vineyard);
+
+        // Act
+        Vineyard result = vineyardService.create(vineyard);
+
+        // Assert
+        assertThat(result).isEqualTo(vineyard);
+        Mockito.verify(vineyardRepository).save(vineyard);
     }
 
     @Test
@@ -188,6 +203,9 @@ class VineyardServiceTest {
 
     @Test
     void deleteById_existingVineyard_callsRepository() {
+        Mockito.when(vineyardRepository.findById(TestDataFactory.VINEYARD_ID))
+                .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
+
         // Act
         vineyardService.deleteById(TestDataFactory.VINEYARD_ID);
 

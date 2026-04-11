@@ -2,7 +2,7 @@ package cz.muni.fi.pa165.harvestservice.service;
 
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -188,6 +188,9 @@ class GrapeTypeServiceTest {
 
     @Test
     void deleteById_existingGrapeType_callsRepository() {
+        Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
+                .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
+
         // Act
         grapeTypeService.deleteById(TestDataFactory.GRAPE_TYPE_ID);
 

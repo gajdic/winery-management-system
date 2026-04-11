@@ -2,7 +2,7 @@ package cz.muni.fi.pa165.harvestservice.service;
 
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +83,7 @@ public class VineyardService {
     }
 
     public void deleteById(UUID id) {
+        findById(id);
         vineyardRepository.deleteById(id);
     }
 }
