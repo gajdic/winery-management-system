@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
 import cz.muni.fi.pa165.customerservice.data.repository.PurchaseRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class PurchaseRecordService {
         }
 
         return purchaseRecordRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("PurchaseRecord not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("PurchaseRecord not found: " + id));
     }
 
     public List<PurchaseRecord> findAll() {

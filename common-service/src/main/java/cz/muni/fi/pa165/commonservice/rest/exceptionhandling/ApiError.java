@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.customerservice.rest.exceptionhandling;
+package cz.muni.fi.pa165.commonservice.rest.exceptionhandling;
 
 import org.springframework.http.HttpStatus;
 

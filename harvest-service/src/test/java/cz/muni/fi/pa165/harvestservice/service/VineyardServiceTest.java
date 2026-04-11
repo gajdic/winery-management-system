@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -165,6 +165,7 @@ class VineyardServiceTest {
     void update_validVineyard_returnsUpdatedVineyard() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
+        Mockito.when(vineyardRepository.findById(vineyard.getId())).thenReturn(Optional.of(vineyard));
         Mockito.when(vineyardRepository.update(vineyard)).thenReturn(vineyard);
 
         // Act
@@ -186,8 +187,7 @@ class VineyardServiceTest {
     void update_vineyardNotFound_throwsResourceNotFoundException() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
-        Mockito.when(vineyardRepository.update(vineyard))
-                .thenThrow(new IllegalArgumentException("Vineyard with id " + vineyard.getId() + " does not exist"));
+        Mockito.when(vineyardRepository.findById(vineyard.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> vineyardService.update(vineyard))
@@ -197,6 +197,9 @@ class VineyardServiceTest {
 
     @Test
     void deleteById_existingVineyard_callsRepository() {
+        Mockito.when(vineyardRepository.findById(TestDataFactory.VINEYARD_ID))
+                .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
+
         // Act
         vineyardService.deleteById(TestDataFactory.VINEYARD_ID);
 

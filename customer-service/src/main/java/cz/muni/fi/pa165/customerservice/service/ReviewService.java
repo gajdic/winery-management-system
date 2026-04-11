@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
 import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
 import cz.muni.fi.pa165.customerservice.data.repository.InMemoryCustomerRepository;
@@ -61,7 +62,7 @@ public class ReviewService {
             throw new IllegalArgumentException("Review id cannot be null");
         }
         return reviewRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Review not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Review not found: " + id));
     }
 
     public List<Review> findByCustomerId(UUID customerId) {

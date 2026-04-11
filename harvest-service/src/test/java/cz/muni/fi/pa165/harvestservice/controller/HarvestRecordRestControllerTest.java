@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestSummaryDto;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.facade.HarvestRecordFacade;
 import cz.muni.fi.pa165.harvestservice.rest.HarvestRecordRestController;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;

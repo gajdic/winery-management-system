@@ -1,10 +1,10 @@
 package cz.muni.fi.pa165.productionservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import cz.muni.fi.pa165.productionservice.data.repository.ProductionBatchRepository;
-import cz.muni.fi.pa165.productionservice.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

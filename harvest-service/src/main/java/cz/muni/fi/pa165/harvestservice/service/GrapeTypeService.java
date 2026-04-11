@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,16 +57,12 @@ public class GrapeTypeService {
             throw new IllegalArgumentException("Grape type name cannot be null or blank");
         }
 
-        try {
-            return grapeTypeRepository.update(grapeType);
-        } catch (IllegalArgumentException ex) {
-            throw new ResourceNotFoundException(
-                "Grape type with id: " + grapeType.getId() + " was not found."
-            );
-        }
+        findById(grapeType.getId());
+        return grapeTypeRepository.update(grapeType);
     }
 
     public void deleteById(UUID id) {
+        findById(id);
         grapeTypeRepository.deleteById(id);
     }
 }

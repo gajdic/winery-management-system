@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
 import cz.muni.fi.pa165.customerservice.facade.PurchaseRecordFacade;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,7 @@ class PurchaseRecordControllerWebMvcTest {
         // Arrange
         UUID purchaseId = UUID.randomUUID();
         when(purchaseRecordFacade.getPurchase(purchaseId))
-            .thenThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId));
+            .thenThrow(new ResourceNotFoundException("PurchaseRecord not found: " + purchaseId));
 
         // Act + Assert
         mockMvc.perform(get("/purchases/{id}", purchaseId))

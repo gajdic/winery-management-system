@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.config.TestJacksonConfig;
@@ -93,7 +94,7 @@ class ReservationControllerTest {
     void updateStatus_reservationNotFound_returnsNotFound() throws Exception {
         // Arrange
         Mockito.when(reservationFacade.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .thenThrow(new IllegalArgumentException("Reservation not found: " + TestDataFactory.RESERVATION_ID));
+            .thenThrow(new ResourceNotFoundException("Reservation not found: " + TestDataFactory.RESERVATION_ID));
 
         // Act + Assert
         mockMvc.perform(patch("/reservations/{id}/status", TestDataFactory.RESERVATION_ID)

@@ -1,12 +1,12 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.HarvestRecordRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -156,16 +156,12 @@ public class HarvestRecordService {
         harvestRecord.setVineyard(vineyard);
         harvestRecord.setGrapeType(grapeType);
 
-        try {
-            return harvestRecordRepository.update(harvestRecord);
-        } catch (IllegalArgumentException ex) {
-            throw new ResourceNotFoundException(
-                "Harvest record with id " + harvestRecord.getId() + " was not found."
-            );
-        }
+        findById(harvestRecord.getId());
+        return harvestRecordRepository.update(harvestRecord);
     }
 
     public void deleteById(UUID id) {
+        findById(id);
         harvestRecordRepository.deleteById(id);
     }
 }
