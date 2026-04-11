@@ -54,7 +54,7 @@ public class ProductionPlanningService {
 
     private double calculatePossibleLitersForComponent(GrapeComponent component, List<HarvestLot> harvestLots) {
         double availableKilograms = harvestLots.stream()
-            .filter(h -> h.getGrapeType().equalsIgnoreCase(component.getGrapeType()))
+            .filter(h -> hasGrapeTypeId(h, component))
             .mapToDouble(HarvestLot::getAvailableKilograms)
             .sum();
         return availableKilograms / component.getKilogramsPerLiter();
@@ -103,7 +103,7 @@ public class ProductionPlanningService {
         double weightedQuality = recipe.getGrapeComponents().stream()
             .mapToDouble(component -> {
                 double componentQuality = harvestLots.stream()
-                    .filter(h -> h.getGrapeType().equalsIgnoreCase(component.getGrapeType()))
+                    .filter(h -> hasGrapeTypeId(h, component))
                     .mapToInt(HarvestLot::getQualityScore)
                     .average()
                     .orElse(0);
@@ -115,5 +115,11 @@ public class ProductionPlanningService {
             return 0;
         }
         return (int) Math.round(weightedQuality / totalRequiredWeight);
+    }
+
+    private boolean hasGrapeTypeId(HarvestLot harvestLot, GrapeComponent component) {
+        return harvestLot.getGrapeTypeId() != null
+            && component.getGrapeType() != null
+            && harvestLot.getGrapeTypeId().toString().equalsIgnoreCase(component.getGrapeType());
     }
 }
