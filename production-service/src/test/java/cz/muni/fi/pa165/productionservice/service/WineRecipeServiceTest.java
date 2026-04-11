@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.productionservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
-import cz.muni.fi.pa165.productionservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
