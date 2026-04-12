@@ -104,8 +104,7 @@ The project is built with:
 
 ## Build And Run
 
-For Milestone 2, `production-service` uses Spring Data JPA with an H2 in-memory database.
-Asynchronous communication is intentionally not part of this merge request and will be handled separately.
+For Milestone 2, the project uses Spring Data JPA with an H2 in-memory database.
 
 Build whole project:
 
@@ -202,5 +201,6 @@ Rendered `.png` exports are stored next to the PlantUML sources.
 
 ## GenAI Usage Disclosure
 
-GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and documentation drafting).
+GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and
+documentation drafting).
 All generated suggestions were manually reviewed and adjusted by team members before integration.
