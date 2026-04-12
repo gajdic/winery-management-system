@@ -202,6 +202,5 @@ Rendered `.png` exports are stored next to the PlantUML sources.
 
 ## GenAI Usage Disclosure
 
-GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and
-documentation drafting).
+GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and documentation drafting).
 All generated suggestions were manually reviewed and adjusted by team members before integration.
