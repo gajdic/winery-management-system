@@ -33,6 +33,17 @@ class ProductionBatchRepositoryTest {
     }
 
     @Test
+    void findByRecipeId_noMatchingRecipeId_returnsEmptyList() {
+        ProductionBatch batch = TestDataFactory.productionBatchEntity(TestDataFactory.RECIPE_ID, BatchStatus.PLANNED);
+        batch.setId(null);
+        productionBatchRepository.save(batch);
+
+        List<ProductionBatch> result = productionBatchRepository.findByRecipeId(UUID.randomUUID());
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void findByStatus_matchingStatus_returnsBatches() {
         ProductionBatch planned = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.PLANNED);
         ProductionBatch completed = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.COMPLETED);
@@ -43,6 +54,17 @@ class ProductionBatchRepositoryTest {
         List<ProductionBatch> result = productionBatchRepository.findByStatus(BatchStatus.COMPLETED);
 
         assertThat(result).containsExactly(completed);
+    }
+
+    @Test
+    void findByStatus_noMatchingStatus_returnsEmptyList() {
+        ProductionBatch batch = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.PLANNED);
+        batch.setId(null);
+        productionBatchRepository.save(batch);
+
+        List<ProductionBatch> result = productionBatchRepository.findByStatus(BatchStatus.COMPLETED);
+
+        assertThat(result).isEmpty();
     }
 
 }

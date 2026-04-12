@@ -34,6 +34,17 @@ class WineRecipeRepositoryTest {
     }
 
     @Test
+    void findByNameContainingIgnoreCase_noMatchingName_returnsEmptyList() {
+        WineRecipe riesling = TestDataFactory.wineRecipeEntity("Late Harvest Riesling", 2025);
+        riesling.setId(null);
+        wineRecipeRepository.save(riesling);
+
+        List<WineRecipe> result = wineRecipeRepository.findByNameContainingIgnoreCase("pinot");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void findByProductionYear_matchingYear_returnsRecipes() {
         WineRecipe current = TestDataFactory.wineRecipeEntity("Sauvignon Blanc", 2025);
         WineRecipe older = TestDataFactory.wineRecipeEntity("Cabernet Moravia", 2024);
@@ -44,6 +55,17 @@ class WineRecipeRepositoryTest {
         List<WineRecipe> result = wineRecipeRepository.findByProductionYear(2025);
 
         assertThat(result).containsExactly(current);
+    }
+
+    @Test
+    void findByProductionYear_noMatchingYear_returnsEmptyList() {
+        WineRecipe recipe = TestDataFactory.wineRecipeEntity("Sauvignon Blanc", 2025);
+        recipe.setId(null);
+        wineRecipeRepository.save(recipe);
+
+        List<WineRecipe> result = wineRecipeRepository.findByProductionYear(2024);
+
+        assertThat(result).isEmpty();
     }
 
     @Test
