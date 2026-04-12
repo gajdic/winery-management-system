@@ -11,28 +11,34 @@ The system covers:
 - bottle inventory and reservation management,
 - customer profiles, purchases, and wine reviews.
 
-The system is split into 4 executable Maven modules:
+The system is split into 5 executable Maven modules:
 
-1. `customer-service`
+1. `common-service`
+Handles shared application concerns:
+- shared exceptions and error handling,
+- reusable API/common classes,
+- code extracted from multiple services during refactoring.
+
+2. `customer-service`
 Handles customer-related operations:
 - customer profile management,
 - purchase history,
 - wine reviews and feedback.
 
-2. `harvest-service`
+3. `harvest-service`
 Handles harvest domain:
 - vineyards and grape types management,
 - harvest records,
 - harvest summaries.
 
-3. `production-service`
+4. `production-service`
 Handles production domain:
 - wine recipe management,
 - production planning from available harvest lots,
 - blend quality evaluation,
 - production batch lifecycle.
 
-4. `inventory-service`
+5. `inventory-service`
 Handles stock domain:
 - bottle stock tracking,
 - reservation tracking,
@@ -65,6 +71,7 @@ Implemented business functionality beyond CRUD:
 ## Executable Modules
 
 Executable Spring Boot modules:
+- `common-service`
 - `customer-service`
 - `harvest-service`
 - `production-service`
@@ -99,6 +106,7 @@ mvn -pl harvest-service spring-boot:run
 You can run other modules analogically:
 
 ```bash
+mvn -pl common-service spring-boot:run
 mvn -pl customer-service spring-boot:run
 mvn -pl production-service spring-boot:run
 mvn -pl inventory-service spring-boot:run

@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
 import cz.muni.fi.pa165.inventoryservice.config.TestJacksonConfig;
@@ -108,7 +109,7 @@ class StockControllerTest {
         // Arrange
         StockQuantityChangeDto changeDto = TestDataFactory.stockQuantityChangeDto(10);
         Mockito.when(stockFacade.removeFromStock(TestDataFactory.STOCK_ID, 10))
-            .thenThrow(new IllegalArgumentException("Stock not found: " + TestDataFactory.STOCK_ID));
+            .thenThrow(new ResourceNotFoundException("Stock not found: " + TestDataFactory.STOCK_ID));
 
         // Act + Assert
         mockMvc.perform(post("/stocks/{id}/remove", TestDataFactory.STOCK_ID)

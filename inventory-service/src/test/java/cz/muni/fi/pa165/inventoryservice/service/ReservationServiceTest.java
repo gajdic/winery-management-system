@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
@@ -113,14 +114,14 @@ class ReservationServiceTest {
     }
 
     @Test
-    void updateStatus_stockForWineNotFound_throwsIllegalArgumentException() {
+    void updateStatus_stockForWineNotFound_throwsResourceNotFoundException() {
         // Arrange
         Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.of(TestDataFactory.reservationEntity()));
         Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThatThrownBy(() -> reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Stock not found for wine: " + TestDataFactory.WINE_ID);
     }
 

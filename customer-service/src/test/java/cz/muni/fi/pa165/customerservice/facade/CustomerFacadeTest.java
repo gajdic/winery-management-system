@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.facade;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.AddressDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerCreateDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerDto;
@@ -168,11 +169,11 @@ class CustomerFacadeTest {
     void getCustomer_serviceThrowsException_propagatesException() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Mockito.when(customerService.findById(customerId)).thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+        Mockito.when(customerService.findById(customerId)).thenThrow(new ResourceNotFoundException("Customer not found: " + customerId));
 
         // Act + Assert
         assertThatThrownBy(() -> customerFacade.getCustomer(customerId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Customer not found: " + customerId);
 
         // Assert
@@ -189,11 +190,11 @@ class CustomerFacadeTest {
 
         Mockito.when(customerMapper.mapToEntity(customerId, updateDto)).thenReturn(mappedCustomer);
         Mockito.when(customerService.update(customerId, mappedCustomer))
-            .thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+            .thenThrow(new ResourceNotFoundException("Customer not found: " + customerId));
 
         // Act + Assert
         assertThatThrownBy(() -> customerFacade.updateCustomer(customerId, updateDto))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Customer not found: " + customerId);
 
         // Assert
@@ -218,12 +219,12 @@ class CustomerFacadeTest {
     void deleteCustomer_serviceThrowsException_propagatesException() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Mockito.doThrow(new IllegalArgumentException("Customer not found: " + customerId))
+        Mockito.doThrow(new ResourceNotFoundException("Customer not found: " + customerId))
             .when(customerService).deleteById(customerId);
 
         // Act + Assert
         assertThatThrownBy(() -> customerFacade.deleteCustomer(customerId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Customer not found: " + customerId);
 
         // Assert

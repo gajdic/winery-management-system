@@ -6,10 +6,8 @@ import java.util.UUID;
 public class HarvestRecordViewDto {
 
     private UUID id;
-    private UUID grapeTypeId;
-    private String grapeTypeName;
-    private UUID vineyardId;
-    private String vineyardName;
+    private GrapeTypeBasicDto grapeType;
+    private VineyardBasicDto vineyard;
     private LocalDate harvestDate;
     private double quantity;
     private int quality;
@@ -17,12 +15,10 @@ public class HarvestRecordViewDto {
     public HarvestRecordViewDto() {
     }
 
-    public HarvestRecordViewDto(UUID id, UUID grapeTypeId, String grapeTypeName, UUID vineyardId, String vineyardName, LocalDate harvestDate, double quantity, int quality) {
+    public HarvestRecordViewDto( UUID id, GrapeTypeBasicDto grapeType,VineyardBasicDto vineyard, LocalDate harvestDate, double quantity, int quality) {
         this.id = id;
-        this.grapeTypeId = grapeTypeId;
-        this.grapeTypeName = grapeTypeName;
-        this.vineyardId = vineyardId;
-        this.vineyardName = vineyardName;
+        this.grapeType = grapeType;
+        this.vineyard = vineyard;
         this.harvestDate = harvestDate;
         this.quantity = quantity;
         this.quality = quality;
@@ -36,36 +32,20 @@ public class HarvestRecordViewDto {
         this.id = id;
     }
 
-    public UUID getGrapeTypeId() {
-        return grapeTypeId;
+    public GrapeTypeBasicDto getGrapeType() {
+        return grapeType;
     }
 
-    public void setGrapeTypeId(UUID grapeTypeId) {
-        this.grapeTypeId = grapeTypeId;
+    public void setGrapeType(GrapeTypeBasicDto grapeType) {
+        this.grapeType = grapeType;
     }
 
-    public String getGrapeTypeName() {
-        return grapeTypeName;
+    public VineyardBasicDto getVineyard() {
+        return vineyard;
     }
 
-    public void setGrapeTypeName(String grapeTypeName) {
-        this.grapeTypeName = grapeTypeName;
-    }
-
-    public UUID getVineyardId() {
-        return vineyardId;
-    }
-
-    public void setVineyardId(UUID vineyardId) {
-        this.vineyardId = vineyardId;
-    }
-
-    public String getVineyardName() {
-        return vineyardName;
-    }
-
-    public void setVineyardName(String vineyardName) {
-        this.vineyardName = vineyardName;
+    public void setVineyard(VineyardBasicDto vineyard) {
+        this.vineyard = vineyard;
     }
 
     public LocalDate getHarvestDate() {
@@ -91,5 +71,4 @@ public class HarvestRecordViewDto {
     public void setQuality(int quality) {
         this.quality = quality;
     }
-
 }

@@ -1,12 +1,12 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.HarvestRecordRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
-import cz.muni.fi.pa165.harvestservice.exceptions.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -317,6 +317,7 @@ class HarvestRecordServiceTest {
     void update_validHarvestRecord_returnsUpdatedRecord() {
         // Arrange
         HarvestRecord record = TestDataFactory.harvestRecordEntity();
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.of(record));
         Mockito.when(vineyardRepository.findById(TestDataFactory.VINEYARD_ID))
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
@@ -354,12 +355,11 @@ class HarvestRecordServiceTest {
     void update_harvestRecordNotFound_throwsResourceNotFoundException() {
         // Arrange
         HarvestRecord record = TestDataFactory.harvestRecordEntity();
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.empty());
         Mockito.when(vineyardRepository.findById(TestDataFactory.VINEYARD_ID))
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
                 .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
-        Mockito.when(harvestRecordRepository.update(record))
-                .thenThrow(new IllegalArgumentException("Record not found"));
 
         // Act & Assert
         assertThatThrownBy(() -> harvestRecordService.update(record))
@@ -369,6 +369,9 @@ class HarvestRecordServiceTest {
 
     @Test
     void deleteById_existingRecord_callsRepository() {
+        Mockito.when(harvestRecordRepository.findById(TestDataFactory.HARVEST_RECORD_ID))
+                .thenReturn(Optional.of(TestDataFactory.harvestRecordEntity()));
+
         // Act
         harvestRecordService.deleteById(TestDataFactory.HARVEST_RECORD_ID);
 

@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import cz.muni.fi.pa165.inventoryservice.util.TestDataFactory;
@@ -115,13 +116,13 @@ class StockServiceTest {
     }
 
     @Test
-    void removeFromStock_stockNotFound_throwsIllegalArgumentException() {
+    void removeFromStock_stockNotFound_throwsResourceNotFoundException() {
         // Arrange
         Mockito.when(stockRepository.findById(TestDataFactory.STOCK_ID)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThatThrownBy(() -> stockService.removeFromStock(TestDataFactory.STOCK_ID, 10))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Stock not found: " + TestDataFactory.STOCK_ID);
         Mockito.verify(stockRepository).findById(TestDataFactory.STOCK_ID);
     }

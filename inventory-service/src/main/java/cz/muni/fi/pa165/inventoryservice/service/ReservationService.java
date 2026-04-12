@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
@@ -47,13 +48,13 @@ public class ReservationService {
         }
 
         Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Reservation not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found: " + id));
 
         reservation.setStatus(status);
         reservationRepository.save(reservation);
 
         Stock stock = stockRepository.findByWineId(reservation.getWineId())
-                .orElseThrow(() -> new IllegalArgumentException("Stock not found for wine: " + reservation.getWineId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Stock not found for wine: " + reservation.getWineId()));
 
         switch (status) {
             case COMPLETED -> {
@@ -81,4 +82,5 @@ public class ReservationService {
         reservationRepository.deleteById(id);
         return true;
     }
+
 }

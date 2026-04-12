@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.AddressDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerDto;
 import cz.muni.fi.pa165.customerservice.facade.CustomerFacade;
@@ -80,7 +81,7 @@ class CustomerControllerWebMvcTest {
     void getCustomer_nonExistingId_returnsNotFound() throws Exception {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        when(customerFacade.getCustomer(customerId)).thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+        when(customerFacade.getCustomer(customerId)).thenThrow(new ResourceNotFoundException("Customer not found: " + customerId));
 
         // Act + Assert
         mockMvc.perform(get("/customers/{id}", customerId))
@@ -127,7 +128,7 @@ class CustomerControllerWebMvcTest {
         // Arrange
         UUID customerId = UUID.randomUUID();
         when(customerFacade.updateCustomer(eq(customerId), any()))
-            .thenThrow(new IllegalArgumentException("Customer not found: " + customerId));
+            .thenThrow(new ResourceNotFoundException("Customer not found: " + customerId));
 
         // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
@@ -165,7 +166,7 @@ class CustomerControllerWebMvcTest {
     void deleteCustomer_nonExistingId_returnsNotFound() throws Exception {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        doThrow(new IllegalArgumentException("Customer not found: " + customerId))
+        doThrow(new ResourceNotFoundException("Customer not found: " + customerId))
             .when(customerFacade).deleteCustomer(customerId);
 
         // Act + Assert

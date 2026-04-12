@@ -35,7 +35,7 @@ public class StockService {
         validatePositiveQuantity(quantityToAdd);
 
         Stock stock = stockRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
 
         stock.setQuantity(stock.getQuantity() + quantityToAdd);
         return stockRepository.save(stock);
@@ -45,7 +45,7 @@ public class StockService {
         validatePositiveQuantity(quantityToRemove);
 
         Stock stock = stockRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
 
         int available = stock.getQuantity() - stock.getReservedQuantity();
         if (quantityToRemove > available) {
