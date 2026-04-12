@@ -2,11 +2,11 @@ package cz.muni.fi.pa165.productionservice.data.repository;
 
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,9 +20,11 @@ class ProductionBatchRepositoryTest {
 
     @Test
     void findByRecipeId_matchingRecipeId_returnsBatches() {
-        UUID recipeId = UUID.randomUUID();
-        ProductionBatch matching = createBatch(recipeId, BatchStatus.PLANNED);
-        ProductionBatch other = createBatch(UUID.randomUUID(), BatchStatus.PLANNED);
+        UUID recipeId = TestDataFactory.RECIPE_ID;
+        ProductionBatch matching = TestDataFactory.productionBatchEntity(recipeId, BatchStatus.PLANNED);
+        ProductionBatch other = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.PLANNED);
+        matching.setId(null);
+        other.setId(null);
         productionBatchRepository.saveAll(List.of(matching, other));
 
         List<ProductionBatch> result = productionBatchRepository.findByRecipeId(recipeId);
@@ -32,8 +34,10 @@ class ProductionBatchRepositoryTest {
 
     @Test
     void findByStatus_matchingStatus_returnsBatches() {
-        ProductionBatch planned = createBatch(UUID.randomUUID(), BatchStatus.PLANNED);
-        ProductionBatch completed = createBatch(UUID.randomUUID(), BatchStatus.COMPLETED);
+        ProductionBatch planned = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.PLANNED);
+        ProductionBatch completed = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.COMPLETED);
+        planned.setId(null);
+        completed.setId(null);
         productionBatchRepository.saveAll(List.of(planned, completed));
 
         List<ProductionBatch> result = productionBatchRepository.findByStatus(BatchStatus.COMPLETED);
@@ -41,14 +45,4 @@ class ProductionBatchRepositoryTest {
         assertThat(result).containsExactly(completed);
     }
 
-    private static ProductionBatch createBatch(UUID recipeId, BatchStatus status) {
-        ProductionBatch batch = new ProductionBatch();
-        batch.setRecipeId(recipeId);
-        batch.setPlannedLiters(75.0);
-        batch.setPlannedBottleCount(100);
-        batch.setActualBottleCount(0);
-        batch.setStatus(status);
-        batch.setCreatedAt(LocalDateTime.of(2026, 4, 11, 12, 0));
-        return batch;
-    }
 }

@@ -1,10 +1,10 @@
 package cz.muni.fi.pa165.productionservice.controller;
 
-import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.facade.ProductionBatchFacade;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,11 +30,9 @@ class ProductionBatchControllerTest {
 
     @Test
     void createBatch_validRequest_returnsCreated() {
-        ProductionBatchCreateRequestDto request = new ProductionBatchCreateRequestDto();
-        request.setBatch(new ProductionBatchCreateDto());
-        request.setHarvestLots(List.of());
+        ProductionBatchCreateRequestDto request = TestDataFactory.productionBatchCreateRequestDto();
 
-        ProductionBatchDto dto = new ProductionBatchDto();
+        ProductionBatchDto dto = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchFacade.createBatch(
             request.getBatch(),
@@ -50,10 +48,7 @@ class ProductionBatchControllerTest {
 
     @Test
     void getBatches_noInput_returnsOk() {
-        List<ProductionBatchDto> list = List.of(
-            new ProductionBatchDto(),
-            new ProductionBatchDto()
-        );
+        List<ProductionBatchDto> list = TestDataFactory.productionBatchDtos();
 
         Mockito.when(productionBatchFacade.findAllBatches()).thenReturn(list);
 
@@ -66,8 +61,8 @@ class ProductionBatchControllerTest {
 
     @Test
     void getBatch_existingId_returnsOk() {
-        UUID id = UUID.randomUUID();
-        ProductionBatchDto dto = new ProductionBatchDto();
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatchDto dto = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchFacade.findBatch(id)).thenReturn(dto);
 
@@ -80,7 +75,7 @@ class ProductionBatchControllerTest {
 
     @Test
     void deleteBatch_existingId_returnsNoContent() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.BATCH_ID;
 
         ResponseEntity<Void> response =
             productionBatchController.deleteBatch(id);
@@ -91,8 +86,8 @@ class ProductionBatchControllerTest {
 
     @Test
     void updateBatchStatus_validStatus_returnsOk() {
-        UUID id = UUID.randomUUID();
-        ProductionBatchDto dto = new ProductionBatchDto();
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatchDto dto = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchFacade.updateBatchStatus(id, BatchStatus.PLANNED))
             .thenReturn(dto);

@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationRequestDto;
 import cz.muni.fi.pa165.productionservice.facade.ProductionPlanningFacade;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +28,8 @@ class ProductionPlanningControllerTest {
 
     @Test
     void planProduction_validRequest_returnsOk() {
-        ProductionPlanRequestDto request = new ProductionPlanRequestDto();
-        ProductionPlanDto responseDto = new ProductionPlanDto();
+        ProductionPlanRequestDto request = TestDataFactory.productionPlanRequestDto();
+        ProductionPlanDto responseDto = TestDataFactory.productionPlanDto();
 
         Mockito.when(productionPlanningFacade.planProduction(request))
             .thenReturn(responseDto);
@@ -42,8 +43,8 @@ class ProductionPlanningControllerTest {
 
     @Test
     void evaluateQuality_validRequest_returnsOk() {
-        QualityEvaluationRequestDto request = new QualityEvaluationRequestDto();
-        QualityEvaluationDto responseDto = new QualityEvaluationDto();
+        QualityEvaluationRequestDto request = TestDataFactory.qualityEvaluationRequestDto();
+        QualityEvaluationDto responseDto = TestDataFactory.qualityEvaluationDto();
 
         Mockito.when(productionPlanningFacade.evaluateQuality(request))
             .thenReturn(responseDto);

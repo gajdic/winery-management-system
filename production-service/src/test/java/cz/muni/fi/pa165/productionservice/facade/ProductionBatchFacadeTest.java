@@ -13,6 +13,7 @@ import cz.muni.fi.pa165.productionservice.mappers.ProductionBatchMapper;
 import cz.muni.fi.pa165.productionservice.service.ProductionBatchService;
 import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,9 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class ProductionBatchFacadeTest {
-
-    private static final UUID MERLOT_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
-    private static final UUID VINEYARD_ID = UUID.fromString("33333333-3333-3333-3333-333333333333");
 
     @Mock
     private ProductionBatchService productionBatchService;
@@ -52,26 +49,18 @@ class ProductionBatchFacadeTest {
 
     @Test
     void createBatch_validRequest_returnsDto() {
-        UUID recipeId = UUID.randomUUID();
+        UUID recipeId = TestDataFactory.RECIPE_ID;
 
-        ProductionBatchCreateDto dto = new ProductionBatchCreateDto();
-        dto.setRecipeId(recipeId);
-        dto.setDesiredBottleCount(100);
+        ProductionBatchCreateDto dto = TestDataFactory.productionBatchCreateDto();
 
-        WineRecipe recipe = new WineRecipe();
-        ProductionPlanDto plan = new ProductionPlanDto();
+        WineRecipe recipe = TestDataFactory.wineRecipeEntity();
+        ProductionPlanDto plan = TestDataFactory.productionPlanDto();
 
-        List<HarvestLotDto> harvestDtos = List.of(new HarvestLotDto());
-        List<HarvestLot> harvestEntities = List.of(
-            new HarvestLot(MERLOT_ID,
-                VINEYARD_ID,
-                LocalDate.now(),
-                100.0,
-                85)
-        );
+        List<HarvestLotDto> harvestDtos = List.of(TestDataFactory.harvestLotDto());
+        List<HarvestLot> harvestEntities = List.of(TestDataFactory.harvestLot());
 
-        ProductionBatch batch = new ProductionBatch();
-        ProductionBatchDto batchDto = new ProductionBatchDto();
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
+        ProductionBatchDto batchDto = TestDataFactory.productionBatchDto();
 
         Mockito.when(wineRecipeService.findById(recipeId)).thenReturn(recipe);
 
@@ -98,11 +87,11 @@ class ProductionBatchFacadeTest {
 
     @Test
     void findAllBatches_noInput_returnsMappedList() {
-        ProductionBatch b1 = new ProductionBatch();
-        ProductionBatch b2 = new ProductionBatch();
+        ProductionBatch b1 = TestDataFactory.productionBatchEntity(TestDataFactory.RECIPE_ID, BatchStatus.PLANNED);
+        ProductionBatch b2 = TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.COMPLETED);
 
-        ProductionBatchDto d1 = new ProductionBatchDto();
-        ProductionBatchDto d2 = new ProductionBatchDto();
+        ProductionBatchDto d1 = TestDataFactory.productionBatchDto();
+        ProductionBatchDto d2 = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchService.findAll())
             .thenReturn(List.of(b1, b2));
@@ -118,10 +107,10 @@ class ProductionBatchFacadeTest {
 
     @Test
     void findBatch_existingId_returnsDto() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.BATCH_ID;
 
-        ProductionBatch batch = new ProductionBatch();
-        ProductionBatchDto dto = new ProductionBatchDto();
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
+        ProductionBatchDto dto = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchService.findById(id)).thenReturn(batch);
         Mockito.when(productionBatchMapper.mapToDto(batch)).thenReturn(dto);
@@ -133,10 +122,10 @@ class ProductionBatchFacadeTest {
 
     @Test
     void updateBatchStatus_validStatus_returnsDto() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.BATCH_ID;
 
-        ProductionBatch batch = new ProductionBatch();
-        ProductionBatchDto dto = new ProductionBatchDto();
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
+        ProductionBatchDto dto = TestDataFactory.productionBatchDto();
 
         Mockito.when(productionBatchService.updateStatus(id, BatchStatus.PLANNED))
             .thenReturn(batch);
@@ -152,7 +141,7 @@ class ProductionBatchFacadeTest {
 
     @Test
     void deleteBatch_existingId_callsService() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.BATCH_ID;
 
         productionBatchFacade.deleteBatch(id);
 

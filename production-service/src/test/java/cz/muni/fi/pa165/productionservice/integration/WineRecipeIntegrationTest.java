@@ -1,7 +1,9 @@
 package cz.muni.fi.pa165.productionservice.integration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,38 +29,19 @@ class WineRecipeIntegrationTest {
     @Autowired
     private WineRecipeRepository wineRecipeRepository;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
     @Test
     void createAndFetchRecipe_validRequest_persistsRecipe() throws Exception {
-        String request = """
-            {
-              "name": "Integration Riesling",
-              "productionYear": 2026,
-              "alcoholPercentage": 12.5,
-              "tastingNotes": "Fresh citrus notes",
-              "bottleVolumeLiters": 0.75,
-              "grapeComponents": [
-                {
-                  "grapeType": "Riesling",
-                  "kilogramsPerLiter": 1.3,
-                  "preferredQuality": 85
-                }
-              ],
-              "additionalIngredients": [
-                {
-                  "name": "Yeast",
-                  "quantityPerLiter": 0.02,
-                  "unit": "kg"
-                }
-              ]
-            }
-            """;
+        String request = objectMapper.writeValueAsString(TestDataFactory.wineRecipeCreateDto());
 
         String response = mockMvc.perform(post("/production/recipes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").exists())
-            .andExpect(jsonPath("$.name").value("Integration Riesling"))
+            .andExpect(jsonPath("$.name").value("Riesling"))
             .andExpect(jsonPath("$.grapeComponents[0].grapeType").value("Riesling"))
             .andReturn()
             .getResponse()
@@ -69,7 +52,7 @@ class WineRecipeIntegrationTest {
         mockMvc.perform(get("/production/recipes/{id}", recipeId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(recipeId.toString()))
-            .andExpect(jsonPath("$.name").value("Integration Riesling"))
+            .andExpect(jsonPath("$.name").value("Riesling"))
             .andExpect(jsonPath("$.additionalIngredients[0].name").value("Yeast"));
 
         assertThat(wineRecipeRepository.findById(recipeId)).isPresent();
