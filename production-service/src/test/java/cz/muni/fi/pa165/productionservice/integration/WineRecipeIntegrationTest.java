@@ -2,12 +2,14 @@ package cz.muni.fi.pa165.productionservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
+import cz.muni.fi.pa165.commonservice.testconfig.TestJacksonConfig;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(TestJacksonConfig.class)
 class WineRecipeIntegrationTest {
 
     @Autowired
@@ -29,8 +32,8 @@ class WineRecipeIntegrationTest {
     @Autowired
     private WineRecipeRepository wineRecipeRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void createAndFetchRecipe_validRequest_persistsRecipe() throws Exception {
