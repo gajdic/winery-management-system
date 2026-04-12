@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.productionservice.api;
 
+import cz.muni.fi.pa165.productionservice.api.enums.QualityRecommendation;
 import lombok.Data;
 
 import java.util.UUID;
