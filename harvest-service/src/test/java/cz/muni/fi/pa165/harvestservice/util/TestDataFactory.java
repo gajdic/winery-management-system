@@ -31,11 +31,27 @@ public class TestDataFactory {
         return vineyard;
     }
 
+    public static Vineyard vineyardEntity(String name, String location) {
+        Vineyard vineyard = new Vineyard();
+        vineyard.setName(name);
+        vineyard.setLocation(location);
+        vineyard.setAreaSize(10.0);
+        vineyard.setDescription(name + " description");
+        return vineyard;
+    }
+
     public static GrapeType grapeTypeEntity() {
         GrapeType grapeType = new GrapeType();
         grapeType.setId(GRAPE_TYPE_ID);
         grapeType.setName("Welschriesling");
         grapeType.setDescription("Obl\u00edben\u00e1 odr\u016fda na Morav\u011b");
+        return grapeType;
+    }
+
+    public static GrapeType grapeTypeEntity(String name) {
+        GrapeType grapeType = new GrapeType();
+        grapeType.setName(name);
+        grapeType.setDescription(name + " description");
         return grapeType;
     }
 
@@ -46,6 +62,16 @@ public class TestDataFactory {
         record.setGrapeType(grapeTypeEntity());
         record.setHarvestDate(LocalDate.of(2024, 9, 15));
         record.setQuantity(1500.0);
+        record.setQuality(8);
+        return record;
+    }
+
+    public static HarvestRecord harvestRecordEntity(GrapeType grapeType, Vineyard vineyard, LocalDate harvestDate) {
+        HarvestRecord record = new HarvestRecord();
+        record.setGrapeType(grapeType);
+        record.setVineyard(vineyard);
+        record.setHarvestDate(harvestDate);
+        record.setQuantity(1200.0);
         record.setQuality(8);
         return record;
     }
