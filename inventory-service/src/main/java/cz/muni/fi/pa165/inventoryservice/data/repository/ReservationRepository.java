@@ -1,6 +1,5 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,9 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
-
-    List<Reservation> findByCustomerId(UUID customerId);
-
     @Query("""
             SELECT r FROM Reservation r
             WHERE (:customerId IS NULL OR r.customerId = :customerId)

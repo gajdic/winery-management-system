@@ -14,7 +14,4 @@ import java.util.UUID;
 public interface StockRepository extends JpaRepository<Stock, UUID> {
 
     Optional<Stock> findByWineId(UUID wineId);
-
-    @Query("SELECT s FROM Stock s WHERE (s.quantity - s.reservedQuantity) >= :minAvailable")
-    List<Stock> findAllWithAvailableQuantityAtLeast(@Param("minAvailable") int minAvailable);
 }

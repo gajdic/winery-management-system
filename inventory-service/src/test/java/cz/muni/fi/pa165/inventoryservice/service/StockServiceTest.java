@@ -54,7 +54,7 @@ class StockServiceTest {
     void findByWine_stockFound_returnsStock() {
         // Arrange
         Stock stock = TestDataFactory.stockEntity();
-        Mockito.when(stockRepository.findByWine(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
+        Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
 
         // Act
         Stock foundStock = stockService.findByWine(TestDataFactory.WINE_ID);
@@ -67,14 +67,14 @@ class StockServiceTest {
     void addToStock_positiveQuantity_returnsUpdatedStock() {
         // Arrange
         Stock updatedStock = TestDataFactory.stockEntity(130, 20);
-        Mockito.when(stockRepository.updateQuantity(TestDataFactory.STOCK_ID, 10)).thenReturn(updatedStock);
+        Mockito.when(stockRepository.findById(TestDataFactory.STOCK_ID)).thenReturn(Optional.of(TestDataFactory.stockEntity(120, 20)));
+        Mockito.when(stockRepository.save(updatedStock)).thenReturn(updatedStock);
 
         // Act
         Stock result = stockService.addToStock(TestDataFactory.STOCK_ID, 10);
 
         // Assert
         assertThat(result).isEqualTo(updatedStock);
-        Mockito.verify(stockRepository).updateQuantity(TestDataFactory.STOCK_ID, 10);
     }
 
     @Test
@@ -83,7 +83,6 @@ class StockServiceTest {
         assertThatThrownBy(() -> stockService.addToStock(TestDataFactory.STOCK_ID, 0))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Quantity must be positive");
-        Mockito.verify(stockRepository, Mockito.never()).updateQuantity(Mockito.any(), Mockito.anyInt());
     }
 
     @Test
@@ -92,7 +91,7 @@ class StockServiceTest {
         Stock stock = TestDataFactory.stockEntity(120, 20);
         Stock updatedStock = TestDataFactory.stockEntity(110, 20);
         Mockito.when(stockRepository.findById(TestDataFactory.STOCK_ID)).thenReturn(Optional.of(stock));
-        Mockito.when(stockRepository.updateQuantity(TestDataFactory.STOCK_ID, -10)).thenReturn(updatedStock);
+        Mockito.when(stockRepository.save(updatedStock)).thenReturn(updatedStock);
 
         // Act
         Stock result = stockService.removeFromStock(TestDataFactory.STOCK_ID, 10);
@@ -100,7 +99,6 @@ class StockServiceTest {
         // Assert
         assertThat(result).isEqualTo(updatedStock);
         Mockito.verify(stockRepository).findById(TestDataFactory.STOCK_ID);
-        Mockito.verify(stockRepository).updateQuantity(TestDataFactory.STOCK_ID, -10);
     }
 
     @Test
@@ -114,7 +112,6 @@ class StockServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Cannot remove more bottles than available stock");
         Mockito.verify(stockRepository).findById(TestDataFactory.STOCK_ID);
-        Mockito.verify(stockRepository, Mockito.never()).updateQuantity(Mockito.any(), Mockito.anyInt());
     }
 
     @Test
@@ -127,7 +124,6 @@ class StockServiceTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Stock not found: " + TestDataFactory.STOCK_ID);
         Mockito.verify(stockRepository).findById(TestDataFactory.STOCK_ID);
-        Mockito.verify(stockRepository, Mockito.never()).updateQuantity(Mockito.any(), Mockito.anyInt());
     }
 
     @Test

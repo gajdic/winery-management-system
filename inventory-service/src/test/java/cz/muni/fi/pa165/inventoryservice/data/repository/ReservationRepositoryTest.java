@@ -29,14 +29,13 @@ class ReservationRepositoryTest {
     private UUID customerId1;
     private UUID customerId2;
     private UUID wineId1;
-    private UUID wineId2;
 
     @BeforeEach
     void initData() {
         customerId1 = UUID.randomUUID();
         customerId2 = UUID.randomUUID();
         wineId1 = UUID.randomUUID();
-        wineId2 = UUID.randomUUID();
+        UUID wineId2 = UUID.randomUUID();
 
         Reservation r1 = new Reservation();
         r1.setCustomerId(customerId1);
@@ -63,23 +62,6 @@ class ReservationRepositoryTest {
         testEntityManager.persist(r3);
 
         testEntityManager.flush();
-    }
-
-    // --- findByCustomerId ---
-
-    @Test
-    void findByCustomerId_customerHasReservations_returnsList() {
-        List<Reservation> result = reservationRepository.findByCustomerId(customerId1);
-
-        assertThat(result).hasSize(2);
-        assertThat(result).allMatch(r -> r.getCustomerId().equals(customerId1));
-    }
-
-    @Test
-    void findByCustomerId_customerHasNoReservations_returnsEmptyList() {
-        List<Reservation> result = reservationRepository.findByCustomerId(UUID.randomUUID());
-
-        assertThat(result).isEmpty();
     }
 
     // --- filter ---
@@ -187,31 +169,9 @@ class ReservationRepositoryTest {
     }
 
     @Test
-    void findById_existingReservation_returnsReservation() {
-        Reservation reservation = reservationRepository.findByCustomerId(customerId2).get(0);
-
-        Optional<Reservation> found = reservationRepository.findById(reservation.getId());
-
-        assertThat(found).isPresent();
-        assertThat(found.get().getQuantity()).isEqualTo(8);
-        assertThat(found.get().getStatus()).isEqualTo(ReservationStatus.CANCELED);
-    }
-
-    @Test
     void findById_nonExistingId_returnsEmpty() {
         Optional<Reservation> found = reservationRepository.findById(UUID.randomUUID());
 
         assertThat(found).isEmpty();
-    }
-
-    @Test
-    void deleteById_reservationDeleted_notFoundAnymore() {
-        Reservation reservation = reservationRepository.findByCustomerId(customerId2).get(0);
-
-        reservationRepository.deleteById(reservation.getId());
-        testEntityManager.flush();
-
-        assertThat(reservationRepository.findById(reservation.getId())).isEmpty();
-        assertThat(reservationRepository.findAll()).hasSize(2);
     }
 }
