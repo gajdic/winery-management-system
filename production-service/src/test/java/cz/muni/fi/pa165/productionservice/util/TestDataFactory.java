@@ -41,15 +41,27 @@ public final class TestDataFactory {
     }
 
     public static GrapeComponent grapeComponent() {
-        return new GrapeComponent("Riesling", 1.3, 85);
+        GrapeComponent component = new GrapeComponent();
+        component.setGrapeType("Riesling");
+        component.setKilogramsPerLiter(1.3);
+        component.setPreferredQuality(85);
+        return component;
     }
 
     public static GrapeComponent grapeComponent(UUID grapeTypeId, double kilogramsPerLiter, int preferredQuality) {
-        return new GrapeComponent(grapeTypeId.toString(), kilogramsPerLiter, preferredQuality);
+        GrapeComponent component = new GrapeComponent();
+        component.setGrapeType(grapeTypeId.toString());
+        component.setKilogramsPerLiter(kilogramsPerLiter);
+        component.setPreferredQuality(preferredQuality);
+        return component;
     }
 
     public static AdditionalIngredient additionalIngredient() {
-        return new AdditionalIngredient("Yeast", 0.02, "kg");
+        AdditionalIngredient ingredient = new AdditionalIngredient();
+        ingredient.setName("Yeast");
+        ingredient.setQuantityPerLiter(0.02);
+        ingredient.setUnit("kg");
+        return ingredient;
     }
 
     public static HarvestLot harvestLot() {
@@ -57,7 +69,13 @@ public final class TestDataFactory {
     }
 
     public static HarvestLot harvestLot(UUID grapeTypeId, double availableKilograms, int qualityScore) {
-        return new HarvestLot(grapeTypeId, VINEYARD_ID, HARVEST_DATE, availableKilograms, qualityScore);
+        HarvestLot harvestLot = new HarvestLot();
+        harvestLot.setGrapeTypeId(grapeTypeId);
+        harvestLot.setVineyardId(VINEYARD_ID);
+        harvestLot.setHarvestDate(HARVEST_DATE);
+        harvestLot.setAvailableKilograms(availableKilograms);
+        harvestLot.setQualityScore(qualityScore);
+        return harvestLot;
     }
 
     public static ProductionBatch productionBatchEntity() {

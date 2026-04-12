@@ -1,13 +1,15 @@
 package cz.muni.fi.pa165.productionservice.data.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class HarvestLot {
     private UUID grapeTypeId;
     private UUID vineyardId;

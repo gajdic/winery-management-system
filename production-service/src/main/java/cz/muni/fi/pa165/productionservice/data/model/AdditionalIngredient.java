@@ -1,14 +1,14 @@
 package cz.muni.fi.pa165.productionservice.data.model;
 
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Embeddable
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class AdditionalIngredient {
     private String name;
     private double quantityPerLiter;
