@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
