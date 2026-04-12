@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.commonservice.testconfig;
+package cz.muni.fi.pa165.commonservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;

@@ -2,7 +2,7 @@ package cz.muni.fi.pa165.productionservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import cz.muni.fi.pa165.commonservice.testconfig.TestJacksonConfig;
+import cz.muni.fi.pa165.commonservice.config.TestJacksonConfig;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
