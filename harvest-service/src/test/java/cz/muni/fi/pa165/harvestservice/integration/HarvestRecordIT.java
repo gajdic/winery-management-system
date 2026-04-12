@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = HarvestServiceApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-class HarvestRecordIntegrationTest {
+class HarvestRecordIT {
 
     @Autowired
     private MockMvc mockMvc;

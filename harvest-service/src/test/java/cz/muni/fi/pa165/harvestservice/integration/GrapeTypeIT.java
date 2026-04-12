@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = HarvestServiceApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-class GrapeTypeIntegrationTest {
+class GrapeTypeIT {
 
     @Autowired
     private MockMvc mockMvc;

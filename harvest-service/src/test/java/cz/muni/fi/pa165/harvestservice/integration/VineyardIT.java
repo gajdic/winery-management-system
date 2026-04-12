@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = HarvestServiceApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-class VineyardIntegrationTest {
+class VineyardIT {
 
     @Autowired
     private MockMvc mockMvc;
