@@ -38,7 +38,7 @@ class GrapeTypeRepositoryTest {
     }
 
     @Test
-    void existsByName_existingAndMissingName_returnsExpectedBoolean() {
+    void existsByName_existingName_returnsTrue() {
         // Arrange
         GrapeType grapeType = new GrapeType();
         grapeType.setName("Pinot Noir");
@@ -46,11 +46,24 @@ class GrapeTypeRepositoryTest {
         grapeTypeRepository.saveAndFlush(grapeType);
 
         // Act
-        boolean existing = grapeTypeRepository.existsByName("Pinot Noir");
-        boolean missing = grapeTypeRepository.existsByName("Merlot");
+        boolean result = grapeTypeRepository.existsByName("Pinot Noir");
 
         // Assert
-        assertThat(existing).isTrue();
-        assertThat(missing).isFalse();
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existsByName_missingName_returnsFalse() {
+        // Arrange
+        GrapeType grapeType = new GrapeType();
+        grapeType.setName("Pinot Noir");
+        grapeType.setDescription("Red grape");
+        grapeTypeRepository.saveAndFlush(grapeType);
+
+        // Act
+        boolean result = grapeTypeRepository.existsByName("Merlot");
+
+        // Assert
+        assertThat(result).isFalse();
     }
 }
