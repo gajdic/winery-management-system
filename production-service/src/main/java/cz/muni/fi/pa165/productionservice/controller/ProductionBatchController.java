@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/production/batches")
+@RequestMapping("/production/batches")
 @Tag(name = "Production Batches", description = "Endpoints for managing production batches")
 public class ProductionBatchController {
     private final ProductionBatchFacade productionBatchFacade;

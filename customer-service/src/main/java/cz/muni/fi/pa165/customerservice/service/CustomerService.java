@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class CustomerService {
         }
 
         return customerRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
     }
 
     public List<Customer> findAll() {

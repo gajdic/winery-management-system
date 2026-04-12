@@ -13,6 +13,11 @@
     <name>harvest-service</name>
   <dependencies>
     <dependency>
+      <groupId>cz.muni.fi.pa165</groupId>
+      <artifactId>common-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>1.6.3</version>

@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.facade;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.ReviewCreateDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewUpdateDto;
@@ -232,11 +233,11 @@ class ReviewFacadeTest {
     void getReview_serviceThrowsException_propagatesException() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
-        Mockito.when(reviewService.findById(reviewId)).thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+        Mockito.when(reviewService.findById(reviewId)).thenThrow(new ResourceNotFoundException("Review not found: " + reviewId));
 
         // Act + Assert
         assertThatThrownBy(() -> reviewFacade.getReview(reviewId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Review not found: " + reviewId);
 
         // Assert
@@ -253,11 +254,11 @@ class ReviewFacadeTest {
 
         Mockito.when(reviewMapper.mapToEntity(reviewId, updateDto)).thenReturn(mappedReview);
         Mockito.when(reviewService.update(reviewId, mappedReview))
-            .thenThrow(new IllegalArgumentException("Review not found: " + reviewId));
+            .thenThrow(new ResourceNotFoundException("Review not found: " + reviewId));
 
         // Act + Assert
         assertThatThrownBy(() -> reviewFacade.updateReview(reviewId, updateDto))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Review not found: " + reviewId);
 
         // Assert
@@ -282,12 +283,12 @@ class ReviewFacadeTest {
     void deleteReview_serviceThrowsException_propagatesException() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
-        Mockito.doThrow(new IllegalArgumentException("Review not found: " + reviewId))
+        Mockito.doThrow(new ResourceNotFoundException("Review not found: " + reviewId))
             .when(reviewService).deleteById(reviewId);
 
         // Act + Assert
         assertThatThrownBy(() -> reviewFacade.deleteReview(reviewId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Review not found: " + reviewId);
 
         // Assert

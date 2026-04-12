@@ -6,7 +6,7 @@ public class QualityEvaluationDto {
     private UUID recipeId;
     private int weightedQualityScore;
     private boolean recipeQualityTargetMet;
-    private String recommendation;
+    private QualityRecommendation recommendation;
 
     public UUID getRecipeId() {
         return recipeId;
@@ -32,11 +32,11 @@ public class QualityEvaluationDto {
         this.recipeQualityTargetMet = recipeQualityTargetMet;
     }
 
-    public String getRecommendation() {
+    public QualityRecommendation getRecommendation() {
         return recommendation;
     }
 
-    public void setRecommendation(String recommendation) {
+    public void setRecommendation(QualityRecommendation recommendation) {
         this.recommendation = recommendation;
     }
 }

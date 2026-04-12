@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.harvestservice.rest.exceptionhandling;
+package cz.muni.fi.pa165.commonservice.rest.exceptionhandling;
 
 import org.springframework.http.HttpStatus;
 
@@ -51,15 +51,5 @@ public class ApiError {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    @Override
-    public String toString() {
-        return "ApiError{" +
-            "timestamp=" + timestamp +
-            ", status=" + status +
-            ", message='" + message + '\'' +
-            ", path='" + path + '\'' +
-            '}';
     }
 }

@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 
 import java.util.Optional;
@@ -14,7 +15,7 @@ public class StockRepository extends InMemoryRepository<Stock> {
 
     public Stock updateQuantity(UUID id, int delta) {
         Stock stock = findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
 
         stock.setQuantity(stock.getQuantity() + delta);
         return update(stock);
@@ -22,7 +23,7 @@ public class StockRepository extends InMemoryRepository<Stock> {
 
     public Stock updateReservedQuantity(UUID id, int delta) {
         Stock stock = findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
 
         stock.setReservedQuantity(stock.getReservedQuantity() + delta);
         return update(stock);

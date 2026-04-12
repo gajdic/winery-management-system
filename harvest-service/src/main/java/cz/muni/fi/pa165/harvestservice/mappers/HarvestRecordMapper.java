@@ -15,10 +15,10 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface HarvestRecordMapper {
 
-    @Mapping(target = "grapeTypeId", source = "grapeType.id")
-    @Mapping(target = "grapeTypeName", source = "grapeType.name")
-    @Mapping(target = "vineyardId", source = "vineyard.id")
-    @Mapping(target = "vineyardName", source = "vineyard.name")
+    @Mapping(target = "grapeType.id", source = "grapeType.id")
+    @Mapping(target = "grapeType.name", source = "grapeType.name")
+    @Mapping(target = "vineyard.id", source = "vineyard.id")
+    @Mapping(target = "vineyard.name", source = "vineyard.name")
     HarvestRecordViewDto mapToDto(HarvestRecord harvestRecord);
 
     List<HarvestRecordViewDto> mapToList(List<HarvestRecord> harvestRecords);

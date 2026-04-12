@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.facade;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordCreateDto;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
@@ -365,11 +366,11 @@ class PurchaseRecordFacadeTest {
         // Arrange
         UUID purchaseId = UUID.randomUUID();
         Mockito.when(purchaseRecordService.findById(purchaseId))
-            .thenThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId));
+            .thenThrow(new ResourceNotFoundException("PurchaseRecord not found: " + purchaseId));
 
         // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.getPurchase(purchaseId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("PurchaseRecord not found: " + purchaseId);
 
         // Assert
@@ -409,12 +410,12 @@ class PurchaseRecordFacadeTest {
     void deletePurchase_serviceThrowsException_propagatesException() {
         // Arrange
         UUID purchaseId = UUID.randomUUID();
-        Mockito.doThrow(new IllegalArgumentException("PurchaseRecord not found: " + purchaseId))
+        Mockito.doThrow(new ResourceNotFoundException("PurchaseRecord not found: " + purchaseId))
             .when(purchaseRecordService).deleteById(purchaseId);
 
         // Act + Assert
         assertThatThrownBy(() -> purchaseRecordFacade.deletePurchase(purchaseId))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("PurchaseRecord not found: " + purchaseId);
 
         // Assert

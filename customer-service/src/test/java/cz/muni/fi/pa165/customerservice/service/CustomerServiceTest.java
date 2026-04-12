@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.service;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Address;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
@@ -287,14 +288,14 @@ class CustomerServiceTest {
     }
 
     @Test
-    void findById_nonExistingId_throwsIllegalArgumentException() {
+    void findById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
             // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> customerService.findById(customerId));
+            assertThrows(ResourceNotFoundException.class, () -> customerService.findById(customerId));
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer not found: " + customerId);
@@ -363,14 +364,14 @@ class CustomerServiceTest {
     }
 
     @Test
-    void deleteById_nonExistingId_throwsIllegalArgumentException() {
+    void deleteById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID customerId = UUID.randomUUID();
         Mockito.when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-        IllegalArgumentException exception =
+        ResourceNotFoundException exception =
             // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> customerService.deleteById(customerId));
+            assertThrows(ResourceNotFoundException.class, () -> customerService.deleteById(customerId));
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("Customer not found: " + customerId);

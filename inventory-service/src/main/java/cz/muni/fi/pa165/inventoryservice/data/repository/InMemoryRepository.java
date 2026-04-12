@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.data.models.EntityBase;
 
 import java.util.*;
@@ -26,7 +27,7 @@ public class InMemoryRepository<T extends EntityBase> {
             storage.put(entity.getId(), entity);
             return entity;
         }
-        throw new IllegalArgumentException("Entity with ID " + entity.getId() + " does not exist");
+        throw new ResourceNotFoundException("Entity with ID " + entity.getId() + " does not exist");
     }
 
     public boolean delete(UUID id) {
