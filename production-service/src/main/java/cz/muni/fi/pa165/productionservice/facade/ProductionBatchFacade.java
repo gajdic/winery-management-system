@@ -13,11 +13,13 @@ import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductionBatchFacade {
     private final ProductionBatchService productionBatchService;
     private final ProductionBatchMapper productionBatchMapper;
@@ -40,6 +42,7 @@ public class ProductionBatchFacade {
         this.harvestLotMapper = harvestLotMapper;
     }
 
+    @Transactional
     public ProductionBatchDto createBatch(ProductionBatchCreateDto dto, List<HarvestLotDto> harvestLots) {
         WineRecipe recipe = wineRecipeService.findById(dto.getRecipeId());
         ProductionPlanDto plan = productionPlanningService.createProductionPlan(recipe, dto.getDesiredBottleCount(), harvestLotMapper.toHarvestEntities(harvestLots));
@@ -54,10 +57,12 @@ public class ProductionBatchFacade {
         return productionBatchMapper.mapToDto(productionBatchService.findById(id));
     }
 
+    @Transactional
     public ProductionBatchDto updateBatchStatus(UUID id, BatchStatus status) {
         return productionBatchMapper.mapToDto(productionBatchService.updateStatus(id, status));
     }
 
+    @Transactional
     public void deleteBatch(UUID id) {
         productionBatchMapper.mapToDto(productionBatchService.deleteById(id));
     }

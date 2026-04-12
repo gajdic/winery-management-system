@@ -10,8 +10,10 @@ import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductionPlanningFacade {
     private final ProductionPlanningService productionPlanningService;
     private final HarvestLotMapper harvestLotMapper;
