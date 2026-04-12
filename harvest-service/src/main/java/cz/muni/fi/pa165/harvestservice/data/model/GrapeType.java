@@ -27,14 +27,9 @@ public class GrapeType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof GrapeType grapeType)) {
             return false;
         }
-
-        GrapeType grapeType = (GrapeType) o;
 
         return Objects.equals(getId(), grapeType.getId())
             && Objects.equals(getName(), grapeType.getName())

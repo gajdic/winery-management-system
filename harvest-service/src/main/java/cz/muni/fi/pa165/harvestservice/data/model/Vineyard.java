@@ -33,20 +33,14 @@ public class Vineyard {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Vineyard vineyard)) {
             return false;
         }
 
-        Vineyard vineyard = (Vineyard) o;
-
-        return Double.compare(vineyard.getAreaSize(), getAreaSize()) == 0
-            && Objects.equals(getId(), vineyard.getId())
+        return Objects.equals(getId(), vineyard.getId())
             && Objects.equals(getName(), vineyard.getName())
             && Objects.equals(getLocation(), vineyard.getLocation())
+            && Double.compare(getAreaSize(), vineyard.getAreaSize()) == 0
             && Objects.equals(getDescription(), vineyard.getDescription());
     }
 

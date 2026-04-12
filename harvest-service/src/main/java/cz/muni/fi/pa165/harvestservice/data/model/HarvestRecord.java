@@ -38,22 +38,15 @@ public class HarvestRecord {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof HarvestRecord that)) {
             return false;
         }
-
-        HarvestRecord harvestRecord = (HarvestRecord) o;
-
-        return Double.compare(harvestRecord.getQuantity(), getQuantity()) == 0
-            && Double.compare(harvestRecord.getQuality(), getQuality()) == 0
-            && Objects.equals(getId(), harvestRecord.getId())
-            && Objects.equals(getGrapeType(), harvestRecord.getGrapeType())
-            && Objects.equals(getVineyard(), harvestRecord.getVineyard())
-            && Objects.equals(getHarvestDate(), harvestRecord.getHarvestDate());
+        return Objects.equals(getId(), that.getId())
+            && Objects.equals(getGrapeType(), that.getGrapeType())
+            && Objects.equals(getVineyard(), that.getVineyard())
+            && Objects.equals(getHarvestDate(), that.getHarvestDate())
+            && Double.compare(getQuantity(), that.getQuantity()) == 0
+            && Double.compare(getQuality(), that.getQuality()) == 0;
     }
 
     @Override
