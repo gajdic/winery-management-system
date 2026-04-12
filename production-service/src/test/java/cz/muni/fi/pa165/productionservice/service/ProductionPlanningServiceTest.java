@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProductionPlanningServiceTest {
 
-    private final ProductionPlanningService service = new ProductionPlanningService();
+    private final ProductionPlanningService service = new ProductionPlanningService(null);
 
     @Test
     void createProductionPlan_validInput_returnsCorrectPlan() {
@@ -90,7 +90,7 @@ class ProductionPlanningServiceTest {
     @Test
     void createProductionPlan_nullRecipe_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
-            service.createProductionPlan(null, 10, List.of())
+            service.createProductionPlan((WineRecipe) null, 10, List.of())
         );
     }
 

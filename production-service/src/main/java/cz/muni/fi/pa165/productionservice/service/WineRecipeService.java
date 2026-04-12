@@ -5,11 +5,13 @@ import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.data.repository.WineRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class WineRecipeService {
     private final WineRecipeRepository wineRecipeRepository;
 
@@ -18,6 +20,7 @@ public class WineRecipeService {
         this.wineRecipeRepository = wineRecipeRepository;
     }
 
+    @Transactional
     public WineRecipe create(WineRecipe wineRecipe) {
         return wineRecipeRepository.save(wineRecipe);
     }
@@ -31,6 +34,7 @@ public class WineRecipeService {
         return wineRecipeRepository.findAll();
     }
 
+    @Transactional
     public WineRecipe update(UUID id, WineRecipe updatedRecipe) {
         WineRecipe existingRecipe = wineRecipeRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Wine recipe with id " + id + " not found"));
@@ -46,6 +50,7 @@ public class WineRecipeService {
         return wineRecipeRepository.save(existingRecipe);
     }
 
+    @Transactional
     public WineRecipe deleteById(UUID id) {
         WineRecipe recipe = findById(id);
         wineRecipeRepository.delete(recipe);

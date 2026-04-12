@@ -7,13 +7,29 @@ import cz.muni.fi.pa165.productionservice.data.model.GrapeComponent;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import org.jspecify.annotations.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductionPlanningService {
+    private final WineRecipeService wineRecipeService;
+
+    @Autowired
+    public ProductionPlanningService(WineRecipeService wineRecipeService) {
+        this.wineRecipeService = wineRecipeService;
+    }
+
+    public ProductionPlanDto createProductionPlan(UUID recipeId, int desiredBottleCount, List<HarvestLot> harvestLots) {
+        WineRecipe recipe = wineRecipeService.findById(recipeId);
+        return createProductionPlan(recipe, desiredBottleCount, harvestLots);
+    }
+
     public ProductionPlanDto createProductionPlan(WineRecipe recipe, int desiredBottleCount, List<HarvestLot> harvestLots) {
         if (recipe == null) {
             throw new IllegalArgumentException("Recipe must not be null.");
@@ -79,6 +95,11 @@ public class ProductionPlanningService {
             .orElse(0));
 
         return getQualityEvaluationDto(recipe, weightedQuality, targetQuality);
+    }
+
+    public QualityEvaluationDto evaluateBlendQuality(UUID recipeId, List<HarvestLot> harvestLots) {
+        WineRecipe recipe = wineRecipeService.findById(recipeId);
+        return evaluateBlendQuality(recipe, harvestLots);
     }
 
     private static @NonNull QualityEvaluationDto getQualityEvaluationDto(WineRecipe recipe, int weightedQuality, int targetQuality) {

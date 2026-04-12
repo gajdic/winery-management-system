@@ -5,10 +5,8 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationRequestDto;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
-import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.mappers.HarvestLotMapper;
 import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
-import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +28,6 @@ class ProductionPlanningFacadeTest {
     @Mock
     private HarvestLotMapper harvestLotMapper;
 
-    @Mock
-    private WineRecipeService wineRecipeService;
-
     @InjectMocks
     private ProductionPlanningFacade productionPlanningFacade;
 
@@ -40,17 +35,15 @@ class ProductionPlanningFacadeTest {
     void planProduction_validRequest_returnsProductionPlanDto() {
         ProductionPlanRequestDto request = TestDataFactory.productionPlanRequestDto();
 
-        WineRecipe recipe = TestDataFactory.wineRecipeEntity();
         ProductionPlanDto expectedDto = TestDataFactory.productionPlanDto();
 
         List<HarvestLot> harvestEntities = List.of(TestDataFactory.harvestLot());
 
-        Mockito.when(wineRecipeService.findById(TestDataFactory.RECIPE_ID)).thenReturn(recipe);
         Mockito.when(harvestLotMapper.toHarvestEntities(request.getAvailableHarvests()))
             .thenReturn(harvestEntities);
 
         Mockito.when(productionPlanningService.createProductionPlan(
-            recipe,
+            TestDataFactory.RECIPE_ID,
             100,
             harvestEntities
         )).thenReturn(expectedDto);
@@ -64,16 +57,14 @@ class ProductionPlanningFacadeTest {
     void evaluateQuality_validRequest_returnsQualityEvaluationDto() {
         QualityEvaluationRequestDto request = TestDataFactory.qualityEvaluationRequestDto();
 
-        WineRecipe recipe = TestDataFactory.wineRecipeEntity();
         QualityEvaluationDto expectedDto = TestDataFactory.qualityEvaluationDto();
 
         List<HarvestLot> harvestEntities = List.of(TestDataFactory.harvestLot());
 
-        Mockito.when(wineRecipeService.findById(TestDataFactory.RECIPE_ID)).thenReturn(recipe);
         Mockito.when(harvestLotMapper.toHarvestEntities(request.getHarvestLots()))
             .thenReturn(harvestEntities);
 
-        Mockito.when(productionPlanningService.evaluateBlendQuality(recipe, harvestEntities))
+        Mockito.when(productionPlanningService.evaluateBlendQuality(TestDataFactory.RECIPE_ID, harvestEntities))
             .thenReturn(expectedDto);
 
         QualityEvaluationDto result = productionPlanningFacade.evaluateQuality(request);

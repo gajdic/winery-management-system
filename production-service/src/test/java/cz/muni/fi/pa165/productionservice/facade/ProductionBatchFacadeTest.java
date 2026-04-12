@@ -7,12 +7,10 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.HarvestLot;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
-import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.mappers.HarvestLotMapper;
 import cz.muni.fi.pa165.productionservice.mappers.ProductionBatchMapper;
 import cz.muni.fi.pa165.productionservice.service.ProductionBatchService;
 import cz.muni.fi.pa165.productionservice.service.ProductionPlanningService;
-import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,9 +34,6 @@ class ProductionBatchFacadeTest {
     private ProductionBatchMapper productionBatchMapper;
 
     @Mock
-    private WineRecipeService wineRecipeService;
-
-    @Mock
     private ProductionPlanningService productionPlanningService;
 
     @Mock
@@ -53,7 +48,6 @@ class ProductionBatchFacadeTest {
 
         ProductionBatchCreateDto dto = TestDataFactory.productionBatchCreateDto();
 
-        WineRecipe recipe = TestDataFactory.wineRecipeEntity();
         ProductionPlanDto plan = TestDataFactory.productionPlanDto();
 
         List<HarvestLotDto> harvestDtos = List.of(TestDataFactory.harvestLotDto());
@@ -62,13 +56,11 @@ class ProductionBatchFacadeTest {
         ProductionBatch batch = TestDataFactory.productionBatchEntity();
         ProductionBatchDto batchDto = TestDataFactory.productionBatchDto();
 
-        Mockito.when(wineRecipeService.findById(recipeId)).thenReturn(recipe);
-
         Mockito.when(harvestLotMapper.toHarvestEntities(harvestDtos))
             .thenReturn(harvestEntities);
 
         Mockito.when(productionPlanningService.createProductionPlan(
-            recipe,
+            recipeId,
             dto.getDesiredBottleCount(),
             harvestEntities
         )).thenReturn(plan);

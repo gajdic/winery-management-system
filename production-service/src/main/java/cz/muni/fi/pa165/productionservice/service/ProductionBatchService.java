@@ -7,12 +7,14 @@ import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import cz.muni.fi.pa165.productionservice.data.repository.ProductionBatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductionBatchService {
     private final ProductionBatchRepository productionBatchRepository;
 
@@ -21,6 +23,7 @@ public class ProductionBatchService {
         this.productionBatchRepository = productionBatchRepository;
     }
 
+    @Transactional
     public ProductionBatch createPlannedBatch(UUID recipeId, ProductionPlanDto plan) {
         ProductionBatch batch = new ProductionBatch();
         batch.setRecipeId(recipeId);
@@ -41,12 +44,14 @@ public class ProductionBatchService {
         return productionBatchRepository.findAll();
     }
 
+    @Transactional
     public ProductionBatch updateStatus(UUID id, BatchStatus status) {
         ProductionBatch batch = findById(id);
         batch.setStatus(status);
         return productionBatchRepository.save(batch);
     }
 
+    @Transactional
     public ProductionBatch deleteById(UUID id) {
         ProductionBatch batch = findById(id);
         productionBatchRepository.delete(batch);
