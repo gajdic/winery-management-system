@@ -24,7 +24,7 @@ cache:
   extends: .job_template
   stage: build
   script:
-    - mvn -pl "${SERVICE_NAME}" -am clean verify
+    - mvn -pl "${SERVICE_NAME}" -am clean install
 
 .run_template:
   extends: .job_template
