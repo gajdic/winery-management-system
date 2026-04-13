@@ -19,20 +19,27 @@ public class StockService {
     }
 
     public Stock create(Stock stock) {
-        return stockRepository.create(stock);
+        if (stock.getId() != null)
+            stock.setId(null);
+        return stockRepository.save(stock);
     }
 
     public Stock findById(UUID id) {
-        return stockRepository.findById(id).orElse(null);
+        return stockRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
     }
 
     public Stock findByWine(UUID wineId) {
-        return stockRepository.findByWine(wineId).orElse(null);
+        return stockRepository.findByWineId(wineId).orElse(null);
     }
 
     public Stock addToStock(UUID id, int quantityToAdd) {
         validatePositiveQuantity(quantityToAdd);
-        return stockRepository.updateQuantity(id, quantityToAdd);
+
+        Stock stock = stockRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
+
+        stock.setQuantity(stock.getQuantity() + quantityToAdd);
+        return stockRepository.save(stock);
     }
 
     public Stock removeFromStock(UUID id, int quantityToRemove) {
@@ -46,7 +53,8 @@ public class StockService {
             throw new IllegalArgumentException("Cannot remove more bottles than available stock");
         }
 
-        return stockRepository.updateQuantity(id, -quantityToRemove);
+        stock.setQuantity(stock.getQuantity() - quantityToRemove);
+        return stockRepository.save(stock);
     }
 
     public List<Stock> findAll() {
@@ -54,11 +62,18 @@ public class StockService {
     }
 
     public Stock update(Stock stock) {
-        return stockRepository.update(stock);
+        if (stockRepository.findById(stock.getId()).isEmpty()) {
+            throw new ResourceNotFoundException("Stock not found: " + stock.getId());
+        }
+        return stockRepository.save(stock);
     }
 
     public boolean delete(UUID id) {
-        return stockRepository.delete(id);
+        if (!stockRepository.existsById(id)) {
+            return false;
+        }
+        stockRepository.deleteById(id);
+        return true;
     }
 
     private void validatePositiveQuantity(int quantity) {

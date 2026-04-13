@@ -10,6 +10,7 @@ import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class TestDataFactory {
@@ -35,6 +36,10 @@ public final class TestDataFactory {
         return stock;
     }
 
+    public static Optional<Stock> stockOptionalEntity(int quantity, int reservedQuantity){
+        return Optional.of(stockEntity(quantity, reservedQuantity));
+    }
+
     public static Reservation reservationEntity() {
         return reservationEntity(ReservationStatus.PENDING, 15);
     }
@@ -49,7 +54,6 @@ public final class TestDataFactory {
         reservation.setCreatedAt(LocalDate.of(2025, 3, 1));
         return reservation;
     }
-
     public static StockDetailedViewDto stockDetailedViewDto() {
         StockDetailedViewDto dto = new StockDetailedViewDto();
         dto.setId(STOCK_ID);
