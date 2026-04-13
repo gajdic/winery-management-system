@@ -31,7 +31,7 @@ public class ReservationService {
     }
 
     public Reservation findById(UUID id) {
-        return reservationRepository.findById(id).orElse(null);
+        return reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Reservation not found: " + id));
     }
 
     public List<Reservation> findAll() {
@@ -39,6 +39,10 @@ public class ReservationService {
     }
 
     public Reservation update(Reservation reservation) {
+
+        if (reservationRepository.findById(reservation.getId()).isEmpty()) {
+            throw new ResourceNotFoundException("Reservation not found: " + reservation.getId());
+        }
         return reservationRepository.save(reservation);
     }
 

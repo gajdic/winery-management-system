@@ -25,7 +25,7 @@ public class StockService {
     }
 
     public Stock findById(UUID id) {
-        return stockRepository.findById(id).orElse(null);
+        return stockRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Stock not found: " + id));
     }
 
     public Stock findByWine(UUID wineId) {
@@ -62,6 +62,9 @@ public class StockService {
     }
 
     public Stock update(Stock stock) {
+        if (stockRepository.findById(stock.getId()).isEmpty()) {
+            throw new ResourceNotFoundException("Stock not found: " + stock.getId());
+        }
         return stockRepository.save(stock);
     }
 

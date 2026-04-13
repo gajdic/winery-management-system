@@ -51,11 +51,10 @@ class ReservationServiceTest {
         // Arrange
         Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.empty());
 
-        // Act
-        Reservation foundReservation = reservationService.findById(TestDataFactory.RESERVATION_ID);
-
-        // Assert
-        assertThat(foundReservation).isNull();
+        // Act + Assert
+        assertThatThrownBy(() -> reservationService.findById(TestDataFactory.RESERVATION_ID))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessage("Reservation not found: " + TestDataFactory.RESERVATION_ID);
     }
 
     @Test

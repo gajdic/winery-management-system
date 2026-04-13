@@ -49,8 +49,10 @@ class StockRepositoryTest {
 
     @Test
     void findByWineId_stockFound_returnsStock() {
+        // Act
         Optional<Stock> found = stockRepository.findByWineId(wineId1);
 
+        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getWineId()).isEqualTo(wineId1);
         assertThat(found.get().getQuantity()).isEqualTo(100);
@@ -59,21 +61,26 @@ class StockRepositoryTest {
 
     @Test
     void findByWineId_stockNotFound_returnsEmpty() {
+        // Act
         Optional<Stock> found = stockRepository.findByWineId(UUID.randomUUID());
 
+        // Assert
         assertThat(found).isEmpty();
     }
 
     @Test
     void save_newStock_persistsCorrectly() {
+        // Arrange
         UUID newWineId = UUID.randomUUID();
         Stock stock = new Stock();
         stock.setWineId(newWineId);
         stock.setQuantity(75);
         stock.setReservedQuantity(5);
 
+        // Act
         Stock saved = stockRepository.save(stock);
 
+        // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getWineId()).isEqualTo(newWineId);
         assertThat(saved.getQuantity()).isEqualTo(75);
@@ -82,28 +89,36 @@ class StockRepositoryTest {
 
     @Test
     void findAll_returnsAllStocks() {
+        // Act
         List<Stock> all = stockRepository.findAll();
 
+        // Assert
         assertThat(all).hasSize(2);
     }
 
     @Test
     void deleteById_stockDeleted_notFoundAnymore() {
+        // Arrange
         Stock stock = stockRepository.findByWineId(wineId1).orElseThrow();
 
+        // Act
         stockRepository.deleteById(stock.getId());
         testEntityManager.flush();
 
+        // Assert
         assertThat(stockRepository.findByWineId(wineId1)).isEmpty();
         assertThat(stockRepository.findAll()).hasSize(1);
     }
 
     @Test
     void findById_existingStock_returnsStock() {
+        // Arrange
         Stock stock = stockRepository.findByWineId(wineId2).orElseThrow();
 
+        // Act
         Optional<Stock> found = stockRepository.findById(stock.getId());
 
+        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getQuantity()).isEqualTo(50);
         assertThat(found.get().getReservedQuantity()).isEqualTo(50);
@@ -111,8 +126,10 @@ class StockRepositoryTest {
 
     @Test
     void findById_nonExistingId_returnsEmpty() {
+        // Act
         Optional<Stock> found = stockRepository.findById(UUID.randomUUID());
 
+        // Assert
         assertThat(found).isEmpty();
     }
 }

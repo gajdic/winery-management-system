@@ -44,11 +44,10 @@ class StockServiceTest {
         // Arrange
         Mockito.when(stockRepository.findById(TestDataFactory.STOCK_ID)).thenReturn(Optional.empty());
 
-        // Act
-        Stock foundStock = stockService.findById(TestDataFactory.STOCK_ID);
-
-        // Assert
-        assertThat(foundStock).isNull();
+        // Act + Assert
+        assertThatThrownBy(() -> stockService.findById(TestDataFactory.STOCK_ID))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessage("Stock not found: " + TestDataFactory.STOCK_ID);
     }
 
     @Test

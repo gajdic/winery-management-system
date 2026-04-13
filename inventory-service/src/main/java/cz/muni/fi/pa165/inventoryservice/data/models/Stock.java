@@ -3,15 +3,19 @@ package cz.muni.fi.pa165.inventoryservice.data.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "stock")
 public class Stock extends EntityBase {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private UUID wineId;
 
     @Column(nullable = false)
@@ -19,30 +23,6 @@ public class Stock extends EntityBase {
 
     @Column(nullable = false)
     private int reservedQuantity;
-
-    public UUID getWineId() {
-        return wineId;
-    }
-
-    public void setWineId(UUID wineId) {
-        this.wineId = wineId;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getReservedQuantity() {
-        return reservedQuantity;
-    }
-
-    public void setReservedQuantity(int reservedQuantity) {
-        this.reservedQuantity = reservedQuantity;
-    }
 
     @Override
     public boolean equals(Object o) {

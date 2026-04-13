@@ -68,58 +68,72 @@ class ReservationRepositoryTest {
 
     @Test
     void filter_allNullParams_returnsAllReservations() {
+        // Act
         List<Reservation> result = reservationRepository.filter(null, null, null, null);
 
+        // Assert
         assertThat(result).hasSize(3);
     }
 
     @Test
     void filter_byCustomerId_returnsMatchingReservations() {
+        // Act
         List<Reservation> result = reservationRepository.filter(customerId1, null, null, null);
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> r.getCustomerId().equals(customerId1));
     }
 
     @Test
     void filter_byWineId_returnsMatchingReservations() {
+        // Act
         List<Reservation> result = reservationRepository.filter(null, wineId1, null, null);
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> r.getWineId().equals(wineId1));
     }
 
     @Test
     void filter_byCreatedAfter_returnsReservationsAfterDate() {
+        // Act
         List<Reservation> result = reservationRepository.filter(
                 null, null, LocalDate.of(2026, 4, 3), null);
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> !r.getCreatedAt().isBefore(LocalDate.of(2026, 4, 3)));
     }
 
     @Test
     void filter_byCreatedBefore_returnsReservationsBeforeDate() {
+        // Act
         List<Reservation> result = reservationRepository.filter(
                 null, null, null, LocalDate.of(2026, 4, 6));
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> !r.getCreatedAt().isAfter(LocalDate.of(2026, 4, 6)));
     }
 
     @Test
     void filter_byDateRange_returnsReservationsInRange() {
+        // Act
         List<Reservation> result = reservationRepository.filter(
                 null, null, LocalDate.of(2026, 4, 4), LocalDate.of(2026, 4, 8));
 
+        // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getQuantity()).isEqualTo(5);
     }
 
     @Test
     void filter_byCustomerIdAndWineId_returnsMatchingReservation() {
+        // Act
         List<Reservation> result = reservationRepository.filter(customerId1, wineId1, null, null);
 
+        // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getQuantity()).isEqualTo(10);
         assertThat(result.get(0).getStatus()).isEqualTo(ReservationStatus.PENDING);
@@ -127,9 +141,11 @@ class ReservationRepositoryTest {
 
     @Test
     void filter_allParams_returnsExactMatch() {
+        // Act
         List<Reservation> result = reservationRepository.filter(
                 customerId2, wineId1, LocalDate.of(2026, 4, 9), LocalDate.of(2026, 4, 11));
 
+        // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCustomerId()).isEqualTo(customerId2);
         assertThat(result.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
@@ -137,9 +153,11 @@ class ReservationRepositoryTest {
 
     @Test
     void filter_noMatch_returnsEmptyList() {
+        // Act
         List<Reservation> result = reservationRepository.filter(
                 UUID.randomUUID(), null, null, null);
 
+        // Assert
         assertThat(result).isEmpty();
     }
 
@@ -147,6 +165,7 @@ class ReservationRepositoryTest {
 
     @Test
     void save_newReservation_persistsCorrectly() {
+        // Arrange
         Reservation reservation = new Reservation();
         reservation.setCustomerId(UUID.randomUUID());
         reservation.setWineId(UUID.randomUUID());
@@ -154,8 +173,10 @@ class ReservationRepositoryTest {
         reservation.setStatus(ReservationStatus.PENDING);
         reservation.setCreatedAt(LocalDate.of(2026, 4, 12));
 
+        // Act
         Reservation saved = reservationRepository.save(reservation);
 
+        // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getQuantity()).isEqualTo(15);
         assertThat(saved.getStatus()).isEqualTo(ReservationStatus.PENDING);
@@ -163,15 +184,19 @@ class ReservationRepositoryTest {
 
     @Test
     void findAll_returnsAllReservations() {
+        // Act
         List<Reservation> all = reservationRepository.findAll();
 
+        // Assert
         assertThat(all).hasSize(3);
     }
 
     @Test
     void findById_nonExistingId_returnsEmpty() {
+        // Act
         Optional<Reservation> found = reservationRepository.findById(UUID.randomUUID());
 
+        // Assert
         assertThat(found).isEmpty();
     }
 }

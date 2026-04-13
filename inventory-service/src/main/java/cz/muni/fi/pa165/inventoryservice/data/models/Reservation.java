@@ -6,19 +6,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "reservation")
 public class Reservation extends EntityBase {
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private UUID customerId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private UUID wineId;
 
     @Column(nullable = false)
@@ -31,45 +35,6 @@ public class Reservation extends EntityBase {
     @Column(nullable = false)
     private LocalDate createdAt;
 
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
-    }
-
-    public UUID getWineId() {
-        return wineId;
-    }
-
-    public void setWineId(UUID wineId) {
-        this.wineId = wineId;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public ReservationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ReservationStatus status) {
-        this.status = status;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
 
     @Override
     public boolean equals(Object o) {
