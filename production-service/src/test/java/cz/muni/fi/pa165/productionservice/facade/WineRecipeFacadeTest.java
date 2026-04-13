@@ -6,6 +6,7 @@ import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.data.model.WineRecipe;
 import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,9 +33,9 @@ class WineRecipeFacadeTest {
 
     @Test
     void createRecipe_validRequest_callsServiceAndReturnsDto() {
-        WineRecipeCreateDto createDto = new WineRecipeCreateDto();
-        WineRecipe entity = new WineRecipe();
-        WineRecipeDto resultDto = new WineRecipeDto();
+        WineRecipeCreateDto createDto = TestDataFactory.wineRecipeCreateDto();
+        WineRecipe entity = TestDataFactory.wineRecipeEntity();
+        WineRecipeDto resultDto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeMapper.mapToEntity(createDto)).thenReturn(entity);
         Mockito.when(wineRecipeService.create(entity)).thenReturn(entity);
@@ -47,9 +48,9 @@ class WineRecipeFacadeTest {
 
     @Test
     void findRecipe_existingId_returnsDto() {
-        UUID id = UUID.randomUUID();
-        WineRecipe entity = new WineRecipe();
-        WineRecipeDto dto = new WineRecipeDto();
+        UUID id = TestDataFactory.RECIPE_ID;
+        WineRecipe entity = TestDataFactory.wineRecipeEntity();
+        WineRecipeDto dto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeService.findById(id)).thenReturn(entity);
         Mockito.when(wineRecipeMapper.mapToDto(entity)).thenReturn(dto);
@@ -61,11 +62,11 @@ class WineRecipeFacadeTest {
 
     @Test
     void findAllRecipes_noInput_returnsMappedDtos() {
-        WineRecipe entity1 = new WineRecipe();
-        WineRecipe entity2 = new WineRecipe();
+        WineRecipe entity1 = TestDataFactory.wineRecipeEntity("Riesling", 2026);
+        WineRecipe entity2 = TestDataFactory.wineRecipeEntity("Pinot Noir", 2025);
 
-        WineRecipeDto dto1 = new WineRecipeDto();
-        WineRecipeDto dto2 = new WineRecipeDto();
+        WineRecipeDto dto1 = TestDataFactory.wineRecipeDto();
+        WineRecipeDto dto2 = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeService.findAll()).thenReturn(List.of(entity1, entity2));
 
@@ -79,11 +80,11 @@ class WineRecipeFacadeTest {
 
     @Test
     void updateRecipe_validRequest_callsServiceAndReturnsDto() {
-        UUID id = UUID.randomUUID();
-        WineRecipeUpdateDto updateDto = new WineRecipeUpdateDto();
-        WineRecipe updateEntity = new WineRecipe();
-        WineRecipe updatedEntity = new WineRecipe();
-        WineRecipeDto resultDto = new WineRecipeDto();
+        UUID id = TestDataFactory.RECIPE_ID;
+        WineRecipeUpdateDto updateDto = TestDataFactory.wineRecipeUpdateDto();
+        WineRecipe updateEntity = TestDataFactory.wineRecipeEntity("Updated Riesling", 2025);
+        WineRecipe updatedEntity = TestDataFactory.wineRecipeEntity("Updated Riesling", 2025);
+        WineRecipeDto resultDto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeMapper.mapToEntity(updateDto))
             .thenReturn(updateEntity);
@@ -101,7 +102,7 @@ class WineRecipeFacadeTest {
 
     @Test
     void deleteRecipe_existingId_callsService() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.RECIPE_ID;
 
         wineRecipeFacade.deleteRecipe(id);
 

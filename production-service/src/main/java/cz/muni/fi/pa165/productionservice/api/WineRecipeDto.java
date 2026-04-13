@@ -2,11 +2,13 @@ package cz.muni.fi.pa165.productionservice.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 public class WineRecipeDto {
     @NotNull
     private UUID id;
@@ -30,68 +32,4 @@ public class WineRecipeDto {
 
     @Valid
     private List<AdditionalIngredientDto> additionalIngredients = new ArrayList<>();
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getProductionYear() {
-        return productionYear;
-    }
-
-    public void setProductionYear(int productionYear) {
-        this.productionYear = productionYear;
-    }
-
-    public double getAlcoholPercentage() {
-        return alcoholPercentage;
-    }
-
-    public void setAlcoholPercentage(double alcoholPercentage) {
-        this.alcoholPercentage = alcoholPercentage;
-    }
-
-    public String getTastingNotes() {
-        return tastingNotes;
-    }
-
-    public void setTastingNotes(String tastingNotes) {
-        this.tastingNotes = tastingNotes;
-    }
-
-    public double getBottleVolumeLiters() {
-        return bottleVolumeLiters;
-    }
-
-    public void setBottleVolumeLiters(double bottleVolumeLiters) {
-        this.bottleVolumeLiters = bottleVolumeLiters;
-    }
-
-    public List<GrapeComponentDto> getGrapeComponents() {
-        return grapeComponents;
-    }
-
-    public void setGrapeComponents(List<GrapeComponentDto> grapeComponents) {
-        this.grapeComponents = grapeComponents;
-    }
-
-    public List<AdditionalIngredientDto> getAdditionalIngredients() {
-        return additionalIngredients;
-    }
-
-    public void setAdditionalIngredients(List<AdditionalIngredientDto> additionalIngredients) {
-        this.additionalIngredients = additionalIngredients;
-    }
 }

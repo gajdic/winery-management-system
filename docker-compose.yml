@@ -1,0 +1,11 @@
+services:
+  production-service:
+    build:
+      context: .
+      dockerfile: production-service/Dockerfile
+    image: winery-management/production-service:latest
+    container_name: production-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false

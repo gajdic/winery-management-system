@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import cz.muni.fi.pa165.productionservice.data.repository.ProductionBatchRepository;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ProductionBatchServiceTest {
@@ -30,11 +31,8 @@ class ProductionBatchServiceTest {
 
     @Test
     void createPlannedBatch_validInput_createsBatchWithCorrectValues() {
-        UUID recipeId = UUID.randomUUID();
-
-        ProductionPlanDto plan = new ProductionPlanDto();
-        plan.setFeasibleBottleCount(100);
-        plan.setProducibleLiters(75.0);
+        UUID recipeId = TestDataFactory.RECIPE_ID;
+        ProductionPlanDto plan = TestDataFactory.productionPlanDto();
 
         Mockito.when(productionBatchRepository.save(Mockito.any()))
             .thenAnswer(invocation -> invocation.getArgument(0));
@@ -51,8 +49,8 @@ class ProductionBatchServiceTest {
 
     @Test
     void findById_existingId_returnsBatch() {
-        UUID id = UUID.randomUUID();
-        ProductionBatch batch = new ProductionBatch();
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
 
         Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.of(batch));
@@ -76,7 +74,10 @@ class ProductionBatchServiceTest {
 
     @Test
     void findAll_noInput_returnsAllBathes() {
-        List<ProductionBatch> batches = List.of(new ProductionBatch(), new ProductionBatch());
+        List<ProductionBatch> batches = List.of(
+            TestDataFactory.productionBatchEntity(TestDataFactory.RECIPE_ID, BatchStatus.PLANNED),
+            TestDataFactory.productionBatchEntity(UUID.randomUUID(), BatchStatus.COMPLETED)
+        );
 
         Mockito.when(productionBatchRepository.findAll()).thenReturn(batches);
 
@@ -87,8 +88,8 @@ class ProductionBatchServiceTest {
 
     @Test
     void updateStatus_existingId_updatesStatus() {
-        UUID id = UUID.randomUUID();
-        ProductionBatch batch = new ProductionBatch();
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
 
         Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.of(batch));
@@ -103,26 +104,28 @@ class ProductionBatchServiceTest {
 
     @Test
     void delete_existingId_returnsDeletedBatch() {
-        UUID id = UUID.randomUUID();
-        ProductionBatch batch = new ProductionBatch();
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatch batch = TestDataFactory.productionBatchEntity();
 
-        Mockito.when(productionBatchRepository.deleteById(id))
+        Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.of(batch));
 
         ProductionBatch result = productionBatchService.deleteById(id);
 
         assertThat(result).isEqualTo(batch);
+        Mockito.verify(productionBatchRepository).delete(batch);
     }
 
     @Test
     void delete_nonExistingId_throwsException() {
         UUID id = UUID.randomUUID();
 
-        Mockito.when(productionBatchRepository.deleteById(id))
+        Mockito.when(productionBatchRepository.findById(id))
             .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> {
             productionBatchService.deleteById(id);
         });
+        Mockito.verify(productionBatchRepository, Mockito.never()).delete(Mockito.any());
     }
 }

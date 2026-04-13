@@ -4,6 +4,7 @@ import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
 import cz.muni.fi.pa165.productionservice.facade.WineRecipeFacade;
+import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,8 +30,8 @@ class WineRecipeControllerTest {
 
     @Test
     void createRecipe_validRequest_returnsCreated() {
-        WineRecipeCreateDto request = new WineRecipeCreateDto();
-        WineRecipeDto responseDto = new WineRecipeDto();
+        WineRecipeCreateDto request = TestDataFactory.wineRecipeCreateDto();
+        WineRecipeDto responseDto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeFacade.createRecipe(request))
             .thenReturn(responseDto);
@@ -44,10 +45,7 @@ class WineRecipeControllerTest {
 
     @Test
     void getRecipes_noInput_returnsOk() {
-        List<WineRecipeDto> list = List.of(
-            new WineRecipeDto(),
-            new WineRecipeDto()
-        );
+        List<WineRecipeDto> list = TestDataFactory.wineRecipeDtos();
 
         Mockito.when(wineRecipeFacade.findAllRecipes())
             .thenReturn(list);
@@ -61,8 +59,8 @@ class WineRecipeControllerTest {
 
     @Test
     void getRecipe_existingId_returnsOk() {
-        UUID id = UUID.randomUUID();
-        WineRecipeDto dto = new WineRecipeDto();
+        UUID id = TestDataFactory.RECIPE_ID;
+        WineRecipeDto dto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeFacade.findRecipe(id))
             .thenReturn(dto);
@@ -76,9 +74,9 @@ class WineRecipeControllerTest {
 
     @Test
     void updateRecipe_validRequest_returnsOk() {
-        UUID id = UUID.randomUUID();
-        WineRecipeUpdateDto request = new WineRecipeUpdateDto();
-        WineRecipeDto responseDto = new WineRecipeDto();
+        UUID id = TestDataFactory.RECIPE_ID;
+        WineRecipeUpdateDto request = TestDataFactory.wineRecipeUpdateDto();
+        WineRecipeDto responseDto = TestDataFactory.wineRecipeDto();
 
         Mockito.when(wineRecipeFacade.updateRecipe(id, request))
             .thenReturn(responseDto);
@@ -92,7 +90,7 @@ class WineRecipeControllerTest {
 
     @Test
     void deleteRecipe_existingId_returnsNoContent() {
-        UUID id = UUID.randomUUID();
+        UUID id = TestDataFactory.RECIPE_ID;
 
         ResponseEntity<Void> response =
             wineRecipeController.deleteRecipe(id);
