@@ -1,12 +1,12 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.HarvestRecordRepository;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -322,14 +322,16 @@ class HarvestRecordServiceTest {
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
                 .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
-        Mockito.when(harvestRecordRepository.update(record)).thenReturn(record);
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.of(record));
+        Mockito.when(harvestRecordRepository.save(record)).thenReturn(record);
 
         // Act
         HarvestRecord result = harvestRecordService.update(record);
 
         // Assert
         assertThat(result).isEqualTo(record);
-        Mockito.verify(harvestRecordRepository).update(record);
+        Mockito.verify(harvestRecordRepository).findById(record.getId());
+        Mockito.verify(harvestRecordRepository).save(record);
     }
 
     @Test
@@ -360,18 +362,18 @@ class HarvestRecordServiceTest {
                 .thenReturn(Optional.of(TestDataFactory.vineyardEntity()));
         Mockito.when(grapeTypeRepository.findById(TestDataFactory.GRAPE_TYPE_ID))
                 .thenReturn(Optional.of(TestDataFactory.grapeTypeEntity()));
+        Mockito.when(harvestRecordRepository.findById(record.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> harvestRecordService.update(record))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Harvest record with id " + record.getId() + " was not found.");
+                .hasMessageContaining("Harvest record with id: " + record.getId() + " was not found.");
+        Mockito.verify(harvestRecordRepository).findById(record.getId());
+        Mockito.verify(harvestRecordRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test
     void deleteById_existingRecord_callsRepository() {
-        Mockito.when(harvestRecordRepository.findById(TestDataFactory.HARVEST_RECORD_ID))
-                .thenReturn(Optional.of(TestDataFactory.harvestRecordEntity()));
-
         // Act
         harvestRecordService.deleteById(TestDataFactory.HARVEST_RECORD_ID);
 

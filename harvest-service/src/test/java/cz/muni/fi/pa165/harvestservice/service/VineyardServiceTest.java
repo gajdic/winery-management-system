@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,15 +49,18 @@ class VineyardServiceTest {
     }
 
     @Test
-    void create_vineyardIdIsNull_throwsIllegalArgumentException() {
+    void create_vineyardIdIsNull_returnsSavedVineyard() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
         vineyard.setId(null);
+        Mockito.when(vineyardRepository.save(vineyard)).thenReturn(vineyard);
 
-        // Act & Assert
-        assertThatThrownBy(() -> vineyardService.create(vineyard))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Vineyard id cannot be null.");
+        // Act
+        Vineyard result = vineyardService.create(vineyard);
+
+        // Assert
+        assertThat(result).isEqualTo(vineyard);
+        Mockito.verify(vineyardRepository).save(vineyard);
     }
 
     @Test
@@ -166,14 +169,15 @@ class VineyardServiceTest {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();
         Mockito.when(vineyardRepository.findById(vineyard.getId())).thenReturn(Optional.of(vineyard));
-        Mockito.when(vineyardRepository.update(vineyard)).thenReturn(vineyard);
+        Mockito.when(vineyardRepository.save(vineyard)).thenReturn(vineyard);
 
         // Act
         Vineyard result = vineyardService.update(vineyard);
 
         // Assert
         assertThat(result).isEqualTo(vineyard);
-        Mockito.verify(vineyardRepository).update(vineyard);
+        Mockito.verify(vineyardRepository).findById(vineyard.getId());
+        Mockito.verify(vineyardRepository).save(vineyard);
     }
 
     @Test
@@ -192,7 +196,9 @@ class VineyardServiceTest {
         // Act & Assert
         assertThatThrownBy(() -> vineyardService.update(vineyard))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Vineyard with id: " + vineyard.getId() + " was not found.");
+                .hasMessageContaining("Vineyard with id " + vineyard.getId() + " was not found.");
+        Mockito.verify(vineyardRepository).findById(vineyard.getId());
+        Mockito.verify(vineyardRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test

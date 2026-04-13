@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,14 +142,15 @@ class GrapeTypeServiceTest {
         // Arrange
         GrapeType grapeType = TestDataFactory.grapeTypeEntity();
         Mockito.when(grapeTypeRepository.findById(grapeType.getId())).thenReturn(Optional.of(grapeType));
-        Mockito.when(grapeTypeRepository.update(grapeType)).thenReturn(grapeType);
+        Mockito.when(grapeTypeRepository.save(grapeType)).thenReturn(grapeType);
 
         // Act
         GrapeType result = grapeTypeService.update(grapeType);
 
         // Assert
         assertThat(result).isEqualTo(grapeType);
-        Mockito.verify(grapeTypeRepository).update(grapeType);
+        Mockito.verify(grapeTypeRepository).findById(grapeType.getId());
+        Mockito.verify(grapeTypeRepository).save(grapeType);
     }
 
     @Test
@@ -181,6 +182,8 @@ class GrapeTypeServiceTest {
         assertThatThrownBy(() -> grapeTypeService.update(grapeType))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Grape type with id: " + grapeType.getId() + " was not found.");
+        Mockito.verify(grapeTypeRepository).findById(grapeType.getId());
+        Mockito.verify(grapeTypeRepository, Mockito.never()).save(Mockito.any());
     }
 
     @Test

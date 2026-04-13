@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.service;
 
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
+import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +22,6 @@ public class VineyardService {
     public Vineyard create(Vineyard vineyard) {
         if (vineyard == null) {
             throw new IllegalArgumentException("Vineyard cannot be null.");
-        }
-
-        if (vineyard.getId() == null) {
-            throw new IllegalArgumentException("Vineyard id cannot be null.");
         }
 
         if (vineyard.getName() == null || vineyard.getName().isBlank()) {
@@ -78,8 +74,12 @@ public class VineyardService {
             throw new IllegalArgumentException("Area size must be greater than 0.");
         }
 
-        findById(vineyard.getId());
-        return vineyardRepository.update(vineyard);
+        vineyardRepository.findById(vineyard.getId())
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Vineyard with id " + vineyard.getId() + " was not found."
+            ));
+
+        return vineyardRepository.save(vineyard);
     }
 
     public void deleteById(UUID id) {
