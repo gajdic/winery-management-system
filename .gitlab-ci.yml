@@ -4,90 +4,99 @@ stages:
   - build
   - run
 
-# ---------------- BUILD ----------------
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  STARTUP_TIMEOUT_SECONDS: "90"
+
+cache:
+  key: "${CI_PROJECT_ID}-maven"
+  paths:
+    - .m2/repository
+
+.job_template:
+  tags: [ shared-fi ]
+  only:
+    - main
+    - merge_requests
+
+.build_template:
+  extends: .job_template
+  stage: build
+  script:
+    - mvn -pl "${SERVICE_NAME}" -am clean verify
+
+.run_template:
+  extends: .job_template
+  stage: run
+  script:
+    - cd "${SERVICE_NAME}"
+    - |
+      mvn spring-boot:run > log.txt 2>&1 &
+      app_pid=$!
+
+      cleanup() {
+        kill "$app_pid" 2>/dev/null || true
+        wait "$app_pid" 2>/dev/null || true
+      }
+
+      trap cleanup EXIT
+
+      elapsed=0
+      until grep -q "Started" log.txt; do
+        if ! kill -0 "$app_pid" 2>/dev/null; then
+          echo "${SERVICE_NAME} exited before startup completed"
+          cat log.txt
+          exit 1
+        fi
+
+        if [ "$elapsed" -ge "$STARTUP_TIMEOUT_SECONDS" ]; then
+          echo "${SERVICE_NAME} did not start within ${STARTUP_TIMEOUT_SECONDS}s"
+          cat log.txt
+          exit 1
+        fi
+
+        sleep 2
+        elapsed=$((elapsed + 2))
+      done
+
+      echo "${SERVICE_NAME} started successfully"
 
 build_customer:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl customer-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: customer-service
 
 build_harvest:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl harvest-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: harvest-service
 
 build_inventory:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl inventory-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: inventory-service
 
 build_production:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl production-service -am clean install
-
-# ---------------- RUN ----------------
+  extends: .build_template
+  variables:
+    SERVICE_NAME: production-service
 
 run_customer:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd customer-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+  extends: .run_template
+  variables:
+    SERVICE_NAME: customer-service
 
 run_harvest:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd harvest-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+  extends: .run_template
+  variables:
+    SERVICE_NAME: harvest-service
 
 run_inventory:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd inventory-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+  extends: .run_template
+  variables:
+    SERVICE_NAME: inventory-service
 
 run_production:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd production-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+  extends: .run_template
+  variables:
+    SERVICE_NAME: production-service
