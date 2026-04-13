@@ -83,7 +83,7 @@ public class PurchaseRecordService {
             throw new IllegalArgumentException("Min cannot be greater than max");
         }
 
-        return purchaseRecordRepository.findByQuantity(lowerBound, upperBound);
+        return purchaseRecordRepository.findByQuantityBetween(lowerBound, upperBound);
     }
 
     public double getTotalSpentByCustomer(UUID customerId) {

@@ -1,11 +1,32 @@
 package cz.muni.fi.pa165.customerservice.data.model.customer;
 
-import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@Table
+@Embeddable
+@Setter
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Address {
+
+    @Column(nullable = false)
     private String street;
+    @Column(nullable = false)
     private String city;
+    @Column(nullable = false)
     private String postCode;
+    @Column(nullable = false)
     private String country;
 
     public Address(String street, String city, String postCode, String country) {
@@ -13,59 +34,5 @@ public class Address {
         this.city = city;
         this.postCode = postCode;
         this.country = country;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getPostCode() {
-        return postCode;
-    }
-
-    public void setPostCode(String postCode) {
-        this.postCode = postCode;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Address address = (Address) o;
-        return Objects.equals(street, address.street) && Objects.equals(city, address.city) && Objects.equals(postCode, address.postCode) && Objects.equals(country, address.country);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(street, city, postCode, country);
-    }
-
-    @Override
-    public String toString() {
-        return "Address{" +
-            "street='" + street + '\'' +
-            ", city='" + city + '\'' +
-            ", postCode='" + postCode + '\'' +
-            ", country='" + country + '\'' +
-            '}';
     }
 }

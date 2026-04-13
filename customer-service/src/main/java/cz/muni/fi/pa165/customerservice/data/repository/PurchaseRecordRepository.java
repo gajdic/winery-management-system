@@ -1,24 +1,18 @@
 package cz.muni.fi.pa165.customerservice.data.repository;
 
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface PurchaseRecordRepository {
-
-    PurchaseRecord save(PurchaseRecord purchaseRecord);
-
-    Optional<PurchaseRecord> findById(UUID id);
-
-    List<PurchaseRecord> findAll();
+@Repository
+public interface PurchaseRecordRepository extends JpaRepository<PurchaseRecord, UUID> {
 
     List<PurchaseRecord> findByCustomerId(UUID customerId);
 
     List<PurchaseRecord> findByWineId(UUID wineId);
 
-    List<PurchaseRecord> findByQuantity(Integer min, Integer max);
-
-    void deleteById(UUID id);
+    List<PurchaseRecord> findByQuantityBetween(Integer min, Integer max);
 }

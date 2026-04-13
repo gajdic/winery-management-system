@@ -292,83 +292,83 @@ class PurchaseRecordServiceTest {
     void findByQuantity_validBounds_callsRepositoryWithProvidedBounds() {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
-        Mockito.when(purchaseRecordRepository.findByQuantity(2, 7)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(2, 7)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(2, 7);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByQuantity(2, 7);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(2, 7);
     }
 
     @Test
     void findByQuantity_nullMin_usesZeroAsLowerBound() {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
-        Mockito.when(purchaseRecordRepository.findByQuantity(0, 7)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(0, 7)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(null, 7);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByQuantity(0, 7);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(0, 7);
     }
 
     @Test
     void findByQuantity_negativeMin_usesZeroAsLowerBound() {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
-        Mockito.when(purchaseRecordRepository.findByQuantity(0, 7)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(0, 7)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(-3, 7);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByQuantity(0, 7);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(0, 7);
     }
 
     @Test
     void findByQuantity_nullMax_usesIntegerMaxValueAsUpperBound() {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
-        Mockito.when(purchaseRecordRepository.findByQuantity(2, Integer.MAX_VALUE)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(2, Integer.MAX_VALUE)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(2, null);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByQuantity(2, Integer.MAX_VALUE);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(2, Integer.MAX_VALUE);
     }
 
     @Test
     void findByQuantity_bothBoundsNull_usesDefaultBounds() {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(createPurchaseRecord());
-        Mockito.when(purchaseRecordRepository.findByQuantity(0, Integer.MAX_VALUE)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(0, Integer.MAX_VALUE)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(null, null);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByQuantity(0, Integer.MAX_VALUE);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(0, Integer.MAX_VALUE);
     }
 
     @Test
     void findByQuantity_validBoundsWithNoMatches_returnsEmptyList() {
         // Arrange
-        Mockito.when(purchaseRecordRepository.findByQuantity(2, 7)).thenReturn(List.of());
+        Mockito.when(purchaseRecordRepository.findByQuantityBetween(2, 7)).thenReturn(List.of());
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByQuantity(2, 7);
 
         // Assert
         assertThat(foundPurchaseRecords).isEmpty();
-        Mockito.verify(purchaseRecordRepository).findByQuantity(2, 7);
+        Mockito.verify(purchaseRecordRepository).findByQuantityBetween(2, 7);
     }
 
     @Test
@@ -380,7 +380,7 @@ class PurchaseRecordServiceTest {
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("Min cannot be greater than max");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByQuantity(Mockito.anyInt(), Mockito.anyInt());
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByQuantityBetween(Mockito.anyInt(), Mockito.anyInt());
     }
 
     @Test
