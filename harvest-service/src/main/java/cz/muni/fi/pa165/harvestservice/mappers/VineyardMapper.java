@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.mappers;
 
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardUpdateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardUpdateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

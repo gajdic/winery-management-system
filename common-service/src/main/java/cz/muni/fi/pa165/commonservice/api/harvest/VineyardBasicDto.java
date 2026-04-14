@@ -1,16 +1,16 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
 import java.util.UUID;
 
-public class GrapeTypeBasicDto {
+public class VineyardBasicDto {
 
     private UUID id;
     private String name;
 
-    public GrapeTypeBasicDto() {
+    public VineyardBasicDto() {
     }
 
-    public GrapeTypeBasicDto(UUID id, String name) {
+    public VineyardBasicDto(UUID id, String name) {
         this.id = id;
         this.name = name;
     }

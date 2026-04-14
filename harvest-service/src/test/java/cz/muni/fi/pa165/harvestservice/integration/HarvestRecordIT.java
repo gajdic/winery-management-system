@@ -2,8 +2,8 @@ package cz.muni.fi.pa165.harvestservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.harvestservice.HarvestServiceApplication;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
@@ -103,3 +103,4 @@ class HarvestRecordIT {
             .andExpect(jsonPath("$.quality").value(8));
     }
 }
+

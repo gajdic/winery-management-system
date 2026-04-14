@@ -1,13 +1,13 @@
 package cz.muni.fi.pa165.harvestservice.util;
 
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeBasicDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardBasicDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeBasicDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardBasicDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.model.HarvestRecord;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
@@ -128,3 +128,4 @@ public class TestDataFactory {
         );
     }
 }
+

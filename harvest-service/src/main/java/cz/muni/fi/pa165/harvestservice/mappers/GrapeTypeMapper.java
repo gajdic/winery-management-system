@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.mappers;
 
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeUpdateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeUpdateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

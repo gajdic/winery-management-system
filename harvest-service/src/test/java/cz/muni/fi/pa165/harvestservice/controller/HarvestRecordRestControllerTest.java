@@ -2,9 +2,9 @@ package cz.muni.fi.pa165.harvestservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordViewDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.HarvestSummaryDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestRecordViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.HarvestSummaryDto;
 import cz.muni.fi.pa165.harvestservice.facade.HarvestRecordFacade;
 import cz.muni.fi.pa165.harvestservice.rest.HarvestRecordRestController;
 import cz.muni.fi.pa165.harvestservice.util.TestDataFactory;
@@ -223,3 +223,4 @@ class HarvestRecordRestControllerTest {
         Mockito.verify(harvestRecordFacade).deleteById(TestDataFactory.HARVEST_RECORD_ID);
     }
 }
+

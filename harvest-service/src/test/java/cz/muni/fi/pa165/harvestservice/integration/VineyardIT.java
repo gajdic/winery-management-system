@@ -2,8 +2,8 @@ package cz.muni.fi.pa165.harvestservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.harvestservice.HarvestServiceApplication;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.Vineyard;
 import cz.muni.fi.pa165.harvestservice.data.repository.VineyardRepository;
 import org.junit.jupiter.api.Test;
@@ -74,3 +74,4 @@ class VineyardIT {
             .andExpect(jsonPath("$.description").value("Sunny South Moravian vineyard"));
     }
 }
+

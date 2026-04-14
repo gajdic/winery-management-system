@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardViewDto;
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.facade.VineyardFacade;
 import cz.muni.fi.pa165.harvestservice.rest.VineyardRestController;
@@ -161,3 +161,4 @@ class VineyardRestControllerTest {
         Mockito.verify(vineyardFacade).deleteById(TestDataFactory.VINEYARD_ID);
     }
 }
+

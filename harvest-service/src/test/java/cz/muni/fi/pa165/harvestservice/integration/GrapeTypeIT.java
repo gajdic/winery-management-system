@@ -2,8 +2,8 @@ package cz.muni.fi.pa165.harvestservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.harvestservice.HarvestServiceApplication;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.data.model.GrapeType;
 import cz.muni.fi.pa165.harvestservice.data.repository.GrapeTypeRepository;
 import org.junit.jupiter.api.Test;
@@ -63,3 +63,4 @@ class GrapeTypeIT {
             .andExpect(jsonPath("$.description").value("Aromatic white grape"));
     }
 }
+

@@ -1,11 +1,15 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class HarvestRecordCreateDto {
+public class HarvestRecordUpdateDto {
 
     @NotNull(message = "Grape type cannot be null")
     private UUID grapeTypeId;
@@ -24,10 +28,10 @@ public class HarvestRecordCreateDto {
     @Max(value = 10, message = "Quality must be at most 10")
     private int quality;
 
-    public HarvestRecordCreateDto() {
+    public HarvestRecordUpdateDto() {
     }
 
-    public HarvestRecordCreateDto(UUID grapeTypeId, UUID vineyardId, LocalDate harvestDate, double quantity, int quality) {
+    public HarvestRecordUpdateDto(UUID grapeTypeId, UUID vineyardId, LocalDate harvestDate, double quantity, int quality) {
         this.grapeTypeId = grapeTypeId;
         this.vineyardId = vineyardId;
         this.harvestDate = harvestDate;

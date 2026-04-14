@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -57,6 +57,4 @@ public class VineyardUpdateDto {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
 }

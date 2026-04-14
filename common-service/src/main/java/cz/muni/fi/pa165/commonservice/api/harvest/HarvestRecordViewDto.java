@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -15,7 +15,7 @@ public class HarvestRecordViewDto {
     public HarvestRecordViewDto() {
     }
 
-    public HarvestRecordViewDto( UUID id, GrapeTypeBasicDto grapeType,VineyardBasicDto vineyard, LocalDate harvestDate, double quantity, int quality) {
+    public HarvestRecordViewDto(UUID id, GrapeTypeBasicDto grapeType, VineyardBasicDto vineyard, LocalDate harvestDate, double quantity, int quality) {
         this.id = id;
         this.grapeType = grapeType;
         this.vineyard = vineyard;

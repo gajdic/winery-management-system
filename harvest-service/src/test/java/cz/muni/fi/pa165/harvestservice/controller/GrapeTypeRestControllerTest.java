@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeViewDto;
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.harvestservice.facade.GrapeTypeFacade;
 import cz.muni.fi.pa165.harvestservice.rest.GrapeTypeRestController;
@@ -146,3 +146,4 @@ class GrapeTypeRestControllerTest {
         Mockito.verify(grapeTypeFacade).deleteById(TestDataFactory.GRAPE_TYPE_ID);
     }
 }
+

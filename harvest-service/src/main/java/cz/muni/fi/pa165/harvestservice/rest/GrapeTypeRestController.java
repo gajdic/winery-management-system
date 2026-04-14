@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeUpdateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeUpdateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.GrapeTypeViewDto;
 import cz.muni.fi.pa165.harvestservice.facade.GrapeTypeFacade;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,3 +54,4 @@ public class GrapeTypeRestController {
         return ResponseEntity.noContent().build();
     }
 }
+

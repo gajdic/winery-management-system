@@ -1,16 +1,17 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class GrapeTypeCreateDto {
+public class GrapeTypeUpdateDto {
 
     @NotBlank(message = "Name cannot be blank")
     private String name;
     private String description;
 
-    public GrapeTypeCreateDto() {}
+    public GrapeTypeUpdateDto() {
+    }
 
-    public GrapeTypeCreateDto(String name, String description) {
+    public GrapeTypeUpdateDto(String name, String description) {
         this.name = name;
         this.description = description;
     }

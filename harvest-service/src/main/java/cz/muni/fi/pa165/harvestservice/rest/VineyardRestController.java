@@ -1,8 +1,8 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardUpdateDto;
-import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardCreateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardUpdateDto;
+import cz.muni.fi.pa165.commonservice.api.harvest.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.facade.VineyardFacade;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,3 +55,4 @@ public class VineyardRestController {
     }
 
 }
+

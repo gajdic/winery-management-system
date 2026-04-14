@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.harvestservice.api.dto;
+package cz.muni.fi.pa165.commonservice.api.harvest;
 
 public class HarvestSummaryDto {
 
