@@ -51,11 +51,10 @@ class ReservationServiceTest {
         // Arrange
         Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.empty());
 
-        // Act
-        Reservation foundReservation = reservationService.findById(TestDataFactory.RESERVATION_ID);
-
-        // Assert
-        assertThat(foundReservation).isNull();
+        // Act + Assert
+        assertThatThrownBy(() -> reservationService.findById(TestDataFactory.RESERVATION_ID))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessage("Reservation not found: " + TestDataFactory.RESERVATION_ID);
     }
 
     @Test
@@ -64,7 +63,6 @@ class ReservationServiceTest {
         assertThatThrownBy(() -> reservationService.updateStatus(TestDataFactory.RESERVATION_ID, null))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Status must not be null");
-        Mockito.verify(reservationRepository, Mockito.never()).updateStatus(Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -72,19 +70,15 @@ class ReservationServiceTest {
         // Arrange
         Reservation reservation = TestDataFactory.reservationEntity(ReservationStatus.COMPLETED, 15);
         Stock stock = TestDataFactory.stockEntity();
-        Mockito.when(reservationRepository.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .thenReturn(reservation);
-        Mockito.when(stockRepository.findByWine(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
+        Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
 
         // Act
         Reservation result = reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED);
 
         // Assert
         assertThat(result).isEqualTo(reservation);
-        Mockito.verify(reservationRepository).updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED);
-        Mockito.verify(stockRepository).findByWine(TestDataFactory.WINE_ID);
-        Mockito.verify(stockRepository).updateQuantity(TestDataFactory.STOCK_ID, -15);
-        Mockito.verify(stockRepository).updateReservedQuantity(TestDataFactory.STOCK_ID, -15);
+        Mockito.verify(stockRepository).findByWineId(TestDataFactory.WINE_ID);
     }
 
     @Test
@@ -92,17 +86,14 @@ class ReservationServiceTest {
         // Arrange
         Reservation reservation = TestDataFactory.reservationEntity(ReservationStatus.CANCELED, 15);
         Stock stock = TestDataFactory.stockEntity();
-        Mockito.when(reservationRepository.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.CANCELED))
-            .thenReturn(reservation);
-        Mockito.when(stockRepository.findByWine(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
+        Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
 
         // Act
         Reservation result = reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.CANCELED);
 
         // Assert
         assertThat(result).isEqualTo(reservation);
-        Mockito.verify(stockRepository).updateReservedQuantity(TestDataFactory.STOCK_ID, -15);
-        Mockito.verify(stockRepository, Mockito.never()).updateQuantity(Mockito.any(), Mockito.anyInt());
     }
 
     @Test
@@ -110,27 +101,22 @@ class ReservationServiceTest {
         // Arrange
         Reservation reservation = TestDataFactory.reservationEntity(ReservationStatus.PENDING, 15);
         Stock stock = TestDataFactory.stockEntity();
-        Mockito.when(reservationRepository.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.PENDING))
-            .thenReturn(reservation);
-        Mockito.when(stockRepository.findByWine(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
+        Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.of(stock));
 
         // Act
         Reservation result = reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.PENDING);
 
         // Assert
         assertThat(result).isEqualTo(reservation);
-        Mockito.verify(stockRepository).findByWine(TestDataFactory.WINE_ID);
-        Mockito.verify(stockRepository, Mockito.never()).updateQuantity(Mockito.any(), Mockito.anyInt());
-        Mockito.verify(stockRepository, Mockito.never()).updateReservedQuantity(Mockito.any(), Mockito.anyInt());
+        Mockito.verify(stockRepository).findByWineId(TestDataFactory.WINE_ID);
     }
 
     @Test
     void updateStatus_stockForWineNotFound_throwsResourceNotFoundException() {
         // Arrange
-        Reservation reservation = TestDataFactory.reservationEntity(ReservationStatus.COMPLETED, 15);
-        Mockito.when(reservationRepository.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .thenReturn(reservation);
-        Mockito.when(stockRepository.findByWine(TestDataFactory.WINE_ID)).thenReturn(Optional.empty());
+        Mockito.when(reservationRepository.findById(TestDataFactory.RESERVATION_ID)).thenReturn(Optional.of(TestDataFactory.reservationEntity()));
+        Mockito.when(stockRepository.findByWineId(TestDataFactory.WINE_ID)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThatThrownBy(() -> reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))

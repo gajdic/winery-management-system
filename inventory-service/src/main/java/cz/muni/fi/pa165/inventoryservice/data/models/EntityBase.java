@@ -1,8 +1,17 @@
 package cz.muni.fi.pa165.inventoryservice.data.models;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+
 import java.util.UUID;
 
-public class EntityBase {
+@MappedSuperclass
+public abstract class EntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     protected UUID id;
 
     public void setId(UUID id) {
