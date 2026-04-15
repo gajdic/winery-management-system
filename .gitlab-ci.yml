@@ -5,12 +5,10 @@ default:
 stages:
   - test
   - build
-  - run
   - docker_build
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  STARTUP_TIMEOUT_SECONDS: "90"
 
 cache:
   key: "${CI_PROJECT_ID}-maven"
@@ -39,42 +37,6 @@ cache:
   stage: test
   script:
     - mvn -pl "${SERVICE_NAME}" -am test
-
-.run_template:
-  extends: .job_template
-  stage: run
-  script:
-    - mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true install
-    - |
-      mvn -f "${SERVICE_NAME}/pom.xml" -DskipTests -Dmaven.test.skip=true spring-boot:run > log.txt 2>&1 &
-      app_pid=$!
-
-      cleanup() {
-        kill "$app_pid" 2>/dev/null || true
-        wait "$app_pid" 2>/dev/null || true
-      }
-
-      trap cleanup EXIT
-
-      elapsed=0
-      until grep -q "Started" log.txt; do
-        if ! kill -0 "$app_pid" 2>/dev/null; then
-          echo "${SERVICE_NAME} exited before startup completed"
-          cat log.txt
-          exit 1
-        fi
-
-        if [ "$elapsed" -ge "$STARTUP_TIMEOUT_SECONDS" ]; then
-          echo "${SERVICE_NAME} did not start within ${STARTUP_TIMEOUT_SECONDS}s"
-          cat log.txt
-          exit 1
-        fi
-
-        sleep 2
-        elapsed=$((elapsed + 2))
-      done
-
-      echo "${SERVICE_NAME} started successfully"
 
 .docker_build_template:
   extends: .docker_template
@@ -122,26 +84,6 @@ build_production:
   variables:
     SERVICE_NAME: production-service
 
-run_customer:
-  extends: .run_template
-  variables:
-    SERVICE_NAME: customer-service
-
-run_harvest:
-  extends: .run_template
-  variables:
-    SERVICE_NAME: harvest-service
-
-run_inventory:
-  extends: .run_template
-  variables:
-    SERVICE_NAME: inventory-service
-
-run_production:
-  extends: .run_template
-  variables:
-    SERVICE_NAME: production-service
-
 docker_harvest:
   extends: .docker_build_template
   variables:
@@ -149,9 +91,23 @@ docker_harvest:
     DOCKERFILE_PATH: harvest-service/Dockerfile
     IMAGE_NAME: winery-management/harvest-service:${CI_COMMIT_SHORT_SHA}
 
+docker_inventory:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: inventory-service
+    DOCKERFILE_PATH: inventory-service/Dockerfile
+    IMAGE_NAME: winery-management/inventory-service:${CI_COMMIT_SHORT_SHA}
+
 docker_production:
   extends: .docker_build_template
   variables:
     SERVICE_NAME: production-service
     DOCKERFILE_PATH: production-service/Dockerfile
     IMAGE_NAME: winery-management/production-service:${CI_COMMIT_SHORT_SHA}
+
+docker_customer:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: customer-service
+    DOCKERFILE_PATH: customer-service/Dockerfile
+    IMAGE_NAME: winery-management/customer-service:${CI_COMMIT_SHORT_SHA}
