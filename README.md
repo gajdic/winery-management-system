@@ -145,8 +145,7 @@ mvn spring-boot:run
 Build and run services with Docker Compose:
 
 ```bash
-docker compose up --build production-service
-docker compose up --build harvest-service
+docker compose up --build
 ```
 
 Stop Docker Compose services:
@@ -154,12 +153,6 @@ Stop Docker Compose services:
 ```bash
 docker compose down
 ```
-
-### Customer-service
-
-Build the customer-service Docker image:
-
-Run the customer-service container:
 
 ### Harvest-service
 
@@ -178,8 +171,14 @@ docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ### Inventory-service
 
 Build the inventory-service Docker image:
+```bash
+docker build -t inventory-service -f .\inventory-service\Dockerfile .
+```
 
 Run the inventory-service container:
+```bash
+docker run -d --name winery-inventory -p 8083:8083 inventory-service
+```
 
 ### Production-service
 
@@ -193,6 +192,25 @@ Run the production-service container:
 
 ```bash
 docker run --rm -p 8082:8082 winery-management/production-service:latest
+```
+
+### Inventory-service
+
+Build the inventory-service Docker image:
+
+Run the inventory-service container:
+
+### Customer-service
+
+Build the customer-service Docker image:
+
+```bash
+docker build -f customer-service/Dockerfile -t winery-management/customer-service:latest .
+```
+
+Run the customer-service container:
+```bash
+docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
 
 ## CI Pipeline
