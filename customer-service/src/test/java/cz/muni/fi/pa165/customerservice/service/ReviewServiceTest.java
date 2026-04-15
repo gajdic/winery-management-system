@@ -2,7 +2,7 @@ package cz.muni.fi.pa165.customerservice.service;
 
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
-import cz.muni.fi.pa165.customerservice.data.repository.InMemoryReviewRepository;
+import cz.muni.fi.pa165.customerservice.data.repository.ReviewRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ReviewServiceTest {
 
     @Mock
-    private InMemoryReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
 
     @InjectMocks
     private ReviewService reviewService;

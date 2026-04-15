@@ -1,75 +1,41 @@
 package cz.muni.fi.pa165.customerservice.data.model;
 
-import java.util.Objects;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.UUID;
 
+@Table
+@Entity
+@Setter
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class Review {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
     private UUID id;
+    @Column(nullable = false)
     private UUID customerId;
+    @Column(nullable = false)
     private UUID wineId;
+    @Min(0)
+    @Max(5)
+    @Column(nullable = false)
     private int rating;
     private String comment;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
-    }
-
-    public UUID getWineId() {
-        return wineId;
-    }
-
-    public void setWineId(UUID wineId) {
-        this.wineId = wineId;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Review review = (Review) o;
-        return rating == review.rating && Objects.equals(id, review.id) && Objects.equals(customerId, review.customerId) && Objects.equals(wineId, review.wineId) && Objects.equals(comment, review.comment);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, customerId, wineId, rating, comment);
-    }
-
-    @Override
-    public String toString() {
-        return "Review{" +
-            "id=" + id +
-            ", customerId=" + customerId +
-            ", wineId=" + wineId +
-            ", rating=" + rating +
-            ", comment='" + comment + '\'' +
-            '}';
-    }
 }

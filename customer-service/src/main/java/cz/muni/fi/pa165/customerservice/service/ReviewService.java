@@ -2,9 +2,7 @@ package cz.muni.fi.pa165.customerservice.service;
 
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
-import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
-import cz.muni.fi.pa165.customerservice.data.repository.InMemoryCustomerRepository;
-import cz.muni.fi.pa165.customerservice.data.repository.InMemoryReviewRepository;
+import cz.muni.fi.pa165.customerservice.data.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +14,7 @@ import java.util.UUID;
 public class ReviewService {
 
     @Autowired
-    private InMemoryReviewRepository reviewRepository;
+    private ReviewRepository reviewRepository;
 
     public Review save(Review review) {
         if (review == null) {
