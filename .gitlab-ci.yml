@@ -3,6 +3,7 @@ default:
   tags: [ shared-fi ]
 
 stages:
+  - test
   - build
   - run
   - docker
@@ -31,7 +32,13 @@ cache:
   extends: .job_template
   stage: build
   script:
-    - mvn -pl "${SERVICE_NAME}" -am clean install
+    - mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true clean install
+
+.test_template:
+  extends: .job_template
+  stage: test
+  script:
+    - mvn -pl "${SERVICE_NAME}" -am test
 
 .run_template:
   extends: .job_template
@@ -74,6 +81,26 @@ cache:
   stage: docker
   script:
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
+
+test_customer:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: customer-service
+
+test_harvest:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: harvest-service
+
+test_inventory:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: inventory-service
+
+test_production:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: production-service
 
 build_customer:
   extends: .build_template
