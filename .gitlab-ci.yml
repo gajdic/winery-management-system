@@ -22,12 +22,9 @@ cache:
 
 .docker_template:
   extends: .job_template
-  image: docker:27-cli
-  services:
-    - docker:27-dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
 
 .build_template:
   extends: .job_template
@@ -39,7 +36,7 @@ cache:
   extends: .docker_template
   stage: docker
   script:
-    - docker build -f "${DOCKERFILE_PATH}" -t "${IMAGE_NAME}" .
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
 
 build_customer:
   extends: .build_template
