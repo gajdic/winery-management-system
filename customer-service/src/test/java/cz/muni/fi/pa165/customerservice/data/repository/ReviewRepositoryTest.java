@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.repository;
 
 import cz.muni.fi.pa165.customerservice.data.model.Review;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -17,108 +18,118 @@ public class ReviewRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
-
     @Test
     void save_validReview_reviewIsPersisted() {
-        Review review = createReview();
+        // Arrange
+        Review review = TestDataFactory.reviewEntity();
 
+        // Act
         Review saved = reviewRepository.save(review);
 
+        // Assert
         assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getRating()).isEqualTo(4);
+        assertThat(saved.getRating()).isEqualTo(5);
     }
 
     @Test
     void findById_existingReview_returnsReview() {
-        Review saved = reviewRepository.save(createReview());
+        // Arrange
+        Review review = TestDataFactory.reviewEntity();
+        Review saved = reviewRepository.save(review);
 
-        assertThat(reviewRepository.findById(saved.getId()))
-            .isPresent();
+        // Act
+        var result = reviewRepository.findById(saved.getId());
+
+        // Assert
+        assertThat(result).isPresent();
     }
+
     @Test
     void save_ratingBelowMin_throwsConstraintViolationException() {
-        Review review = createReview();
+        // Arrange
+        Review review = TestDataFactory.reviewEntity();
         review.setRating(-1);
 
-        assertThatThrownBy(() -> {
-            reviewRepository.saveAndFlush(review);
-        }).isInstanceOf(Exception.class);
+        // Act & Assert
+        assertThatThrownBy(() ->
+            reviewRepository.saveAndFlush(review)
+        ).isInstanceOf(Exception.class);
     }
 
     @Test
     void save_ratingAboveMax_throwsConstraintViolationException() {
-        Review review = createReview();
+        // Arrange
+        Review review = TestDataFactory.reviewEntity();
         review.setRating(10);
 
-        assertThatThrownBy(() -> {
-            reviewRepository.saveAndFlush(review);
-        }).isInstanceOf(Exception.class);
+        // Act & Assert
+        assertThatThrownBy(() ->
+            reviewRepository.saveAndFlush(review)
+        ).isInstanceOf(Exception.class);
     }
-
 
     @Test
     void deleteById_existingReview_reviewIsDeleted() {
-        Review saved = reviewRepository.save(createReview());
+        // Arrange
+        Review saved = reviewRepository.save(TestDataFactory.reviewEntity());
 
+        // Act
         reviewRepository.deleteById(saved.getId());
 
+        // Assert
         assertThat(reviewRepository.findById(saved.getId()))
             .isEmpty();
     }
 
     @Test
     void findByCustomerId_existingCustomer_returnsReviews() {
+        // Arrange
         UUID customerId = UUID.randomUUID();
 
-        Review r1 = createReview();
+        Review r1 = TestDataFactory.reviewEntity();
         r1.setCustomerId(customerId);
 
-        Review r2 = createReview();
+        Review r2 = TestDataFactory.reviewEntity();
         r2.setCustomerId(customerId);
 
-        Review r3 = createReview();
+        Review r3 = TestDataFactory.reviewEntity();
         r3.setCustomerId(UUID.randomUUID());
 
         reviewRepository.save(r1);
         reviewRepository.save(r2);
         reviewRepository.save(r3);
 
+        // Act
         List<Review> result = reviewRepository.findByCustomerId(customerId);
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> r.getCustomerId().equals(customerId));
     }
 
     @Test
     void findByWineId_existingWine_returnsReviews() {
+        // Arrange
         UUID wineId = UUID.randomUUID();
 
-        Review r1 = createReview();
+        Review r1 = TestDataFactory.reviewEntity();
         r1.setWineId(wineId);
 
-        Review r2 = createReview();
+        Review r2 = TestDataFactory.reviewEntity();
         r2.setWineId(wineId);
 
-        Review r3 = createReview();
+        Review r3 = TestDataFactory.reviewEntity();
         r3.setWineId(UUID.randomUUID());
 
         reviewRepository.save(r1);
         reviewRepository.save(r2);
         reviewRepository.save(r3);
 
+        // Act
         List<Review> result = reviewRepository.findByWineId(wineId);
 
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result).allMatch(r -> r.getWineId().equals(wineId));
-    }
-
-
-    private Review createReview() {
-        Review review = new Review();
-        review.setCustomerId(UUID.randomUUID());
-        review.setWineId(UUID.randomUUID());
-        review.setRating(4);
-        review.setComment("Nice wine");
-        return review;
     }
 }

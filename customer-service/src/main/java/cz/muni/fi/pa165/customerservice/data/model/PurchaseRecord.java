@@ -40,8 +40,7 @@ public class PurchaseRecord {
     private LocalDateTime purchaseDate;
 
 
-    public PurchaseRecord(UUID id, UUID customerId, UUID wineId, int quantity, double pricePerBottle, LocalDateTime purchaseDate) {
-        this.id = id;
+    public PurchaseRecord(UUID customerId, UUID wineId, int quantity, double pricePerBottle, LocalDateTime purchaseDate) {
         this.customerId = customerId;
         this.wineId = wineId;
         this.quantity = quantity;

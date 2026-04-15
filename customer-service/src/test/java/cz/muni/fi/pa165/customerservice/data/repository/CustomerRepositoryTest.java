@@ -1,7 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.repository;
 
-import cz.muni.fi.pa165.customerservice.data.model.customer.Address;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -9,99 +9,101 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
 @DataJpaTest
-public class CustomerRepositoryTest {
+class CustomerRepositoryTest {
 
     @Autowired
     private CustomerRepository customerRepository;
 
     @Test
-    void save_validCustomer_customerIsPersisted() {
-        Customer customer = createCustomer();
+    void save_ValidCustomer_PersistsCustomer() {
+        // Arrange
+        Customer customer = TestDataFactory.customerEntity();
 
-        Customer saved = customerRepository.save(customer);
+        // Act
+        Customer saved = customerRepository.saveAndFlush(customer);
 
+        // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getEmail()).isEqualTo(customer.getEmail());
     }
 
     @Test
-    void findById_existingCustomer_customerIsReturned() {
-        Customer customer = customerRepository.save(createCustomer());
+    void findById_ExistingCustomer_ReturnsCustomer() {
+        // Arrange
+        Customer customer = customerRepository.saveAndFlush(TestDataFactory.customerEntity());
 
+        // Act
         Optional<Customer> found = customerRepository.findById(customer.getId());
 
+        // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo(customer.getName());
     }
 
     @Test
-    void findAll_multipleCustomers_returnsAllCustomers() {
-        customerRepository.save(createCustomer());
-        customerRepository.save(createCustomer());
+    void findAll_MultipleCustomers_ReturnsAllCustomers() {
+        // Arrange
+        customerRepository.saveAndFlush(TestDataFactory.customerEntity());
 
+        Customer second = TestDataFactory.customerEntity();
+        second.setEmail("different@email.com");
+        customerRepository.save(second);
+
+        // Act
         List<Customer> customers = customerRepository.findAll();
 
+        // Assert
         assertThat(customers).hasSize(2);
     }
 
     @Test
-    void deleteById_existingCustomer_customerIsRemoved() {
-        Customer customer = customerRepository.save(createCustomer());
+    void deleteById_ExistingCustomer_RemovesCustomer() {
+        // Arrange
+        Customer customer = customerRepository.saveAndFlush(TestDataFactory.customerEntity());
 
+        // Act
         customerRepository.deleteById(customer.getId());
 
+        // Assert
         Optional<Customer> found = customerRepository.findById(customer.getId());
-
         assertThat(found).isEmpty();
     }
 
     @Test
-    void save_nullName_throwsException() {
-        Customer customer = createCustomer();
+    void save_NullName_ThrowsException() {
+        // Arrange
+        Customer customer = TestDataFactory.customerEntity();
         customer.setName(null);
 
+        // Act & Assert
         assertThatThrownBy(() -> customerRepository.saveAndFlush(customer))
             .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void save_nullEmail_throwsException() {
-        Customer customer = createCustomer();
+    void save_NullEmail_ThrowsException() {
+        // Arrange
+        Customer customer = TestDataFactory.customerEntity();
         customer.setEmail(null);
 
+        // Act & Assert
         assertThatThrownBy(() -> customerRepository.saveAndFlush(customer))
             .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void save_nullAddress_throwsException() {
-        Customer customer = createCustomer();
+    void save_NullAddress_ThrowsException() {
+        // Arrange
+        Customer customer = TestDataFactory.customerEntity();
         customer.setAddress(null);
 
+        // Act & Assert
         assertThatThrownBy(() -> customerRepository.saveAndFlush(customer))
             .isInstanceOf(DataIntegrityViolationException.class);
-    }
-
-    private Customer createCustomer() {
-        Customer customer = new Customer();
-        customer.setName("John Doe");
-        customer.setEmail("john_" + UUID.randomUUID() + "@example.com");
-
-        Address address = new Address();
-        address.setCity("Brno");
-        address.setStreet("Main Street 1");
-        address.setPostCode("60200");
-        address.setCountry("CZ");
-
-        customer.setAddress(address);
-
-        return customer;
     }
 }
