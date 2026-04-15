@@ -4,6 +4,7 @@ default:
 
 stages:
   - build
+  - run
   - docker
 
 variables:
@@ -32,6 +33,42 @@ cache:
   script:
     - mvn -pl "${SERVICE_NAME}" -am clean install
 
+.run_template:
+  extends: .job_template
+  stage: run
+  script:
+    - cd "${SERVICE_NAME}"
+    - |
+      mvn spring-boot:run > log.txt 2>&1 &
+      app_pid=$!
+
+      cleanup() {
+        kill "$app_pid" 2>/dev/null || true
+        wait "$app_pid" 2>/dev/null || true
+      }
+
+      trap cleanup EXIT
+
+      elapsed=0
+      until grep -q "Started" log.txt; do
+        if ! kill -0 "$app_pid" 2>/dev/null; then
+          echo "${SERVICE_NAME} exited before startup completed"
+          cat log.txt
+          exit 1
+        fi
+
+        if [ "$elapsed" -ge "$STARTUP_TIMEOUT_SECONDS" ]; then
+          echo "${SERVICE_NAME} did not start within ${STARTUP_TIMEOUT_SECONDS}s"
+          cat log.txt
+          exit 1
+        fi
+
+        sleep 2
+        elapsed=$((elapsed + 2))
+      done
+
+      echo "${SERVICE_NAME} started successfully"
+
 .docker_build_template:
   extends: .docker_template
   stage: docker
@@ -55,6 +92,26 @@ build_inventory:
 
 build_production:
   extends: .build_template
+  variables:
+    SERVICE_NAME: production-service
+
+run_customer:
+  extends: .run_template
+  variables:
+    SERVICE_NAME: customer-service
+
+run_harvest:
+  extends: .run_template
+  variables:
+    SERVICE_NAME: harvest-service
+
+run_inventory:
+  extends: .run_template
+  variables:
+    SERVICE_NAME: inventory-service
+
+run_production:
+  extends: .run_template
   variables:
     SERVICE_NAME: production-service
 
