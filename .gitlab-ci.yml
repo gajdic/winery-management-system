@@ -39,7 +39,7 @@ cache:
   script:
     - cd "${SERVICE_NAME}"
     - |
-      mvn spring-boot:run > log.txt 2>&1 &
+      mvn -DskipTests -Dmaven.test.skip=true spring-boot:run > log.txt 2>&1 &
       app_pid=$!
 
       cleanup() {
