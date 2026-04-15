@@ -9,3 +9,16 @@ services:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+
+  harvest-service:
+    build:
+      context: .
+      dockerfile: harvest-service/Dockerfile
+    image: winery-management/harvest-service:latest
+    container_name: harvest-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:harvest-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+
+

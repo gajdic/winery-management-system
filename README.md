@@ -104,7 +104,8 @@ The project is built with:
 
 ## Build And Run
 
-For Milestone 2, the project uses Spring Data JPA with an H2 in-memory database.
+For Milestone 2, the project gradually connects the REST API to the service and persistence layers.
+Services use Spring Data JPA with an H2 in-memory database.
 
 Build whole project:
 
@@ -141,6 +142,47 @@ mvn spring-boot:run
 
 ## Docker
 
+Build and run services with Docker Compose:
+
+```bash
+docker compose up --build production-service
+docker compose up --build harvest-service
+```
+
+Stop Docker Compose services:
+
+```bash
+docker compose down
+```
+
+### Customer-service
+
+Build the customer-service Docker image:
+
+Run the customer-service container:
+
+### Harvest-service
+
+Build the harvest-service Docker image:
+
+```bash
+docker build -f harvest-service/Dockerfile -t winery-management/harvest-service:latest .
+```
+
+Run the harvest-service container:
+
+```bash
+docker run --rm -p 8081:8081 winery-management/harvest-service:latest
+```
+
+### Inventory-service
+
+Build the inventory-service Docker image:
+
+Run the inventory-service container:
+
+### Production-service
+
 Build the production-service Docker image:
 
 ```bash
@@ -151,18 +193,6 @@ Run the production-service container:
 
 ```bash
 docker run --rm -p 8082:8082 winery-management/production-service:latest
-```
-
-Build and run production-service with Docker Compose:
-
-```bash
-docker compose up --build production-service
-```
-
-Stop Docker Compose services:
-
-```bash
-docker compose down
 ```
 
 ## Use Case Diagram
