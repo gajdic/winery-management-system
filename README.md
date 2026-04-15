@@ -195,6 +195,20 @@ Run the production-service container:
 docker run --rm -p 8082:8082 winery-management/production-service:latest
 ```
 
+## CI Pipeline
+
+The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
+
+The pipeline currently validates the project in two steps:
+
+- `build` stage: runs Maven builds for all executable services (`customer-service`, `harvest-service`,
+  `inventory-service`, `production-service`) including their required module dependencies,
+- `docker` stage: builds Docker images for services that already provide Docker support
+  (`harvest-service`, `production-service`).
+
+This means the repository is checked both as a multi-module Maven project and, for supported services,
+also as Dockerized applications.
+
 ## Use Case Diagram
 
 PlantUML source: `useCase.puml`
