@@ -223,6 +223,30 @@ docker compose up --build production-service
 docker compose down
 ```
 
+## OpenAPI / Swagger
+
+After starting a service, Swagger UI and raw OpenAPI documentation are available at:
+
+### Customer-service
+
+- Swagger UI: [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8084/v3/api-docs](http://localhost:8084/v3/api-docs)
+
+### Harvest-service
+
+- Swagger UI: [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+
+### Inventory-service
+
+- Swagger UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
+
+### Production-service
+
+- Swagger UI: [http://localhost:8082/api/swagger-ui.html](http://localhost:8082/api/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8082/api/v3/api-docs](http://localhost:8082/api/v3/api-docs)
+
 ## Use Case Diagram
 
 PlantUML source: `useCase.puml`
