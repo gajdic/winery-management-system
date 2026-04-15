@@ -37,8 +37,9 @@ cache:
   extends: .job_template
   stage: run
   script:
+    - mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true install
     - |
-      mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true spring-boot:run > log.txt 2>&1 &
+      mvn -f "${SERVICE_NAME}/pom.xml" -DskipTests -Dmaven.test.skip=true spring-boot:run > log.txt 2>&1 &
       app_pid=$!
 
       cleanup() {
