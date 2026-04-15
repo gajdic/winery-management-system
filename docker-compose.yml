@@ -21,4 +21,13 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:harvest-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 
-
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    image: winery-management/inventory-service:latest
+    container_name: inventory-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:inventory-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE

@@ -145,8 +145,7 @@ mvn spring-boot:run
 Build and run services with Docker Compose:
 
 ```bash
-docker compose up --build production-service
-docker compose up --build harvest-service
+docker compose up --build
 ```
 
 Stop Docker Compose services:
@@ -178,8 +177,14 @@ docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ### Inventory-service
 
 Build the inventory-service Docker image:
+```bash
+docker build -t inventory-service -f .\inventory-service\Dockerfile .
+```
 
 Run the inventory-service container:
+```bash
+docker run -d --name winery-inventory -p 8083:8083 inventory-service
+```
 
 ### Production-service
 
