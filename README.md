@@ -194,12 +194,6 @@ Run the production-service container:
 docker run --rm -p 8082:8082 winery-management/production-service:latest
 ```
 
-### Inventory-service
-
-Build the inventory-service Docker image:
-
-Run the inventory-service container:
-
 ### Customer-service
 
 Build the customer-service Docker image:
@@ -217,14 +211,13 @@ docker run --rm -p 8084:8084 winery-management/customer-service:latest
 
 The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
 
-The pipeline currently validates the project in four steps:
+The pipeline currently validates the project in three steps:
 
 - `test` stage: runs Maven tests for all executable services (`customer-service`, `harvest-service`,
   `inventory-service`, `production-service`) including their required module dependencies,
 - `build` stage: verifies that all executable services can be built as Maven modules without rerunning tests,
-- `run` stage: verifies that all executable services can be started with Spring Boot from the command line,
-- `docker_build` stage: builds Docker images for services that already provide Docker support
-  (`harvest-service`, `production-service`).
+- `docker_build` stage: builds Docker images for all executable services
+  (`customer-service`, `harvest-service`, `inventory-service`, `production-service`).
 
 This means the repository is checked both as a multi-module Maven project and, for supported services,
 also as Dockerized applications.

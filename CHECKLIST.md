@@ -57,11 +57,11 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 ### 7. Docker / Compose / README
 
 - [x] Projekt ma `docker-compose.yml`.
-- [x] Projekt ma Dockerfile aspon pre cast services.
-- [ ] `docker-compose.yml` pokryva cely system alebo aspon vsetky planovane runtime komponenty pre M2.
-- [ ] README obsahuje kompletne Docker build/run instrukcie pre `customer-service`.
+- [x] Projekt ma Dockerfile pre vsetky 4 domenove services.
+- [x] `docker-compose.yml` pokryva cely system alebo aspon vsetky planovane runtime komponenty pre M2.
+- [x] README obsahuje kompletne Docker build/run instrukcie pre `customer-service`.
 - [x] README obsahuje Docker build/run instrukcie pre `harvest-service`.
-- [ ] README obsahuje kompletne Docker build/run instrukcie pre `inventory-service`.
+- [x] README obsahuje kompletne Docker build/run instrukcie pre `inventory-service`.
 - [x] README obsahuje Docker build/run instrukcie pre `production-service`.
 - [x] README obsahuje Swagger UI a OpenAPI odkazy pre vsetky 4 domenove services.
 - [ ] README popisuje aj broker / supporting infrastructure, ak bude pridany Artemis.
