@@ -165,6 +165,7 @@ public class HarvestRecordService {
     }
 
     public void deleteById(UUID id) {
+        findById(id);
         harvestRecordRepository.deleteById(id);
     }
 }
