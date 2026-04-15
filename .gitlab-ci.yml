@@ -6,7 +6,7 @@ stages:
   - test
   - build
   - run
-  - docker
+  - docker_build
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -78,7 +78,7 @@ cache:
 
 .docker_build_template:
   extends: .docker_template
-  stage: docker
+  stage: docker_build
   script:
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
 

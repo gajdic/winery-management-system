@@ -199,15 +199,29 @@ docker run --rm -p 8082:8082 winery-management/production-service:latest
 
 The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
 
-The pipeline currently validates the project in two steps:
+The pipeline currently validates the project in four steps:
 
-- `build` stage: runs Maven builds for all executable services (`customer-service`, `harvest-service`,
+- `test` stage: runs Maven tests for all executable services (`customer-service`, `harvest-service`,
   `inventory-service`, `production-service`) including their required module dependencies,
-- `docker` stage: builds Docker images for services that already provide Docker support
+- `build` stage: verifies that all executable services can be built as Maven modules without rerunning tests,
+- `run` stage: verifies that all executable services can be started with Spring Boot from the command line,
+- `docker_build` stage: builds Docker images for services that already provide Docker support
   (`harvest-service`, `production-service`).
 
 This means the repository is checked both as a multi-module Maven project and, for supported services,
 also as Dockerized applications.
+
+Container runtime validation with Docker Compose is currently intended to be performed locally, because the
+current GitLab runner setup does not provide a working Docker daemon for `docker compose up` / `docker run`
+checks inside CI jobs.
+
+Recommended local Docker verification commands:
+
+```bash
+docker compose up --build harvest-service
+docker compose up --build production-service
+docker compose down
+```
 
 ## Use Case Diagram
 
