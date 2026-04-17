@@ -1,93 +1,113 @@
-image: maven:3.9.9-eclipse-temurin-21
+default:
+  image: maven:3.9.12-eclipse-temurin-25
+  tags: [ shared-fi ]
 
 stages:
+  - test
   - build
-  - run
+  - docker_build
 
-# ---------------- BUILD ----------------
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  key: "${CI_PROJECT_ID}-maven"
+  paths:
+    - .m2/repository
+
+.job_template:
+  only:
+    - main
+    - merge_requests
+
+.docker_template:
+  extends: .job_template
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
+
+.build_template:
+  extends: .job_template
+  stage: build
+  script:
+    - mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true clean install
+
+.test_template:
+  extends: .job_template
+  stage: test
+  script:
+    - mvn -pl "${SERVICE_NAME}" -am test
+
+.docker_build_template:
+  extends: .docker_template
+  stage: docker_build
+  script:
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
+
+test_customer:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: customer-service
+
+test_harvest:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: harvest-service
+
+test_inventory:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: inventory-service
+
+test_production:
+  extends: .test_template
+  variables:
+    SERVICE_NAME: production-service
 
 build_customer:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl customer-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: customer-service
 
 build_harvest:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl harvest-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: harvest-service
 
 build_inventory:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl inventory-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: inventory-service
 
 build_production:
-  stage: build
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - mvn -pl production-service -am clean install
+  extends: .build_template
+  variables:
+    SERVICE_NAME: production-service
 
-# ---------------- RUN ----------------
+docker_harvest:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: harvest-service
+    DOCKERFILE_PATH: harvest-service/Dockerfile
+    IMAGE_NAME: winery-management/harvest-service:${CI_COMMIT_SHORT_SHA}
 
-run_customer:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd customer-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+docker_inventory:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: inventory-service
+    DOCKERFILE_PATH: inventory-service/Dockerfile
+    IMAGE_NAME: winery-management/inventory-service:${CI_COMMIT_SHORT_SHA}
 
-run_harvest:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd harvest-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+docker_production:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: production-service
+    DOCKERFILE_PATH: production-service/Dockerfile
+    IMAGE_NAME: winery-management/production-service:${CI_COMMIT_SHORT_SHA}
 
-run_inventory:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd inventory-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
-
-run_production:
-  stage: run
-  tags: [ shared-fi ]
-  only:
-    - main
-    - merge_requests
-  script:
-    - cd production-service
-    - mvn spring-boot:run > log.txt 2>&1 &
-    - sleep 60
-    - grep "Started" log.txt
+docker_customer:
+  extends: .docker_build_template
+  variables:
+    SERVICE_NAME: customer-service
+    DOCKERFILE_PATH: customer-service/Dockerfile
+    IMAGE_NAME: winery-management/customer-service:${CI_COMMIT_SHORT_SHA}
