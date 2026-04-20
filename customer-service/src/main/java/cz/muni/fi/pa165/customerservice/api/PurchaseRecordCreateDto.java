@@ -1,22 +1,28 @@
 package cz.muni.fi.pa165.customerservice.api;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
+@Schema(description = "Body for creating a new purchase record")
 public class PurchaseRecordCreateDto {
 
     @NotNull
+    @Schema(description = "Id of the customer") //TODO
     private UUID customerId;
 
     @NotNull
+    @Schema(description = "Id of the wine") //TODO
     private UUID wineId;
 
     @Min(1)
+    @Schema(description = "The amount of bottles bought", example = "7")
     private int quantity;
 
     @Min(0)
+    @Schema(description = "Price per one bottle bought", example = "8.9")
     private double pricePerBottle;
 
     public UUID getCustomerId() {

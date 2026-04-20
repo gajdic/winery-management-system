@@ -1,21 +1,26 @@
 package cz.muni.fi.pa165.customerservice.api;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+@Schema(description = "Body for updating an existing customer")
 public class CustomerUpdateDto {
 
     @NotBlank
+    @Schema(description = "Name of the customer", example = "John Doe")
     private String name;
 
     @Email
     @NotBlank
+    @Schema(description = "Email address of the customer", example = "johndoe@gmail.com")
     private String email;
 
     @Valid
     @NotNull
+    @Schema(description = "Address of the customer")
     private AddressDto address;
 
     public CustomerUpdateDto(String name, String email, AddressDto address) {
