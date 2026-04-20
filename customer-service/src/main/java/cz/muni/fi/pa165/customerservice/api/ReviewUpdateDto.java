@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ReviewUpdateDto {
 
     @NotNull
-    @Schema(description = "Id of the wine") //TODO
+    @Schema(description = "Id of the wine the review is about", example = "e58ed763-928c-4155-bee9-fdbaaadc15f3")
     private UUID wineId;
 
     @NotNull

@@ -27,7 +27,7 @@ public class PurchaseRecordDto {
     private UUID customerId;
 
     @NotNull
-    @Schema(description = "Id of the wine") //TODO
+    @Schema(description = "Id of the wine the purchase record is about", example = "e58ed763-928c-4155-bee9-fdbaaadc15f3")
     private UUID wineId;
 
     @Min(1)
@@ -40,6 +40,6 @@ public class PurchaseRecordDto {
 
     @DateTimeFormat
     @PastOrPresent
-    @Schema(description = "Purchase date of the order") //TODO example
+    @Schema(description = "Purchase date of the order", example = "2025-03-15T14:30:00")
     private LocalDateTime purchaseDate;
 }

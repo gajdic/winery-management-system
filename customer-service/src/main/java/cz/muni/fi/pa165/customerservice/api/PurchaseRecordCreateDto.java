@@ -20,7 +20,7 @@ public class PurchaseRecordCreateDto {
     private UUID customerId;
 
     @NotNull
-    @Schema(description = "Id of the wine") //TODO
+    @Schema(description = "Id of the wine the purchase record is about", example = "e58ed763-928c-4155-bee9-fdbaaadc15f3")
     private UUID wineId;
 
     @Min(1)
