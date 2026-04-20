@@ -374,10 +374,31 @@ class HarvestRecordServiceTest {
 
     @Test
     void deleteById_existingRecord_callsRepository() {
+        // Arrange
+        HarvestRecord record = TestDataFactory.harvestRecordEntity();
+        Mockito.when(harvestRecordRepository.findById(TestDataFactory.HARVEST_RECORD_ID))
+            .thenReturn(Optional.of(record));
+
         // Act
         harvestRecordService.deleteById(TestDataFactory.HARVEST_RECORD_ID);
 
         // Assert
+        Mockito.verify(harvestRecordRepository).findById(TestDataFactory.HARVEST_RECORD_ID);
         Mockito.verify(harvestRecordRepository).deleteById(TestDataFactory.HARVEST_RECORD_ID);
+    }
+
+    @Test
+    void deleteById_recordNotFound_throwsResourceNotFoundException() {
+        // Arrange
+        UUID unknownId = UUID.randomUUID();
+        Mockito.when(harvestRecordRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> harvestRecordService.deleteById(unknownId))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("Harvest record with id " + unknownId + " was not found.");
+
+        Mockito.verify(harvestRecordRepository).findById(unknownId);
+        Mockito.verify(harvestRecordRepository, Mockito.never()).deleteById(Mockito.any());
     }
 }

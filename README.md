@@ -194,12 +194,6 @@ Run the production-service container:
 docker run --rm -p 8082:8082 winery-management/production-service:latest
 ```
 
-### Inventory-service
-
-Build the inventory-service Docker image:
-
-Run the inventory-service container:
-
 ### Customer-service
 
 Build the customer-service Docker image:
@@ -217,14 +211,13 @@ docker run --rm -p 8084:8084 winery-management/customer-service:latest
 
 The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
 
-The pipeline currently validates the project in four steps:
+The pipeline currently validates the project in three steps:
 
 - `test` stage: runs Maven tests for all executable services (`customer-service`, `harvest-service`,
   `inventory-service`, `production-service`) including their required module dependencies,
 - `build` stage: verifies that all executable services can be built as Maven modules without rerunning tests,
-- `run` stage: verifies that all executable services can be started with Spring Boot from the command line,
-- `docker_build` stage: builds Docker images for services that already provide Docker support
-  (`harvest-service`, `production-service`).
+- `docker_build` stage: builds Docker images for all executable services
+  (`customer-service`, `harvest-service`, `inventory-service`, `production-service`).
 
 This means the repository is checked both as a multi-module Maven project and, for supported services,
 also as Dockerized applications.
@@ -240,6 +233,30 @@ docker compose up --build harvest-service
 docker compose up --build production-service
 docker compose down
 ```
+
+## OpenAPI / Swagger
+
+After starting a service, Swagger UI and raw OpenAPI documentation are available at:
+
+### Customer-service
+
+- Swagger UI: [http://localhost:8084/swagger-ui.html](http://localhost:8084/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8084/v3/api-docs](http://localhost:8084/v3/api-docs)
+
+### Harvest-service
+
+- Swagger UI: [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+
+### Inventory-service
+
+- Swagger UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
+
+### Production-service
+
+- Swagger UI: [http://localhost:8082/api/swagger-ui.html](http://localhost:8082/api/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8082/api/v3/api-docs](http://localhost:8082/api/v3/api-docs)
 
 ## Use Case Diagram
 
