@@ -4,9 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Schema(description = "Information about an existing review")
 public class ReviewDto {
 
@@ -20,7 +26,7 @@ public class ReviewDto {
 
     @NotNull
     @Schema(description = "Id of the customer") //TODO
-    private UUID customerID;
+    private UUID customerId;
 
     @Min(0)
     @Max(5)
@@ -29,44 +35,4 @@ public class ReviewDto {
 
     @Schema(description = "Optional text description of the bottle", example = "The wine is a bit more dry then I expected")
     private String comment;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getWineId() {
-        return wineId;
-    }
-
-    public void setWineId(UUID wineId) {
-        this.wineId = wineId;
-    }
-
-    public UUID getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(UUID customerID) {
-        this.customerID = customerID;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
 }

@@ -189,9 +189,9 @@ class ReviewFacadeTest {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         ReviewUpdateDto updateDto = createReviewUpdateDto();
-        Review mappedReview = createReview(updateDto.getCustomerID(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review mappedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
         mappedReview.setId(reviewId);
-        Review updatedReview = createReview(updateDto.getCustomerID(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review updatedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
         updatedReview.setId(reviewId);
         ReviewDto reviewDto = createReviewDto(reviewId, updatedReview.getWineId(), updatedReview.getCustomerId(), updatedReview.getRating(), updatedReview.getComment());
 
@@ -250,7 +250,7 @@ class ReviewFacadeTest {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         ReviewUpdateDto updateDto = createReviewUpdateDto();
-        Review mappedReview = createReview(updateDto.getCustomerID(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review mappedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
 
         Mockito.when(reviewMapper.mapToEntity(reviewId, updateDto)).thenReturn(mappedReview);
         Mockito.when(reviewService.update(reviewId, mappedReview))
@@ -298,7 +298,7 @@ class ReviewFacadeTest {
     private ReviewCreateDto createReviewCreateDto() {
         ReviewCreateDto dto = new ReviewCreateDto();
         dto.setWineId(UUID.randomUUID());
-        dto.setCustomerID(UUID.randomUUID());
+        dto.setCustomerId(UUID.randomUUID());
         dto.setRating(5);
         dto.setComment("Great wine");
         return dto;
@@ -307,7 +307,7 @@ class ReviewFacadeTest {
     private ReviewUpdateDto createReviewUpdateDto() {
         ReviewUpdateDto dto = new ReviewUpdateDto();
         dto.setWineId(UUID.randomUUID());
-        dto.setCustomerID(UUID.randomUUID());
+        dto.setCustomerId(UUID.randomUUID());
         dto.setRating(4);
         dto.setComment("Updated review");
         return dto;
@@ -330,7 +330,7 @@ class ReviewFacadeTest {
         ReviewDto dto = new ReviewDto();
         dto.setId(id);
         dto.setWineId(wineId);
-        dto.setCustomerID(customerId);
+        dto.setCustomerId(customerId);
         dto.setRating(rating);
         dto.setComment(comment);
         return dto;
