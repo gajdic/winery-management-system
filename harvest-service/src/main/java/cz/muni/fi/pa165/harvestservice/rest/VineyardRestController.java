@@ -1,10 +1,15 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
+import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardUpdateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.facade.VineyardFacade;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,37 +36,68 @@ public class VineyardRestController {
     @PostMapping
     @Operation(summary = "Create a vineyard", description = "Creates a vineyard that can later be referenced by harvest records")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Vineyard created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid vineyard payload")
+        @ApiResponse(responseCode = "201", description = "Vineyard created successfully",
+            content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid vineyard payload",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<VineyardViewDto> create(@RequestBody @Valid VineyardCreateDto dto) {
+    public ResponseEntity<VineyardViewDto> create(
+        @Valid
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Vineyard data to create.",
+            required = true,
+            content = @Content(schema = @Schema(implementation = VineyardCreateDto.class))
+        )
+        @RequestBody VineyardCreateDto dto
+    ) {
         return ResponseEntity.status(201).body(vineyardFacade.create(dto));
     }
 
     @GetMapping(path = "/{id}")
     @Operation(summary = "Get a vineyard by id", description = "Returns one vineyard detail by its unique identifier")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Vineyard found"),
-        @ApiResponse(responseCode = "404", description = "Vineyard not found")
+        @ApiResponse(responseCode = "200", description = "Vineyard found",
+            content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "404", description = "Vineyard not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<VineyardViewDto> findById(@PathVariable UUID id) {
+    public ResponseEntity<VineyardViewDto> findById(
+        @Parameter(description = "Vineyard identifier.", example = "22222222-2222-2222-2222-222222222222")
+        @PathVariable UUID id
+    ) {
         return ResponseEntity.ok(vineyardFacade.findById(id));
     }
 
     @GetMapping(path = "/by-name/{name}")
     @Operation(summary = "Get a vineyard by name", description = "Finds one vineyard by its business name")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Vineyard found"),
-        @ApiResponse(responseCode = "404", description = "Vineyard not found")
+        @ApiResponse(responseCode = "200", description = "Vineyard found",
+            content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
+        @ApiResponse(responseCode = "404", description = "Vineyard not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<VineyardViewDto> findByName(@PathVariable String name) {
+    public ResponseEntity<VineyardViewDto> findByName(
+        @Parameter(description = "Business name of the vineyard.", example = "Sunrise Hill")
+        @PathVariable String name
+    ) {
         return  ResponseEntity.ok(vineyardFacade.findByName(name));
     }
 
     @GetMapping
     @Operation(summary = "List all vineyards", description = "Returns all vineyards currently registered in the harvest service")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Vineyards returned successfully")
+        @ApiResponse(responseCode = "200", description = "Vineyards returned successfully",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = VineyardViewDto.class)))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<List<VineyardViewDto>> findAll() {
         return ResponseEntity.ok(vineyardFacade.findAll());
@@ -70,21 +106,43 @@ public class VineyardRestController {
     @PutMapping("/{id}")
     @Operation(summary = "Update a vineyard", description = "Updates an existing vineyard by its identifier")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Vineyard updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid vineyard payload"),
-        @ApiResponse(responseCode = "404", description = "Vineyard not found")
+        @ApiResponse(responseCode = "200", description = "Vineyard updated successfully",
+            content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid UUID format or vineyard payload",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "404", description = "Vineyard not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<VineyardViewDto> update(@PathVariable UUID id, @RequestBody @Valid VineyardUpdateDto dto) {
+    public ResponseEntity<VineyardViewDto> update(
+        @Parameter(description = "Vineyard identifier.", example = "22222222-2222-2222-2222-222222222222")
+        @PathVariable UUID id,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Updated vineyard data.",
+            required = true,
+            content = @Content(schema = @Schema(implementation = VineyardUpdateDto.class))
+        )
+        @RequestBody @Valid VineyardUpdateDto dto
+    ) {
         return ResponseEntity.ok(vineyardFacade.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a vineyard", description = "Removes a vineyard from the harvest service")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Vineyard deleted successfully"),
-        @ApiResponse(responseCode = "404", description = "Vineyard not found")
+        @ApiResponse(responseCode = "204", description = "Vineyard deleted successfully", content = @Content),
+        @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "404", description = "Vineyard not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "500", description = "Unexpected server error",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(
+        @Parameter(description = "Vineyard identifier.", example = "22222222-2222-2222-2222-222222222222")
+        @PathVariable UUID id
+    ) {
         vineyardFacade.deleteById(id);
         return ResponseEntity.noContent().build();
     }
