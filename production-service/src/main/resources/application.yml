@@ -16,3 +16,7 @@ spring:
       ddl-auto: create-drop
     open-in-view: false
     show-sql: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
