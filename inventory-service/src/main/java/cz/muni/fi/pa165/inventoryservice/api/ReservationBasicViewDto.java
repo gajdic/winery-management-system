@@ -21,6 +21,7 @@ public class ReservationBasicViewDto {
     private UUID id;
 
     @Schema(description = "Current lifecycle status of the reservation", example = "PENDING")
+    @NotNull(message = "Reservation status cannot be null")
     private ReservationStatus status;
 
     @Schema(description = "Date when the reservation was created", example = "2025-10-15")
