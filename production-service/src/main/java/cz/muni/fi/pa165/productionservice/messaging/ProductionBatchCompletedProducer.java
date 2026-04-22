@@ -18,17 +18,15 @@ public class ProductionBatchCompletedProducer {
 
     private final JmsTemplate jmsTemplate;
     private final OutboundMessageLogRepository outboundMessageLogRepository;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Autowired
     public ProductionBatchCompletedProducer(
         JmsTemplate jmsTemplate,
-        OutboundMessageLogRepository outboundMessageLogRepository,
-        ObjectMapper objectMapper
+        OutboundMessageLogRepository outboundMessageLogRepository
     ) {
         this.jmsTemplate = jmsTemplate;
         this.outboundMessageLogRepository = outboundMessageLogRepository;
-        this.objectMapper = objectMapper;
     }
 
     public void sendBatchCompleted(ProductionBatch batch) {
