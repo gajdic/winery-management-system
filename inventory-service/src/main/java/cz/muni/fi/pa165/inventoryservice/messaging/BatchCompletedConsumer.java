@@ -1,0 +1,67 @@
+package cz.muni.fi.pa165.inventoryservice.messaging;
+
+
+import cz.muni.fi.pa165.commonservice.messaging.Queues;
+import cz.muni.fi.pa165.commonservice.messaging.data.InboundMessageLogRepository;
+import cz.muni.fi.pa165.commonservice.messaging.data.entity.InboundMessageLog;
+import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
+import cz.muni.fi.pa165.commonservice.messaging.messages.StockUpdatedMessage;
+import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
+import cz.muni.fi.pa165.inventoryservice.service.StockService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Component
+@Slf4j
+public class BatchCompletedConsumer {
+
+    private final StockService stockService;
+    private final InboundMessageLogRepository messageLogRepository;
+    private final JmsTemplate jmsTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+
+    public BatchCompletedConsumer(StockService stockService,
+                                  InboundMessageLogRepository messageLogRepository,
+                                  JmsTemplate jmsTemplate) {
+        this.stockService = stockService;
+        this.messageLogRepository = messageLogRepository;
+        this.jmsTemplate = jmsTemplate;
+    }
+
+    @Transactional
+    @JmsListener(destination = Queues.BATCH_COMPLETED)
+    public void onBatchCompleted(BatchCompletedMessage message) throws Exception {
+        log.info("Prijata BatchCompletedMessage: {}", message);
+
+        InboundMessageLog log = new InboundMessageLog();
+        log.setQueueName(Queues.BATCH_COMPLETED);
+        log.setPayload(objectMapper.writeValueAsString(message));
+        log.setBatchId(message.getBatchId());
+        log.setReceivedAt(LocalDateTime.now());
+        messageLogRepository.save(log);
+
+        var stock = new Stock();
+        if (stockService.findByWine(message.getWineId()) == null) {
+            stock.setQuantity(message.getBottleCount());
+            stock.setWineId(message.getWineId());
+            stockService.create(stock);
+        }
+        else {
+            stock = stockService.addToStock(message.getWineId(), message.getBottleCount());
+        }
+
+        StockUpdatedMessage ack = new StockUpdatedMessage(
+            message.getBatchId(),
+            message.getWineId(),
+            stock.getQuantity(),
+            LocalDateTime.now()
+        );
+        jmsTemplate.convertAndSend(Queues.STOCK_UPDATED, ack);
+    }
+}

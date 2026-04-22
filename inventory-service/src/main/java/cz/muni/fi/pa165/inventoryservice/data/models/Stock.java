@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.data.models;
 
+import cz.muni.fi.pa165.commonservice.entity.EntityBase;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
