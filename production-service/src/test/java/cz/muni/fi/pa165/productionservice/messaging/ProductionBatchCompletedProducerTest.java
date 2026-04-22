@@ -72,7 +72,7 @@ class ProductionBatchCompletedProducerTest {
     }
 
     @Test
-    void sendBatchCompleted_actualBottleCountGreaterThanZero_usesActualBottleCount() throws Exception {
+    void sendBatchCompleted_actualBottleCountGreaterThanZero_usesActualBottleCount() {
         ProductionBatch batch = TestDataFactory.productionBatchEntity();
         batch.setActualBottleCount(77);
         batch.setPlannedBottleCount(120);
