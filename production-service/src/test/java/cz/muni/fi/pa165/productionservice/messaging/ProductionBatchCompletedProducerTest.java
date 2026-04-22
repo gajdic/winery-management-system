@@ -41,7 +41,7 @@ class ProductionBatchCompletedProducerTest {
     private ArgumentCaptor<OutboundMessageLog> logCaptor;
 
     @Test
-    void sendBatchCompleted_usesPlannedBottleCountWhenActualIsZero() throws Exception {
+    void sendBatchCompleted_actualBottleCountIsZero_usesPlannedBottleCount() throws Exception {
         ProductionBatch batch = TestDataFactory.productionBatchEntity();
         batch.setActualBottleCount(0);
         batch.setPlannedBottleCount(120);
@@ -72,7 +72,7 @@ class ProductionBatchCompletedProducerTest {
     }
 
     @Test
-    void sendBatchCompleted_usesActualBottleCountWhenPresent() throws Exception {
+    void sendBatchCompleted_actualBottleCountGreaterThanZero_usesActualBottleCount() throws Exception {
         ProductionBatch batch = TestDataFactory.productionBatchEntity();
         batch.setActualBottleCount(77);
         batch.setPlannedBottleCount(120);
