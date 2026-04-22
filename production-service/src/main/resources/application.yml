@@ -16,3 +16,12 @@ spring:
       ddl-auto: create-drop
     open-in-view: false
     show-sql: false
+  artemis:
+    mode: native
+    broker-url: tcp://localhost:61616
+    user: artemis
+    password: artemis
+  jms:
+    template:
+      default-destination: batch-completed-queue
+      session-transacted: true
