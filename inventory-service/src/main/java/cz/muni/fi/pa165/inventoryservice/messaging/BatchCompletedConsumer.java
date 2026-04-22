@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.inventoryservice.messaging;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.commonservice.messaging.Queues;
 import cz.muni.fi.pa165.commonservice.messaging.data.InboundMessageLogRepository;
 import cz.muni.fi.pa165.commonservice.messaging.data.entity.InboundMessageLog;
@@ -8,7 +9,6 @@ import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
 import cz.muni.fi.pa165.commonservice.messaging.messages.StockUpdatedMessage;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.service.StockService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -37,7 +37,7 @@ public class BatchCompletedConsumer {
     @Transactional
     @JmsListener(destination = Queues.BATCH_COMPLETED)
     public void onBatchCompleted(BatchCompletedMessage message) throws Exception {
-        log.info("Prijata BatchCompletedMessage: {}", message);
+        log.info("Received BatchCompletedMessage: {}", message);
 
         InboundMessageLog log = new InboundMessageLog();
         log.setQueueName(Queues.BATCH_COMPLETED);
@@ -51,8 +51,7 @@ public class BatchCompletedConsumer {
             stock.setQuantity(message.getBottleCount());
             stock.setWineId(message.getWineId());
             stockService.create(stock);
-        }
-        else {
+        } else {
             stock = stockService.addToStock(message.getWineId(), message.getBottleCount());
         }
 
