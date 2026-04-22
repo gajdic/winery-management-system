@@ -10,7 +10,8 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockUpdatedMessage {
+public class
+StockUpdatedMessage {
     private UUID batchId;
     private UUID wineId;
     private int newQuantity;
