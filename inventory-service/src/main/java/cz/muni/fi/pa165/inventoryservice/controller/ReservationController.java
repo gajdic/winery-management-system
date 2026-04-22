@@ -4,6 +4,11 @@ import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -16,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/reservations")
+@Tag(name = "Reservations", description = "Endpoints for managing wine stock reservations")
 public class ReservationController {
     private final ReservationFacade reservationFacade;
 
@@ -25,12 +31,22 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDetailedViewDto> create(@RequestBody ReservationDetailedViewDto reservation) {
+    @Operation(summary = "Create a reservation", description = "Creates a reservation of a given wine quantity for a customer")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Reservation created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid reservation payload")
+    })
+    public ResponseEntity<ReservationDetailedViewDto> create(@RequestBody @Valid ReservationDetailedViewDto reservation) {
         ReservationDetailedViewDto created = reservationFacade.create(reservation);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a reservation by id", description = "Returns one reservation with detailed customer and wine references")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reservation found"),
+        @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<ReservationDetailedViewDto> findById(@PathVariable UUID id) {
         ReservationDetailedViewDto reservation = reservationFacade.findById(id);
         if (reservation == null) {
@@ -40,11 +56,20 @@ public class ReservationController {
     }
 
     @GetMapping
+    @Operation(summary = "List all reservations", description = "Returns all reservations currently registered in the inventory service")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reservations returned successfully")
+    })
     public ResponseEntity<List<ReservationBasicViewDto>> findAll() {
         return ResponseEntity.ok(reservationFacade.findAll());
     }
 
     @GetMapping("/filter")
+    @Operation(summary = "Filter reservations", description = "Returns reservations filtered by customer, wine and creation date range")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reservations returned successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid filter parameters")
+    })
     public ResponseEntity<List<ReservationBasicViewDto>> filter(
         @RequestParam(required = false) UUID customerId,
         @RequestParam(required = false) UUID wineId,
@@ -54,19 +79,36 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReservationDetailedViewDto> update(@PathVariable UUID id, @RequestBody ReservationDetailedViewDto reservation) {
+    @Operation(summary = "Update a reservation", description = "Updates an existing reservation by its identifier")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reservation updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid reservation payload"),
+        @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
+    public ResponseEntity<ReservationDetailedViewDto> update(@PathVariable UUID id, @RequestBody @Valid ReservationDetailedViewDto reservation) {
         reservation.setId(id);
         ReservationDetailedViewDto updated = reservationFacade.update(reservation);
         return ResponseEntity.ok(updated);
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Update reservation status", description = "Transitions the reservation to the given lifecycle status")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reservation status updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid status value or state transition"),
+        @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<ReservationDetailedViewDto> updateStatus(@PathVariable UUID id, @RequestParam ReservationStatus status) {
         ReservationDetailedViewDto updated = reservationFacade.updateStatus(id, status);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a reservation", description = "Removes a reservation from the inventory service")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Reservation deleted successfully"),
+        @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         boolean deleted = reservationFacade.delete(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
