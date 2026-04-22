@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import cz.muni.fi.pa165.productionservice.data.repository.ProductionBatchRepository;
+import cz.muni.fi.pa165.productionservice.messaging.ProductionBatchCompletedProducer;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ class ProductionBatchServiceTest {
 
     @Mock
     private ProductionBatchRepository productionBatchRepository;
+
+    @Mock
+    private ProductionBatchCompletedProducer productionBatchCompletedProducer;
 
     @InjectMocks
     private ProductionBatchService productionBatchService;
@@ -100,6 +104,41 @@ class ProductionBatchServiceTest {
         ProductionBatch result = productionBatchService.updateStatus(id, BatchStatus.COMPLETED);
 
         assertThat(result.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+        Mockito.verify(productionBatchCompletedProducer).sendBatchCompleted(batch);
+    }
+
+    @Test
+    void updateStatus_alreadyCompleted_doesNotSendMessage() {
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatch batch = TestDataFactory.productionBatchEntity(TestDataFactory.RECIPE_ID, BatchStatus.COMPLETED);
+
+        Mockito.when(productionBatchRepository.findById(id))
+            .thenReturn(Optional.of(batch));
+
+        Mockito.when(productionBatchRepository.save(batch))
+            .thenReturn(batch);
+
+        ProductionBatch result = productionBatchService.updateStatus(id, BatchStatus.COMPLETED);
+
+        assertThat(result.getStatus()).isEqualTo(BatchStatus.COMPLETED);
+        Mockito.verify(productionBatchCompletedProducer, Mockito.never()).sendBatchCompleted(Mockito.any());
+    }
+
+    @Test
+    void updateStatus_whenProducerFails_throwsException() {
+        UUID id = TestDataFactory.BATCH_ID;
+        ProductionBatch batch = TestDataFactory.productionBatchEntity(TestDataFactory.RECIPE_ID, BatchStatus.PLANNED);
+
+        Mockito.when(productionBatchRepository.findById(id))
+            .thenReturn(Optional.of(batch));
+
+        Mockito.when(productionBatchRepository.save(batch))
+            .thenReturn(batch);
+
+        Mockito.doThrow(new IllegalStateException("JMS error"))
+            .when(productionBatchCompletedProducer).sendBatchCompleted(batch);
+
+        assertThrows(IllegalStateException.class, () -> productionBatchService.updateStatus(id, BatchStatus.COMPLETED));
     }
 
     @Test
