@@ -42,7 +42,7 @@ class ReviewControllerIT {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(review.getId().toString()))
             .andExpect(jsonPath("$.wineId").value(review.getWineId().toString()))
-            .andExpect(jsonPath("$.customerID").value(review.getCustomerId().toString()))
+            .andExpect(jsonPath("$.customerId").value(review.getCustomerId().toString()))
             .andExpect(jsonPath("$.rating").value(5))
             .andExpect(jsonPath("$.comment").value("Excellent wine"));
     }
@@ -87,7 +87,7 @@ class ReviewControllerIT {
         mockMvc.perform(get("/reviews/customer/{customerId}", customerId)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].customerID").value(customerId.toString()))
+            .andExpect(jsonPath("$[0].customerId").value(customerId.toString()))
             .andExpect(jsonPath("$[0].comment").value("Customer filter review"));
     }
 
@@ -140,7 +140,7 @@ class ReviewControllerIT {
                 .content("""
                     {
                       "wineId": "%s",
-                      "customerID": "%s",
+                      "customerId": "%s",
                       "rating": 4,
                       "comment": "Created review"
                     }
@@ -148,7 +148,7 @@ class ReviewControllerIT {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isNotEmpty())
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
-            .andExpect(jsonPath("$.customerID").value(customerId.toString()))
+            .andExpect(jsonPath("$.customerId").value(customerId.toString()))
             .andExpect(jsonPath("$.rating").value(4))
             .andExpect(jsonPath("$.comment").value("Created review"));
     }
@@ -161,7 +161,7 @@ class ReviewControllerIT {
                 .content("""
                     {
                       "wineId": null,
-                      "customerID": null,
+                      "customerId": null,
                       "rating": 10,
                       "comment": "Invalid review"
                     }
@@ -182,7 +182,7 @@ class ReviewControllerIT {
                 .content("""
                     {
                       "wineId": "%s",
-                      "customerID": "%s",
+                      "customerId": "%s",
                       "rating": 3,
                       "comment": "After update"
                     }
@@ -204,7 +204,7 @@ class ReviewControllerIT {
                 .content("""
                     {
                       "wineId": "%s",
-                      "customerID": "%s",
+                      "customerId": "%s",
                       "rating": 3,
                       "comment": "After update"
                     }
