@@ -1,10 +1,11 @@
 package cz.muni.fi.pa165.productionservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.muni.fi.pa165.commonservice.messaging.Queues;
+import cz.muni.fi.pa165.commonservice.messaging.data.OutboundMessageLogRepository;
+import cz.muni.fi.pa165.commonservice.messaging.data.entity.OutboundMessageLog;
+import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
-import cz.muni.fi.pa165.productionservice.messaging.data.OutboundMessageLogRepository;
-import cz.muni.fi.pa165.productionservice.messaging.data.entity.OutboundMessageLog;
-import cz.muni.fi.pa165.productionservice.messaging.messages.ProductionBatchCompletedMessage;
 import cz.muni.fi.pa165.productionservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ class ProductionBatchCompletedProducerTest {
     private ProductionBatchCompletedProducer producer;
 
     @Captor
-    private ArgumentCaptor<String> messageCaptor;
+    private ArgumentCaptor<BatchCompletedMessage> messageCaptor;
 
     @Captor
     private ArgumentCaptor<OutboundMessageLog> logCaptor;
@@ -49,9 +50,8 @@ class ProductionBatchCompletedProducerTest {
 
         producer.sendBatchCompleted(batch);
 
-        verify(jmsTemplate).convertAndSend(eq("batch-completed-queue"), messageCaptor.capture());
-        ProductionBatchCompletedMessage sentMessage =
-            objectMapper.readValue(messageCaptor.getValue(), ProductionBatchCompletedMessage.class);
+        verify(jmsTemplate).convertAndSend(eq(Queues.BATCH_COMPLETED), messageCaptor.capture());
+        BatchCompletedMessage sentMessage = messageCaptor.getValue();
 
         assertThat(sentMessage.getBatchId()).isEqualTo(batch.getId());
         assertThat(sentMessage.getWineId()).isEqualTo(batch.getRecipeId());
@@ -61,12 +61,12 @@ class ProductionBatchCompletedProducerTest {
 
         verify(outboundMessageLogRepository).save(logCaptor.capture());
         OutboundMessageLog savedLog = logCaptor.getValue();
-        assertThat(savedLog.getQueueName()).isEqualTo("batch-completed-queue");
+        assertThat(savedLog.getQueueName()).isEqualTo(Queues.BATCH_COMPLETED);
         assertThat(savedLog.getBatchId()).isEqualTo(batch.getId());
         assertThat(savedLog.getSentAt()).isNotNull();
 
-        ProductionBatchCompletedMessage payloadMessage =
-            objectMapper.readValue(savedLog.getPayload(), ProductionBatchCompletedMessage.class);
+        BatchCompletedMessage payloadMessage =
+            objectMapper.readValue(savedLog.getPayload(), BatchCompletedMessage.class);
         assertThat(payloadMessage.getWineId()).isEqualTo(batch.getRecipeId());
         assertThat(payloadMessage.getBottleCount()).isEqualTo(120);
     }
@@ -81,9 +81,8 @@ class ProductionBatchCompletedProducerTest {
 
         producer.sendBatchCompleted(batch);
 
-        verify(jmsTemplate).convertAndSend(eq("batch-completed-queue"), messageCaptor.capture());
-        ProductionBatchCompletedMessage sentMessage =
-            objectMapper.readValue(messageCaptor.getValue(), ProductionBatchCompletedMessage.class);
+        verify(jmsTemplate).convertAndSend(eq(Queues.BATCH_COMPLETED), messageCaptor.capture());
+        BatchCompletedMessage sentMessage = messageCaptor.getValue();
         assertThat(sentMessage.getBottleCount()).isEqualTo(77);
     }
 }

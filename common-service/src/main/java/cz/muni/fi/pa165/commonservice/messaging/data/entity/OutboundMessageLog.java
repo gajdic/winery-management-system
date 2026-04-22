@@ -1,6 +1,9 @@
-package cz.muni.fi.pa165.productionservice.messaging.data.entity;
+package cz.muni.fi.pa165.commonservice.messaging.data.entity;
 
-import jakarta.persistence.*;
+import cz.muni.fi.pa165.commonservice.entity.EntityBase;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +14,7 @@ import java.util.UUID;
 @Table(name = "outbound_message_log")
 @Getter
 @Setter
-public class OutboundMessageLog {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class OutboundMessageLog extends EntityBase {
 
     @Column(nullable = false)
     private String queueName;
