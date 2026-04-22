@@ -1,14 +1,30 @@
 services:
+  artemis:
+    image: apache/activemq-artemis:latest-alpine
+    container_name: artemis
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      ARTEMIS_USER: artemis
+      ARTEMIS_PASSWORD: artemis
+
   production-service:
     build:
       context: .
       dockerfile: production-service/Dockerfile
     image: winery-management/production-service:latest
     container_name: production-service
+    depends_on:
+      - artemis
     ports:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+      SPRING_ARTEMIS_MODE: native
+      SPRING_ARTEMIS_BROKER_URL: tcp://artemis:61616
+      SPRING_ARTEMIS_USER: artemis
+      SPRING_ARTEMIS_PASSWORD: artemis
 
   harvest-service:
     build:
@@ -27,10 +43,16 @@ services:
       dockerfile: inventory-service/Dockerfile
     image: winery-management/inventory-service:latest
     container_name: inventory-service
+    depends_on:
+      - artemis
     ports:
       - "8083:8083"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:inventory-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_ARTEMIS_MODE: native
+      SPRING_ARTEMIS_BROKER_URL: tcp://artemis:61616
+      SPRING_ARTEMIS_USER: artemis
+      SPRING_ARTEMIS_PASSWORD: artemis
 
   customer-service:
     build:
