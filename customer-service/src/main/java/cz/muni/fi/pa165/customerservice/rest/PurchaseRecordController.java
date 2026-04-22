@@ -109,6 +109,12 @@ public class PurchaseRecordController {
         summary = "Get purchases by wine",
         description = "Returns all purchase records for a given wine."
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Purchases retrieved",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class)))),
+        @ApiResponse(responseCode = "404", description = "Wine not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
     public ResponseEntity<List<PurchaseRecordDto>> getByWineId(
         @Parameter(description = "Wine ID", example = "33333333-3333-3333-3333-333333333333")
         @PathVariable UUID wineId
@@ -121,6 +127,10 @@ public class PurchaseRecordController {
         summary = "Filter purchases by quantity",
         description = "Returns purchases filtered by optional min and max quantity."
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Purchases retrieved",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class))))
+    })
     public ResponseEntity<List<PurchaseRecordDto>> getByQuantity(
         @Parameter(description = "Minimum quantity", example = "1")
         @RequestParam(required = false) Integer min,

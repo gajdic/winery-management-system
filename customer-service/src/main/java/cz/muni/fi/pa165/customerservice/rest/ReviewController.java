@@ -94,6 +94,12 @@ public class ReviewController {
         summary = "Get reviews by customer",
         description = "Returns all reviews created by a specific customer."
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reviews retrieved",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class)))),
+        @ApiResponse(responseCode = "404", description = "Customer not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
     public ResponseEntity<List<ReviewDto>> getByCustomer(
         @Parameter(description = "Customer ID", example = "22222222-2222-2222-2222-222222222222")
         @PathVariable UUID customerId
@@ -106,6 +112,12 @@ public class ReviewController {
         summary = "Get reviews by wine",
         description = "Returns all reviews for a specific wine."
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reviews retrieved",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class)))),
+        @ApiResponse(responseCode = "404", description = "Wine not found",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
+    })
     public ResponseEntity<List<ReviewDto>> getByWine(
         @Parameter(description = "Wine ID", example = "33333333-3333-3333-3333-333333333333")
         @PathVariable UUID wineId
