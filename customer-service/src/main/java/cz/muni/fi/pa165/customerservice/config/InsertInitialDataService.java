@@ -63,7 +63,7 @@ public class InsertInitialDataService {
 
         // --- Purchases ---
         PurchaseRecord purchase1 = new PurchaseRecord();
-        purchase1.setCustomerId(customer1.getId());
+        purchase1.setCustomer(customer1);
         purchase1.setWineId(UUID.randomUUID());
         purchase1.setQuantity(10);
         purchase1.setPricePerBottle(12.5);
@@ -71,7 +71,7 @@ public class InsertInitialDataService {
         purchaseRecordRepository.save(purchase1);
 
         PurchaseRecord purchase2 = new PurchaseRecord();
-        purchase2.setCustomerId(customer1.getId());
+        purchase2.setCustomer(customer1);
         purchase2.setWineId(UUID.randomUUID());
         purchase2.setQuantity(3);
         purchase2.setPricePerBottle(20.0);

@@ -205,7 +205,7 @@ class ReviewServiceTest {
     }
 
     @Test
-    void update_nullCustomerId_throwsIllegalArgumentException() {
+    void update_nullCustomer_throwsIllegalArgumentException() {
         // Arrange
         Review review = createReview();
         review.setCustomer(null);

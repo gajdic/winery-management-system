@@ -321,7 +321,7 @@ class ReviewFacadeTest {
 
     private Review createReview(Customer customer, UUID wineId, int rating, String comment) {
         Review review = new Review();
-        review.setCustomer(TestDataFactory.customerEntity());
+        review.setCustomer(customer);
         review.setWineId(wineId);
         review.setRating(rating);
         review.setComment(comment);

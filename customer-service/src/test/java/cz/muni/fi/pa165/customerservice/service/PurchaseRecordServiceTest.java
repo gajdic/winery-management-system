@@ -2,7 +2,9 @@ package cz.muni.fi.pa165.customerservice.service;
 
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.data.repository.PurchaseRecordRepository;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,17 +57,17 @@ class PurchaseRecordServiceTest {
     }
 
     @Test
-    void save_nullCustomerId_throwsIllegalArgumentException() {
+    void save_nullCustomer_throwsIllegalArgumentException() {
         // Arrange
         PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setCustomerId(null);
+        purchaseRecord.setCustomer(null);
 
         IllegalArgumentException exception =
             // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
 
         // Assert
-        assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
+        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
         Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
     }
 
@@ -177,7 +179,7 @@ class PurchaseRecordServiceTest {
         // Arrange
         List<PurchaseRecord> purchaseRecords = List.of(
             createPurchaseRecord(),
-            createPurchaseRecord(UUID.randomUUID(), UUID.randomUUID(), 3, 9.50, LocalDateTime.of(2026, 3, 21, 12, 0))
+            createPurchaseRecord(TestDataFactory.customerEntity(), UUID.randomUUID(), 3, 9.50, LocalDateTime.of(2026, 3, 21, 12, 0))
         );
         Mockito.when(purchaseRecordRepository.findAll()).thenReturn(purchaseRecords);
 
@@ -207,30 +209,30 @@ class PurchaseRecordServiceTest {
         // Arrange
         UUID customerId = UUID.randomUUID();
         List<PurchaseRecord> purchaseRecords = List.of(
-            createPurchaseRecord(customerId, UUID.randomUUID(), 5, 10.00, LocalDateTime.of(2026, 3, 20, 10, 0))
+            createPurchaseRecord(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, 10.00, LocalDateTime.of(2026, 3, 20, 10, 0))
         );
-        Mockito.when(purchaseRecordRepository.findByCustomerId(customerId)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByCustomer_Id(customerId)).thenReturn(purchaseRecords);
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByCustomerId(customerId);
 
         // Assert
         assertThat(foundPurchaseRecords).isEqualTo(purchaseRecords);
-        Mockito.verify(purchaseRecordRepository).findByCustomerId(customerId);
+        Mockito.verify(purchaseRecordRepository).findByCustomer_Id(customerId);
     }
 
     @Test
     void findByCustomerId_nonExistingCustomerId_returnsEmptyList() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Mockito.when(purchaseRecordRepository.findByCustomerId(customerId)).thenReturn(List.of());
+        Mockito.when(purchaseRecordRepository.findByCustomer_Id(customerId)).thenReturn(List.of());
 
         // Act
         List<PurchaseRecord> foundPurchaseRecords = purchaseRecordService.findByCustomerId(customerId);
 
         // Assert
         assertThat(foundPurchaseRecords).isEmpty();
-        Mockito.verify(purchaseRecordRepository).findByCustomerId(customerId);
+        Mockito.verify(purchaseRecordRepository).findByCustomer_Id(customerId);
     }
 
     @Test
@@ -242,7 +244,7 @@ class PurchaseRecordServiceTest {
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByCustomerId(Mockito.any());
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByCustomer_Id(Mockito.any());
     }
 
     @Test
@@ -250,7 +252,7 @@ class PurchaseRecordServiceTest {
         // Arrange
         UUID wineId = UUID.randomUUID();
         List<PurchaseRecord> purchaseRecords = List.of(
-            createPurchaseRecord(UUID.randomUUID(), wineId, 4, 11.50, LocalDateTime.of(2026, 3, 22, 9, 30))
+            createPurchaseRecord(TestDataFactory.customerEntity(), wineId, 4, 11.50, LocalDateTime.of(2026, 3, 22, 9, 30))
         );
         Mockito.when(purchaseRecordRepository.findByWineId(wineId)).thenReturn(purchaseRecords);
 
@@ -388,31 +390,31 @@ class PurchaseRecordServiceTest {
         // Arrange
         UUID customerId = UUID.randomUUID();
         List<PurchaseRecord> purchaseRecords = List.of(
-            createPurchaseRecord(customerId, UUID.randomUUID(), 2, 10.50, LocalDateTime.of(2026, 3, 20, 8, 0)),
-            createPurchaseRecord(customerId, UUID.randomUUID(), 3, 15.00, LocalDateTime.of(2026, 3, 21, 9, 0))
+            createPurchaseRecord(TestDataFactory.customerEntity(), UUID.randomUUID(), 2, 10.50, LocalDateTime.of(2026, 3, 20, 8, 0)),
+            createPurchaseRecord(TestDataFactory.customerEntity(), UUID.randomUUID(), 3, 15.00, LocalDateTime.of(2026, 3, 21, 9, 0))
         );
-        Mockito.when(purchaseRecordRepository.findByCustomerId(customerId)).thenReturn(purchaseRecords);
+        Mockito.when(purchaseRecordRepository.findByCustomer_Id(customerId)).thenReturn(purchaseRecords);
 
         // Act
         double totalSpent = purchaseRecordService.getTotalSpentByCustomer(customerId);
 
         // Assert
         assertThat(totalSpent).isEqualTo(66.0);
-        Mockito.verify(purchaseRecordRepository).findByCustomerId(customerId);
+        Mockito.verify(purchaseRecordRepository).findByCustomer_Id(customerId);
     }
 
     @Test
     void getTotalSpentByCustomer_nonExistingCustomerId_returnsZero() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Mockito.when(purchaseRecordRepository.findByCustomerId(customerId)).thenReturn(List.of());
+        Mockito.when(purchaseRecordRepository.findByCustomer_Id(customerId)).thenReturn(List.of());
 
         // Act
         double totalSpent = purchaseRecordService.getTotalSpentByCustomer(customerId);
 
         // Assert
         assertThat(totalSpent).isZero();
-        Mockito.verify(purchaseRecordRepository).findByCustomerId(customerId);
+        Mockito.verify(purchaseRecordRepository).findByCustomer_Id(customerId);
     }
 
     @Test
@@ -424,7 +426,7 @@ class PurchaseRecordServiceTest {
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByCustomerId(Mockito.any());
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).findByCustomer_Id(Mockito.any());
     }
 
     @Test
@@ -462,7 +464,7 @@ class PurchaseRecordServiceTest {
 
     private PurchaseRecord createPurchaseRecord() {
         return createPurchaseRecord(
-            UUID.randomUUID(),
+            TestDataFactory.customerEntity(),
             UUID.randomUUID(),
             6,
             13.99,
@@ -471,14 +473,14 @@ class PurchaseRecordServiceTest {
     }
 
     private PurchaseRecord createPurchaseRecord(
-        UUID customerId,
+        Customer customer,
         UUID wineId,
         int quantity,
         double pricePerBottle,
         LocalDateTime purchaseDate
     ) {
         PurchaseRecord purchaseRecord = new PurchaseRecord();
-        purchaseRecord.setCustomerId(customerId);
+        purchaseRecord.setCustomer(customer);
         purchaseRecord.setWineId(wineId);
         purchaseRecord.setQuantity(quantity);
         purchaseRecord.setPricePerBottle(pricePerBottle);

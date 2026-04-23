@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public final class TestDataFactory {
 
-    public static final UUID CUSTOMER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID WINE_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     private TestDataFactory() {}
@@ -43,7 +42,7 @@ public final class TestDataFactory {
 
     public static PurchaseRecord purchaseRecordEntity() {
         PurchaseRecord p = new PurchaseRecord();
-        p.setCustomerId(CUSTOMER_ID);
+        p.setCustomer(customerEntity());
         p.setWineId(WINE_ID);
         p.setQuantity(5);
         p.setPricePerBottle(10.0);

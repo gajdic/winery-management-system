@@ -23,7 +23,7 @@ public class PurchaseRecordDto {
     private UUID id;
 
     @NotNull
-    @Schema(description = "Id of the customer") //TODO
+    @Schema(description = "Id of the customer", example = "e58ed763-928c-4155-bee9-fdbaaadc15f3")
     private UUID customerId;
 
     @NotNull

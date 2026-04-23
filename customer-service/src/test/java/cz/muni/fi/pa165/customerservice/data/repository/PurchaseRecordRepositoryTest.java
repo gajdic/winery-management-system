@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.repository;
 
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,17 @@ class PurchaseRecordRepositoryTest {
     @Autowired
     private PurchaseRecordRepository purchaseRecordRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Test
     void save_ValidPurchaseRecord_RecordIsPersisted() {
+
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
+        record.setCustomer(customer);
 
         // Act
         PurchaseRecord saved = purchaseRecordRepository.saveAndFlush(record);
@@ -31,14 +39,19 @@ class PurchaseRecordRepositoryTest {
         // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getQuantity()).isEqualTo(5);
+        assertThat(saved.getCustomer().getId()).isEqualTo(customer.getId());
     }
 
     @Test
     void findById_ExistingRecord_RecordIsReturned() {
+
         // Arrange
-        PurchaseRecord saved = purchaseRecordRepository.saveAndFlush(
-            TestDataFactory.purchaseRecordEntity()
-        );
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
+        PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
+        record.setCustomer(customer);
+
+        PurchaseRecord saved = purchaseRecordRepository.saveAndFlush(record);
 
         // Act
         var result = purchaseRecordRepository.findById(saved.getId());
@@ -49,9 +62,18 @@ class PurchaseRecordRepositoryTest {
 
     @Test
     void findAll_MultipleRecords_ReturnsAllRecords() {
+
         // Arrange
-        purchaseRecordRepository.saveAndFlush(TestDataFactory.purchaseRecordEntity());
-        purchaseRecordRepository.saveAndFlush(TestDataFactory.purchaseRecordEntity());
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
+        PurchaseRecord r1 = TestDataFactory.purchaseRecordEntity();
+        r1.setCustomer(customer);
+
+        PurchaseRecord r2 = TestDataFactory.purchaseRecordEntity();
+        r2.setCustomer(customer);
+
+        purchaseRecordRepository.saveAndFlush(r1);
+        purchaseRecordRepository.saveAndFlush(r2);
 
         // Act
         List<PurchaseRecord> result = purchaseRecordRepository.findAll();
@@ -62,23 +84,28 @@ class PurchaseRecordRepositoryTest {
 
     @Test
     void deleteById_ExistingRecord_RecordIsDeleted() {
+
         // Arrange
-        PurchaseRecord saved = purchaseRecordRepository.saveAndFlush(
-            TestDataFactory.purchaseRecordEntity()
-        );
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
+        PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
+        record.setCustomer(customer);
+
+        PurchaseRecord saved = purchaseRecordRepository.saveAndFlush(record);
 
         // Act
         purchaseRecordRepository.deleteById(saved.getId());
 
         // Assert
-        assertThat(purchaseRecordRepository.findById(saved.getId())).isEmpty();
+        assertThat(purchaseRecordRepository.findById(saved.getId()))
+            .isEmpty();
     }
 
     @Test
-    void save_NullCustomerId_ThrowsException() {
+    void save_NullCustomer_ThrowsException() {
         // Arrange
         PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
-        record.setCustomerId(null);
+        record.setCustomer(null);
 
         // Act & Assert
         assertThatThrownBy(() -> purchaseRecordRepository.saveAndFlush(record))
@@ -87,64 +114,90 @@ class PurchaseRecordRepositoryTest {
 
     @Test
     void save_NullWineId_ThrowsException() {
+
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
+        record.setCustomer(customer);
         record.setWineId(null);
 
         // Act & Assert
-        assertThatThrownBy(() -> purchaseRecordRepository.saveAndFlush(record))
+        assertThatThrownBy(() ->
+            purchaseRecordRepository.saveAndFlush(record)
+        )
             .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void save_NullPurchaseDate_ThrowsException() {
+
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         PurchaseRecord record = TestDataFactory.purchaseRecordEntity();
+        record.setCustomer(customer);
         record.setPurchaseDate(null);
 
         // Act & Assert
-        assertThatThrownBy(() -> purchaseRecordRepository.saveAndFlush(record))
+        assertThatThrownBy(() ->
+            purchaseRecordRepository.saveAndFlush(record)
+        )
             .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void findByCustomerId_ExistingCustomer_ReturnsMatchingRecords() {
+
         // Arrange
-        UUID customerId = UUID.randomUUID();
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+        Customer otherCustomer = customerRepository.save(TestDataFactory.customerEntity());
+
+        UUID customerId = customer.getId();
 
         PurchaseRecord r1 = TestDataFactory.purchaseRecordEntity();
-        r1.setCustomerId(customerId);
+        r1.setCustomer(customer);
 
         PurchaseRecord r2 = TestDataFactory.purchaseRecordEntity();
-        r2.setCustomerId(customerId);
+        r2.setCustomer(customer);
 
         PurchaseRecord r3 = TestDataFactory.purchaseRecordEntity();
+        r3.setCustomer(otherCustomer);
 
-        purchaseRecordRepository.saveAll(List.of(r1, r2, r3));
+        purchaseRecordRepository.saveAllAndFlush(List.of(r1, r2, r3));
 
         // Act
         List<PurchaseRecord> result =
-            purchaseRecordRepository.findByCustomerId(customerId);
+            purchaseRecordRepository.findByCustomer_Id(customerId);
 
         // Assert
         assertThat(result).hasSize(2);
-        assertThat(result).allMatch(r -> r.getCustomerId().equals(customerId));
+        assertThat(result)
+            .allMatch(r -> r.getCustomer().getId().equals(customerId));
     }
 
     @Test
     void findByWineId_ExistingWine_ReturnsMatchingRecords() {
+
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+        Customer otherCustomer = customerRepository.save(TestDataFactory.customerEntity());
+
         UUID wineId = UUID.randomUUID();
 
         PurchaseRecord r1 = TestDataFactory.purchaseRecordEntity();
+        r1.setCustomer(customer);
         r1.setWineId(wineId);
 
         PurchaseRecord r2 = TestDataFactory.purchaseRecordEntity();
+        r2.setCustomer(customer);
         r2.setWineId(wineId);
 
         PurchaseRecord r3 = TestDataFactory.purchaseRecordEntity();
+        r3.setCustomer(otherCustomer);
+        r3.setWineId(UUID.randomUUID());
 
-        purchaseRecordRepository.saveAll(List.of(r1, r2, r3));
+        purchaseRecordRepository.saveAllAndFlush(List.of(r1, r2, r3));
 
         // Act
         List<PurchaseRecord> result =
@@ -152,22 +205,29 @@ class PurchaseRecordRepositoryTest {
 
         // Assert
         assertThat(result).hasSize(2);
-        assertThat(result).allMatch(r -> r.getWineId().equals(wineId));
+        assertThat(result)
+            .allMatch(r -> r.getWineId().equals(wineId));
     }
 
     @Test
     void findByQuantityBetween_Range_ReturnsMatchingRecords() {
+
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         PurchaseRecord low = TestDataFactory.purchaseRecordEntity();
+        low.setCustomer(customer);
         low.setQuantity(1);
 
         PurchaseRecord mid = TestDataFactory.purchaseRecordEntity();
+        mid.setCustomer(customer);
         mid.setQuantity(5);
 
         PurchaseRecord high = TestDataFactory.purchaseRecordEntity();
+        high.setCustomer(customer);
         high.setQuantity(10);
 
-        purchaseRecordRepository.saveAll(List.of(low, mid, high));
+        purchaseRecordRepository.saveAllAndFlush(List.of(low, mid, high));
 
         // Act
         List<PurchaseRecord> result =
