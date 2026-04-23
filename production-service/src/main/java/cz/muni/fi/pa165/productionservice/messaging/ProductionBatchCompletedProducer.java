@@ -45,13 +45,13 @@ public class ProductionBatchCompletedProducer {
             throw new IllegalStateException("Failed to serialize BatchCompletedMessage", e);
         }
 
-        jmsTemplate.convertAndSend(Queues.BATCH_COMPLETED, message);
-
         OutboundMessageLog messageLog = new OutboundMessageLog();
         messageLog.setQueueName(Queues.BATCH_COMPLETED);
         messageLog.setPayload(payload);
         messageLog.setBatchId(batch.getId());
         messageLog.setSentAt(LocalDateTime.now());
         outboundMessageLogRepository.save(messageLog);
+
+        jmsTemplate.convertAndSend(Queues.BATCH_COMPLETED, message);
     }
 }
