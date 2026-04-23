@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -33,4 +34,10 @@ public class CustomerDto {
     @NotNull
     @Schema(description = "Address of the customer")
     private AddressDto address;
+
+    @Schema(description = "List of reviews by the customer")
+    private List<ReviewDto> reviews;
+
+    @Schema(description = "List of purchases made by the customer")
+    private List<PurchaseRecordDto> purchaseRecords;
 }

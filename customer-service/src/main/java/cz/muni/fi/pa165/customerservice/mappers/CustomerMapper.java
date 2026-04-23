@@ -10,8 +10,14 @@ import org.mapstruct.MappingTarget;
 
 import java.util.UUID;
 
-@Mapper(componentModel = "spring", uses = AddressMapper.class)
+@Mapper(componentModel = "spring", uses = {
+    ReviewMapper.class,
+    PurchaseRecordMapper.class,
+    AddressMapper.class
+})
 public interface CustomerMapper {
+
+
 
     CustomerDto mapToDto(Customer customer);
 
