@@ -2,7 +2,9 @@ package cz.muni.fi.pa165.customerservice.service;
 
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.data.repository.ReviewRepository;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -82,13 +84,13 @@ class ReviewServiceTest {
     void save_nullCustomerId_throwsIllegalArgumentException() {
         // Arrange
         Review review = createReview();
-        review.setCustomerId(null);
+        review.setCustomer(null);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> reviewService.save(review));
 
         // Assert
-        assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
+        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
         Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
     }
 
@@ -110,16 +112,22 @@ class ReviewServiceTest {
     void update_validReview_updatesRatingAndCommentAndReturnsSavedReview() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
-        UUID originalCustomerId = UUID.randomUUID();
-        UUID originalWineId = UUID.randomUUID();
 
-        Review existingReview = createReview(originalCustomerId, originalWineId, 5, "Original comment");
+        Customer customer = TestDataFactory.customerEntity();
+        customer.setId(UUID.randomUUID());
+
+        UUID wineId = UUID.randomUUID();
+
+        Review existingReview = createReview(customer, wineId, 5, "Original comment");
         existingReview.setId(reviewId);
 
-        Review updatedData = createReview(UUID.randomUUID(), UUID.randomUUID(), 3, "Updated comment");
+        Review updatedData = createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 3, "Updated comment");
 
-        Mockito.when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(existingReview));
-        Mockito.when(reviewRepository.save(existingReview)).thenReturn(existingReview);
+        Mockito.when(reviewRepository.findById(reviewId))
+            .thenReturn(Optional.of(existingReview));
+
+        Mockito.when(reviewRepository.save(existingReview))
+            .thenReturn(existingReview);
 
         // Act
         Review updatedReview = reviewService.update(reviewId, updatedData);
@@ -128,8 +136,10 @@ class ReviewServiceTest {
         assertThat(updatedReview.getId()).isEqualTo(reviewId);
         assertThat(updatedReview.getRating()).isEqualTo(3);
         assertThat(updatedReview.getComment()).isEqualTo("Updated comment");
-        assertThat(updatedReview.getCustomerId()).isEqualTo(originalCustomerId);
-        assertThat(updatedReview.getWineId()).isEqualTo(originalWineId);
+
+        assertThat(updatedReview.getCustomer().getId()).isEqualTo(customer.getId());
+        assertThat(updatedReview.getWineId()).isEqualTo(wineId);
+
         Mockito.verify(reviewRepository).findById(reviewId);
         Mockito.verify(reviewRepository).save(existingReview);
     }
@@ -198,14 +208,14 @@ class ReviewServiceTest {
     void update_nullCustomerId_throwsIllegalArgumentException() {
         // Arrange
         Review review = createReview();
-        review.setCustomerId(null);
+        review.setCustomer(null);
 
         IllegalArgumentException exception =
             // Act + Assert
             assertThrows(IllegalArgumentException.class, () -> reviewService.update(UUID.randomUUID(), review));
 
         // Assert
-        assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
+        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
         Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
     }
@@ -273,29 +283,29 @@ class ReviewServiceTest {
     void findByCustomerId_existingCustomerId_returnsMatchingReviews() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        List<Review> reviews = List.of(createReview(customerId, UUID.randomUUID(), 5, "Excellent"));
-        Mockito.when(reviewRepository.findByCustomerId(customerId)).thenReturn(reviews);
+        List<Review> reviews = List.of(createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, "Excellent"));
+        Mockito.when(reviewRepository.findByCustomer_Id(customerId)).thenReturn(reviews);
 
         // Act
         List<Review> foundReviews = reviewService.findByCustomerId(customerId);
 
         // Assert
         assertThat(foundReviews).isEqualTo(reviews);
-        Mockito.verify(reviewRepository).findByCustomerId(customerId);
+        Mockito.verify(reviewRepository).findByCustomer_Id(customerId);
     }
 
     @Test
     void findByCustomerId_nonExistingCustomerId_returnsEmptyList() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Mockito.when(reviewRepository.findByCustomerId(customerId)).thenReturn(List.of());
+        Mockito.when(reviewRepository.findByCustomer_Id(customerId)).thenReturn(List.of());
 
         // Act
         List<Review> foundReviews = reviewService.findByCustomerId(customerId);
 
         // Assert
         assertThat(foundReviews).isEmpty();
-        Mockito.verify(reviewRepository).findByCustomerId(customerId);
+        Mockito.verify(reviewRepository).findByCustomer_Id(customerId);
     }
 
     @Test
@@ -307,14 +317,14 @@ class ReviewServiceTest {
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("CustomerId cannot be null");
-        Mockito.verify(reviewRepository, Mockito.never()).findByCustomerId(Mockito.any());
+        Mockito.verify(reviewRepository, Mockito.never()).findByCustomer_Id(Mockito.any());
     }
 
     @Test
     void findByWineId_existingWineId_returnsMatchingReviews() {
         // Arrange
         UUID wineId = UUID.randomUUID();
-        List<Review> reviews = List.of(createReview(UUID.randomUUID(), wineId, 4, "Very good"));
+        List<Review> reviews = List.of(createReview(TestDataFactory.customerEntity(), wineId, 4, "Very good"));
         Mockito.when(reviewRepository.findByWineId(wineId)).thenReturn(reviews);
 
         // Act
@@ -355,8 +365,8 @@ class ReviewServiceTest {
     void findAll_returnsAllReviews() {
         // Arrange
         List<Review> reviews = List.of(
-            createReview(UUID.randomUUID(), UUID.randomUUID(), 5, "Excellent"),
-            createReview(UUID.randomUUID(), UUID.randomUUID(), 3, "Average")
+            createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, "Excellent"),
+            createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 3, "Average")
         );
         Mockito.when(reviewRepository.findAll()).thenReturn(reviews);
 
@@ -415,12 +425,12 @@ class ReviewServiceTest {
     }
 
     private Review createReview() {
-        return createReview(UUID.randomUUID(), UUID.randomUUID(), 5, "Great wine");
+        return createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, "Great wine");
     }
 
-    private Review createReview(UUID customerId, UUID wineId, int rating, String comment) {
+    private Review createReview(Customer customer, UUID wineId, int rating, String comment) {
         Review review = new Review();
-        review.setCustomerId(customerId);
+        review.setCustomer(customer);
         review.setWineId(wineId);
         review.setRating(rating);
         review.setComment(comment);

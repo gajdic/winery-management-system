@@ -18,7 +18,7 @@ public final class TestDataFactory {
     public static Customer customerEntity() {
         Customer c = new Customer();
         c.setName("John Doe");
-        c.setEmail("john@example.com");
+        c.setEmail("john" + UUID.randomUUID() + "@example.com");
         c.setAddress(addressEntity());
         return c;
     }
@@ -34,7 +34,7 @@ public final class TestDataFactory {
 
     public static Review reviewEntity() {
         Review r = new Review();
-        r.setCustomerId(CUSTOMER_ID);
+        r.setCustomer(customerEntity());
         r.setWineId(WINE_ID);
         r.setRating(5);
         r.setComment("Great wine!");

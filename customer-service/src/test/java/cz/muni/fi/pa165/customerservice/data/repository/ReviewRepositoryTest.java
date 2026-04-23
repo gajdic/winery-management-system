@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.customerservice.data.repository;
 
 import cz.muni.fi.pa165.customerservice.data.model.Review;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,17 @@ public class ReviewRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Test
     void save_validReview_reviewIsPersisted() {
         // Arrange
+        Customer customer = TestDataFactory.customerEntity();
+        customerRepository.save(customer);
+
         Review review = TestDataFactory.reviewEntity();
+        review.setCustomer(customer);
 
         // Act
         Review saved = reviewRepository.save(review);
@@ -34,7 +42,12 @@ public class ReviewRepositoryTest {
     @Test
     void findById_existingReview_returnsReview() {
         // Arrange
+        Customer customer = TestDataFactory.customerEntity();
+        customerRepository.save(customer);
+
         Review review = TestDataFactory.reviewEntity();
+        review.setCustomer(customer);
+
         Review saved = reviewRepository.save(review);
 
         // Act
@@ -71,7 +84,13 @@ public class ReviewRepositoryTest {
     @Test
     void deleteById_existingReview_reviewIsDeleted() {
         // Arrange
-        Review saved = reviewRepository.save(TestDataFactory.reviewEntity());
+        Customer customer = TestDataFactory.customerEntity();
+        customerRepository.save(customer);
+
+        Review review = TestDataFactory.reviewEntity();
+        review.setCustomer(customer);
+
+        Review saved = reviewRepository.save(review);
 
         // Act
         reviewRepository.deleteById(saved.getId());
@@ -84,46 +103,51 @@ public class ReviewRepositoryTest {
     @Test
     void findByCustomerId_existingCustomer_returnsReviews() {
         // Arrange
-        UUID customerId = UUID.randomUUID();
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+        Customer otherCustomer = customerRepository.save(TestDataFactory.customerEntity());
+
+        UUID customerId = customer.getId();
 
         Review r1 = TestDataFactory.reviewEntity();
-        r1.setCustomerId(customerId);
+        r1.setCustomer(customer);
 
         Review r2 = TestDataFactory.reviewEntity();
-        r2.setCustomerId(customerId);
+        r2.setCustomer(customer);
 
         Review r3 = TestDataFactory.reviewEntity();
-        r3.setCustomerId(UUID.randomUUID());
+        r3.setCustomer(otherCustomer);
 
-        reviewRepository.save(r1);
-        reviewRepository.save(r2);
-        reviewRepository.save(r3);
+        reviewRepository.saveAllAndFlush(List.of(r1, r2, r3));
 
         // Act
-        List<Review> result = reviewRepository.findByCustomerId(customerId);
+        List<Review> result = reviewRepository.findByCustomer_Id(customerId);
 
         // Assert
         assertThat(result).hasSize(2);
-        assertThat(result).allMatch(r -> r.getCustomerId().equals(customerId));
+        assertThat(result).allMatch(r -> r.getCustomer().getId().equals(customerId));
     }
 
     @Test
     void findByWineId_existingWine_returnsReviews() {
         // Arrange
+        Customer customer = TestDataFactory.customerEntity();
+        customer = customerRepository.save(customer);
+
         UUID wineId = UUID.randomUUID();
 
         Review r1 = TestDataFactory.reviewEntity();
+        r1.setCustomer(customer);
         r1.setWineId(wineId);
 
         Review r2 = TestDataFactory.reviewEntity();
+        r2.setCustomer(customer);
         r2.setWineId(wineId);
 
         Review r3 = TestDataFactory.reviewEntity();
+        r3.setCustomer(customer);
         r3.setWineId(UUID.randomUUID());
 
-        reviewRepository.save(r1);
-        reviewRepository.save(r2);
-        reviewRepository.save(r3);
+        reviewRepository.saveAll(List.of(r1, r2, r3));
 
         // Act
         List<Review> result = reviewRepository.findByWineId(wineId);

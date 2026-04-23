@@ -48,14 +48,14 @@ public class InsertInitialDataService {
         customerRepository.save(customer2);
 
         Review review1 = new Review();
-        review1.setCustomerId(customer1.getId());
+        review1.setCustomer(customer1);
         review1.setWineId(UUID.randomUUID());
         review1.setRating(5);
         review1.setComment("Excellent wine!");
         reviewRepository.save(review1);
 
         Review review2 = new Review();
-        review2.setCustomerId(customer2.getId());
+        review2.setCustomer(customer2);
         review2.setWineId(UUID.randomUUID());
         review2.setRating(4);
         review2.setComment("Very good.");
