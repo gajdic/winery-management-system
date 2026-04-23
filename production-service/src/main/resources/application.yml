@@ -25,3 +25,7 @@ spring:
     template:
       default-destination: batch-completed-queue
       session-transacted: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

@@ -51,7 +51,7 @@ class ReviewControllerWebMvcTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(reviewId.toString()))
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
-            .andExpect(jsonPath("$.customerID").value(customerId.toString()))
+            .andExpect(jsonPath("$.customerId").value(customerId.toString()))
             .andExpect(jsonPath("$.rating").value(4))
             .andExpect(jsonPath("$.comment").value("Created review"));
     }
@@ -79,7 +79,7 @@ class ReviewControllerWebMvcTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(reviewId.toString()))
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
-            .andExpect(jsonPath("$.customerID").value(customerId.toString()))
+            .andExpect(jsonPath("$.customerId").value(customerId.toString()))
             .andExpect(jsonPath("$.rating").value(5))
             .andExpect(jsonPath("$.comment").value("Excellent wine"));
     }
@@ -135,7 +135,7 @@ class ReviewControllerWebMvcTest {
         // Act + Assert
         mockMvc.perform(get("/reviews/customer/{customerId}", customerId))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].customerID").value(customerId.toString()))
+            .andExpect(jsonPath("$[0].customerId").value(customerId.toString()))
             .andExpect(jsonPath("$[0].comment").value("Customer review"));
     }
 
@@ -305,7 +305,7 @@ class ReviewControllerWebMvcTest {
         ReviewDto dto = new ReviewDto();
         dto.setId(id);
         dto.setWineId(wineId);
-        dto.setCustomerID(customerId);
+        dto.setCustomerId(customerId);
         dto.setRating(rating);
         dto.setComment(comment);
         return dto;
@@ -315,7 +315,7 @@ class ReviewControllerWebMvcTest {
         return """
             {
               "wineId": "%s",
-              "customerID": "%s",
+              "customerId": "%s",
               "rating": 4,
               "comment": "Created review"
             }
@@ -326,7 +326,7 @@ class ReviewControllerWebMvcTest {
         return """
             {
               "wineId": "%s",
-              "customerID": "%s",
+              "customerId": "%s",
               "rating": 3,
               "comment": "After update"
             }
@@ -337,7 +337,7 @@ class ReviewControllerWebMvcTest {
         return """
             {
               "wineId": null,
-              "customerID": null,
+              "customerId": null,
               "rating": 10,
               "comment": "Invalid review"
             }
