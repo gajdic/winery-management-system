@@ -25,8 +25,8 @@ public class PurchaseRecordService {
             throw new IllegalArgumentException("PurchaseRecord cannot be null");
         }
 
-        if (purchaseRecord.getCustomerId() == null) {
-            throw new IllegalArgumentException("CustomerId cannot be null");
+        if (purchaseRecord.getCustomer() == null) {
+            throw new IllegalArgumentException("Customer cannot be null");
         }
 
         if (purchaseRecord.getWineId() == null) {
@@ -64,7 +64,7 @@ public class PurchaseRecordService {
             throw new IllegalArgumentException("CustomerId cannot be null");
         }
 
-        return purchaseRecordRepository.findByCustomerId(customerId);
+        return purchaseRecordRepository.findByCustomer_Id(customerId);
     }
 
     public List<PurchaseRecord> findByWineId(UUID wineId) {
@@ -91,7 +91,7 @@ public class PurchaseRecordService {
             throw new IllegalArgumentException("CustomerId cannot be null");
         }
 
-        return purchaseRecordRepository.findByCustomerId(customerId).stream()
+        return purchaseRecordRepository.findByCustomer_Id(customerId).stream()
             .mapToDouble(p -> p.getQuantity() * p.getPricePerBottle())
             .sum();
     }

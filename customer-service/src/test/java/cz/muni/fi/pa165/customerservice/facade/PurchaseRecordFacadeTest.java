@@ -4,8 +4,10 @@ import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordCreateDto;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
 import cz.muni.fi.pa165.customerservice.data.model.PurchaseRecord;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.mappers.PurchaseRecordMapper;
 import cz.muni.fi.pa165.customerservice.service.PurchaseRecordService;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,7 +43,7 @@ class PurchaseRecordFacadeTest {
         savedPurchaseRecord.setId(UUID.randomUUID());
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
             savedPurchaseRecord.getId(),
-            savedPurchaseRecord.getCustomerId(),
+            savedPurchaseRecord.getCustomer().getId(),
             savedPurchaseRecord.getWineId(),
             savedPurchaseRecord.getQuantity(),
             savedPurchaseRecord.getPricePerBottle(),
@@ -70,7 +72,7 @@ class PurchaseRecordFacadeTest {
         purchaseRecord.setId(purchaseId);
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
             purchaseId,
-            purchaseRecord.getCustomerId(),
+            purchaseRecord.getCustomer().getId(),
             purchaseRecord.getWineId(),
             purchaseRecord.getQuantity(),
             purchaseRecord.getPricePerBottle(),
@@ -95,7 +97,7 @@ class PurchaseRecordFacadeTest {
         PurchaseRecord firstPurchase = createPurchaseRecord();
         firstPurchase.setId(UUID.randomUUID());
         PurchaseRecord secondPurchase = createPurchaseRecord(
-            UUID.randomUUID(),
+            TestDataFactory.customerEntity(),
             UUID.randomUUID(),
             3,
             11.50,
@@ -105,7 +107,7 @@ class PurchaseRecordFacadeTest {
 
         PurchaseRecordDto firstDto = createPurchaseRecordDto(
             firstPurchase.getId(),
-            firstPurchase.getCustomerId(),
+            firstPurchase.getCustomer().getId(),
             firstPurchase.getWineId(),
             firstPurchase.getQuantity(),
             firstPurchase.getPricePerBottle(),
@@ -113,7 +115,7 @@ class PurchaseRecordFacadeTest {
         );
         PurchaseRecordDto secondDto = createPurchaseRecordDto(
             secondPurchase.getId(),
-            secondPurchase.getCustomerId(),
+            secondPurchase.getCustomer().getId(),
             secondPurchase.getWineId(),
             secondPurchase.getQuantity(),
             secondPurchase.getPricePerBottle(),
@@ -153,7 +155,7 @@ class PurchaseRecordFacadeTest {
         // Arrange
         UUID customerId = UUID.randomUUID();
         PurchaseRecord purchaseRecord = createPurchaseRecord(
-            customerId,
+            TestDataFactory.customerEntity(),
             UUID.randomUUID(),
             5,
             10.00,
@@ -162,7 +164,7 @@ class PurchaseRecordFacadeTest {
         purchaseRecord.setId(UUID.randomUUID());
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
             purchaseRecord.getId(),
-            purchaseRecord.getCustomerId(),
+            purchaseRecord.getCustomer().getId(),
             purchaseRecord.getWineId(),
             purchaseRecord.getQuantity(),
             purchaseRecord.getPricePerBottle(),
@@ -201,7 +203,7 @@ class PurchaseRecordFacadeTest {
         // Arrange
         UUID wineId = UUID.randomUUID();
         PurchaseRecord purchaseRecord = createPurchaseRecord(
-            UUID.randomUUID(),
+            TestDataFactory.customerEntity(),
             wineId,
             4,
             11.50,
@@ -210,7 +212,7 @@ class PurchaseRecordFacadeTest {
         purchaseRecord.setId(UUID.randomUUID());
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
             purchaseRecord.getId(),
-            purchaseRecord.getCustomerId(),
+            purchaseRecord.getCustomer().getId(),
             purchaseRecord.getWineId(),
             purchaseRecord.getQuantity(),
             purchaseRecord.getPricePerBottle(),
@@ -251,7 +253,7 @@ class PurchaseRecordFacadeTest {
         purchaseRecord.setId(UUID.randomUUID());
         PurchaseRecordDto purchaseRecordDto = createPurchaseRecordDto(
             purchaseRecord.getId(),
-            purchaseRecord.getCustomerId(),
+            purchaseRecord.getCustomer().getId(),
             purchaseRecord.getWineId(),
             purchaseRecord.getQuantity(),
             purchaseRecord.getPricePerBottle(),
@@ -433,7 +435,7 @@ class PurchaseRecordFacadeTest {
 
     private PurchaseRecord createPurchaseRecord() {
         return createPurchaseRecord(
-            UUID.randomUUID(),
+            TestDataFactory.customerEntity(),
             UUID.randomUUID(),
             6,
             13.99,
@@ -442,14 +444,14 @@ class PurchaseRecordFacadeTest {
     }
 
     private PurchaseRecord createPurchaseRecord(
-        UUID customerId,
+        Customer customer,
         UUID wineId,
         int quantity,
         double pricePerBottle,
         LocalDateTime purchaseDate
     ) {
         PurchaseRecord purchaseRecord = new PurchaseRecord();
-        purchaseRecord.setCustomerId(customerId);
+        purchaseRecord.setCustomer(customer);
         purchaseRecord.setWineId(wineId);
         purchaseRecord.setQuantity(quantity);
         purchaseRecord.setPricePerBottle(pricePerBottle);

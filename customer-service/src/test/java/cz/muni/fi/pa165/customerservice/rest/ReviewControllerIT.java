@@ -1,7 +1,10 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
 import cz.muni.fi.pa165.customerservice.data.model.Review;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
+import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
 import cz.muni.fi.pa165.customerservice.data.repository.ReviewRepository;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,22 +32,28 @@ class ReviewControllerIT {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Test
     void getReview_existingReview_returnsReviewDto() throws Exception {
         // Arrange
-        Review review = createReview("Excellent wine");
-        // Act
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
+        Review review = TestDataFactory.reviewEntity();
+        review.setCustomer(customer);
+
         review = reviewRepository.save(review);
 
         // Act + Assert
         mockMvc.perform(get("/reviews/{id}", review.getId())
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(review.getId().toString()))
             .andExpect(jsonPath("$.wineId").value(review.getWineId().toString()))
-            .andExpect(jsonPath("$.customerId").value(review.getCustomerId().toString()))
+            .andExpect(jsonPath("$.customerId").value(customer.getId().toString()))
             .andExpect(jsonPath("$.rating").value(5))
-            .andExpect(jsonPath("$.comment").value("Excellent wine"));
+            .andExpect(jsonPath("$.comment").value("Great wine!"));
     }
 
     @Test
@@ -63,13 +72,17 @@ class ReviewControllerIT {
     @Test
     void getAllReviews_returnsReviewsIncludingInsertedReview() throws Exception {
         // Arrange
-        Review review = createReview("Collection review");
-        // Act
-        reviewRepository.save(review);
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
+        Review review = TestDataFactory.reviewEntity();
+        review.setCustomer(customer);
+        review.setComment("Collection review");
+
+        reviewRepository.saveAndFlush(review);
 
         // Act + Assert
         mockMvc.perform(get("/reviews")
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[*].comment", hasItem("Collection review")));
     }
@@ -77,17 +90,18 @@ class ReviewControllerIT {
     @Test
     void getReviewsByCustomer_existingCustomer_returnsMatchingReviews() throws Exception {
         // Arrange
-        UUID customerId = UUID.randomUUID();
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         Review review = createReview("Customer filter review");
-        review.setCustomerId(customerId);
-        // Act
-        reviewRepository.save(review);
+        review.setCustomer(customer);
+
+        reviewRepository.saveAndFlush(review);
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/customer/{customerId}", customerId)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/reviews/customer/{customerId}", customer.getId())
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].customerId").value(customerId.toString()))
+            .andExpect(jsonPath("$[0].customerId").value(customer.getId().toString()))
             .andExpect(jsonPath("$[0].comment").value("Customer filter review"));
     }
 
@@ -104,15 +118,19 @@ class ReviewControllerIT {
     @Test
     void getReviewsByWine_existingWine_returnsMatchingReviews() throws Exception {
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         UUID wineId = UUID.randomUUID();
+
         Review review = createReview("Wine filter review");
+        review.setCustomer(customer);
         review.setWineId(wineId);
-        // Act
-        reviewRepository.save(review);
+
+        reviewRepository.saveAndFlush(review);
 
         // Act + Assert
         mockMvc.perform(get("/reviews/wine/{wineId}", wineId)
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].wineId").value(wineId.toString()))
             .andExpect(jsonPath("$[0].comment").value("Wine filter review"));
@@ -132,7 +150,7 @@ class ReviewControllerIT {
     void createReview_validRequest_returnsCreatedReviewDto() throws Exception {
         // Arrange
         UUID wineId = UUID.randomUUID();
-        UUID customerId = UUID.randomUUID();
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
 
         // Act + Assert
         mockMvc.perform(post("/reviews")
@@ -144,11 +162,11 @@ class ReviewControllerIT {
                       "rating": 4,
                       "comment": "Created review"
                     }
-                    """.formatted(wineId, customerId)))
+                    """.formatted(wineId, customer.getId())))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").isNotEmpty())
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
-            .andExpect(jsonPath("$.customerId").value(customerId.toString()))
+            .andExpect(jsonPath("$.customerId").value(customer.getId().toString()))
             .andExpect(jsonPath("$.rating").value(4))
             .andExpect(jsonPath("$.comment").value("Created review"));
     }
@@ -172,21 +190,23 @@ class ReviewControllerIT {
     @Test
     void updateReview_existingReview_returnsUpdatedReviewDto() throws Exception {
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         Review review = createReview("Before update");
-        // Act
-        review = reviewRepository.save(review);
+        review.setCustomer(customer);
+        review = reviewRepository.saveAndFlush(review);
 
         // Act + Assert
         mockMvc.perform(put("/reviews/{id}", review.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {
-                      "wineId": "%s",
-                      "customerId": "%s",
-                      "rating": 3,
-                      "comment": "After update"
-                    }
-                    """.formatted(review.getWineId(), review.getCustomerId())))
+                {
+                  "wineId": "%s",
+                  "customerId": "%s",
+                  "rating": 3,
+                  "comment": "After update"
+                }
+                """.formatted(review.getWineId(), customer.getId())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(review.getId().toString()))
             .andExpect(jsonPath("$.rating").value(3))
@@ -217,9 +237,11 @@ class ReviewControllerIT {
     @Test
     void deleteReview_existingReview_returnsNoContent() throws Exception {
         // Arrange
+        Customer customer = customerRepository.save(TestDataFactory.customerEntity());
+
         Review review = createReview("Delete review");
-        // Act
-        review = reviewRepository.save(review);
+        review.setCustomer(customer);
+        review = reviewRepository.saveAndFlush(review);
 
         // Act + Assert
         mockMvc.perform(delete("/reviews/{id}", review.getId()))
@@ -228,7 +250,7 @@ class ReviewControllerIT {
 
     private Review createReview(String comment) {
         Review review = new Review();
-        review.setCustomerId(UUID.randomUUID());
+        review.setCustomer(TestDataFactory.customerEntity());
         review.setWineId(UUID.randomUUID());
         review.setRating(5);
         review.setComment(comment);

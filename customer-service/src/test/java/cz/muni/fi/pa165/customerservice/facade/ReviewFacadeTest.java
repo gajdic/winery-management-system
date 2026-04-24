@@ -5,8 +5,10 @@ import cz.muni.fi.pa165.customerservice.api.ReviewCreateDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewUpdateDto;
 import cz.muni.fi.pa165.customerservice.data.model.Review;
+import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.mappers.ReviewMapper;
 import cz.muni.fi.pa165.customerservice.service.ReviewService;
+import cz.muni.fi.pa165.customerservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,7 +41,7 @@ class ReviewFacadeTest {
         Review review = createReview();
         Review savedReview = createReview();
         savedReview.setId(UUID.randomUUID());
-        ReviewDto reviewDto = createReviewDto(savedReview.getId(), savedReview.getWineId(), savedReview.getCustomerId(), savedReview.getRating(), savedReview.getComment());
+        ReviewDto reviewDto = createReviewDto(savedReview.getId(), savedReview.getWineId(), savedReview.getCustomer().getId(), savedReview.getRating(), savedReview.getComment());
 
         Mockito.when(reviewMapper.mapToEntity(createDto)).thenReturn(review);
         Mockito.when(reviewService.save(review)).thenReturn(savedReview);
@@ -61,7 +63,7 @@ class ReviewFacadeTest {
         UUID reviewId = UUID.randomUUID();
         Review review = createReview();
         review.setId(reviewId);
-        ReviewDto reviewDto = createReviewDto(reviewId, review.getWineId(), review.getCustomerId(), review.getRating(), review.getComment());
+        ReviewDto reviewDto = createReviewDto(reviewId, review.getWineId(), review.getCustomer().getId(), review.getRating(), review.getComment());
 
         Mockito.when(reviewService.findById(reviewId)).thenReturn(review);
         Mockito.when(reviewMapper.mapToDto(review)).thenReturn(reviewDto);
@@ -80,11 +82,11 @@ class ReviewFacadeTest {
         // Arrange
         Review firstReview = createReview();
         firstReview.setId(UUID.randomUUID());
-        Review secondReview = createReview(UUID.randomUUID(), UUID.randomUUID(), 3, "Average");
+        Review secondReview = createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 3, "Average");
         secondReview.setId(UUID.randomUUID());
 
-        ReviewDto firstDto = createReviewDto(firstReview.getId(), firstReview.getWineId(), firstReview.getCustomerId(), firstReview.getRating(), firstReview.getComment());
-        ReviewDto secondDto = createReviewDto(secondReview.getId(), secondReview.getWineId(), secondReview.getCustomerId(), secondReview.getRating(), secondReview.getComment());
+        ReviewDto firstDto = createReviewDto(firstReview.getId(), firstReview.getWineId(), firstReview.getCustomer().getId(), firstReview.getRating(), firstReview.getComment());
+        ReviewDto secondDto = createReviewDto(secondReview.getId(), secondReview.getWineId(), secondReview.getCustomer().getId(), secondReview.getRating(), secondReview.getComment());
 
         Mockito.when(reviewService.findAll()).thenReturn(List.of(firstReview, secondReview));
         Mockito.when(reviewMapper.mapToDto(firstReview)).thenReturn(firstDto);
@@ -118,9 +120,9 @@ class ReviewFacadeTest {
     void getReviewsByCustomer_existingCustomerId_returnsMappedDtos() {
         // Arrange
         UUID customerId = UUID.randomUUID();
-        Review review = createReview(customerId, UUID.randomUUID(), 5, "Excellent");
+        Review review = createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, "Excellent");
         review.setId(UUID.randomUUID());
-        ReviewDto reviewDto = createReviewDto(review.getId(), review.getWineId(), review.getCustomerId(), review.getRating(), review.getComment());
+        ReviewDto reviewDto = createReviewDto(review.getId(), review.getWineId(), review.getCustomer().getId(), review.getRating(), review.getComment());
 
         Mockito.when(reviewService.findByCustomerId(customerId)).thenReturn(List.of(review));
         Mockito.when(reviewMapper.mapToDto(review)).thenReturn(reviewDto);
@@ -153,9 +155,9 @@ class ReviewFacadeTest {
     void getReviewsByWine_existingWineId_returnsMappedDtos() {
         // Arrange
         UUID wineId = UUID.randomUUID();
-        Review review = createReview(UUID.randomUUID(), wineId, 4, "Very good");
+        Review review = createReview(TestDataFactory.customerEntity(), wineId, 4, "Very good");
         review.setId(UUID.randomUUID());
-        ReviewDto reviewDto = createReviewDto(review.getId(), review.getWineId(), review.getCustomerId(), review.getRating(), review.getComment());
+        ReviewDto reviewDto = createReviewDto(review.getId(), review.getWineId(), review.getCustomer().getId(), review.getRating(), review.getComment());
 
         Mockito.when(reviewService.findByWineId(wineId)).thenReturn(List.of(review));
         Mockito.when(reviewMapper.mapToDto(review)).thenReturn(reviewDto);
@@ -189,11 +191,11 @@ class ReviewFacadeTest {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         ReviewUpdateDto updateDto = createReviewUpdateDto();
-        Review mappedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review mappedReview = createReview(TestDataFactory.customerEntity(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
         mappedReview.setId(reviewId);
-        Review updatedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review updatedReview = createReview(TestDataFactory.customerEntity(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
         updatedReview.setId(reviewId);
-        ReviewDto reviewDto = createReviewDto(reviewId, updatedReview.getWineId(), updatedReview.getCustomerId(), updatedReview.getRating(), updatedReview.getComment());
+        ReviewDto reviewDto = createReviewDto(reviewId, updatedReview.getWineId(), updatedReview.getCustomer().getId(), updatedReview.getRating(), updatedReview.getComment());
 
         Mockito.when(reviewMapper.mapToEntity(reviewId, updateDto)).thenReturn(mappedReview);
         Mockito.when(reviewService.update(reviewId, mappedReview)).thenReturn(updatedReview);
@@ -250,7 +252,7 @@ class ReviewFacadeTest {
         // Arrange
         UUID reviewId = UUID.randomUUID();
         ReviewUpdateDto updateDto = createReviewUpdateDto();
-        Review mappedReview = createReview(updateDto.getCustomerId(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
+        Review mappedReview = createReview(TestDataFactory.customerEntity(), updateDto.getWineId(), updateDto.getRating(), updateDto.getComment());
 
         Mockito.when(reviewMapper.mapToEntity(reviewId, updateDto)).thenReturn(mappedReview);
         Mockito.when(reviewService.update(reviewId, mappedReview))
@@ -314,12 +316,12 @@ class ReviewFacadeTest {
     }
 
     private Review createReview() {
-        return createReview(UUID.randomUUID(), UUID.randomUUID(), 5, "Great wine");
+        return createReview(TestDataFactory.customerEntity(), UUID.randomUUID(), 5, "Great wine");
     }
 
-    private Review createReview(UUID customerId, UUID wineId, int rating, String comment) {
+    private Review createReview(Customer customer, UUID wineId, int rating, String comment) {
         Review review = new Review();
-        review.setCustomerId(customerId);
+        review.setCustomer(customer);
         review.setWineId(wineId);
         review.setRating(rating);
         review.setComment(comment);

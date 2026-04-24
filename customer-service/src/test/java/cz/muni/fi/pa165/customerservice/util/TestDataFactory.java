@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public final class TestDataFactory {
 
-    public static final UUID CUSTOMER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final UUID WINE_ID = UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     private TestDataFactory() {}
@@ -18,7 +17,7 @@ public final class TestDataFactory {
     public static Customer customerEntity() {
         Customer c = new Customer();
         c.setName("John Doe");
-        c.setEmail("john@example.com");
+        c.setEmail("john" + UUID.randomUUID() + "@example.com");
         c.setAddress(addressEntity());
         return c;
     }
@@ -34,7 +33,7 @@ public final class TestDataFactory {
 
     public static Review reviewEntity() {
         Review r = new Review();
-        r.setCustomerId(CUSTOMER_ID);
+        r.setCustomer(customerEntity());
         r.setWineId(WINE_ID);
         r.setRating(5);
         r.setComment("Great wine!");
@@ -43,7 +42,7 @@ public final class TestDataFactory {
 
     public static PurchaseRecord purchaseRecordEntity() {
         PurchaseRecord p = new PurchaseRecord();
-        p.setCustomerId(CUSTOMER_ID);
+        p.setCustomer(customerEntity());
         p.setWineId(WINE_ID);
         p.setQuantity(5);
         p.setPricePerBottle(10.0);
