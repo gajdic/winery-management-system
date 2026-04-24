@@ -4,7 +4,6 @@ import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 
@@ -41,16 +40,15 @@ public final class TestDataFactory {
     }
 
     public static Reservation reservationEntity() {
-        return reservationEntity(ReservationStatus.PENDING, 15);
+        return reservationEntity(15);
     }
 
-    public static Reservation reservationEntity(ReservationStatus status, int quantity) {
+    public static Reservation reservationEntity(int quantity) {
         Reservation reservation = new Reservation();
         reservation.setId(RESERVATION_ID);
         reservation.setCustomerId(CUSTOMER_ID);
         reservation.setWineId(WINE_ID);
         reservation.setQuantity(quantity);
-        reservation.setStatus(status);
         reservation.setCreatedAt(LocalDate.of(2025, 3, 1));
         return reservation;
     }
@@ -75,22 +73,20 @@ public final class TestDataFactory {
     public static ReservationBasicViewDto reservationBasicViewDto() {
         ReservationBasicViewDto dto = new ReservationBasicViewDto();
         dto.setId(RESERVATION_ID);
-        dto.setStatus(ReservationStatus.PENDING);
         dto.setCreatedAt(LocalDate.of(2025, 3, 1));
         return dto;
     }
 
     public static ReservationDetailedViewDto reservationDetailedViewDto() {
-        return reservationDetailedViewDto(ReservationStatus.PENDING, 15);
+        return reservationDetailedViewDto(15);
     }
 
-    public static ReservationDetailedViewDto reservationDetailedViewDto(ReservationStatus status, int quantity) {
+    public static ReservationDetailedViewDto reservationDetailedViewDto(int quantity) {
         ReservationDetailedViewDto dto = new ReservationDetailedViewDto();
         dto.setId(RESERVATION_ID);
         dto.setCustomerId(CUSTOMER_ID);
         dto.setWineId(WINE_ID);
         dto.setQuantity(quantity);
-        dto.setStatus(status);
         dto.setCreatedAt(LocalDate.of(2025, 3, 1));
         return dto;
     }

@@ -3,11 +3,8 @@ package cz.muni.fi.pa165.inventoryservice.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.inventoryservice.InventoryServiceApplication;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
-import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
-import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,9 +18,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,9 +36,6 @@ class ReservationIT {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    @Autowired
-    private StockRepository stockRepository;
-
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Test
@@ -53,7 +48,6 @@ class ReservationIT {
         createDto.setCustomerId(customerId);
         createDto.setWineId(wineId);
         createDto.setQuantity(6);
-        createDto.setStatus(ReservationStatus.PENDING);
         createDto.setCreatedAt(LocalDate.of(2025, 10, 15));
 
         MvcResult createResult = mockMvc.perform(post("/reservations")
@@ -63,7 +57,6 @@ class ReservationIT {
             .andExpect(jsonPath("$.customerId").value(customerId.toString()))
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
             .andExpect(jsonPath("$.quantity").value(6))
-            .andExpect(jsonPath("$.status").value("PENDING"))
             .andReturn();
 
         ReservationDetailedViewDto created = objectMapper.readValue(
@@ -74,7 +67,6 @@ class ReservationIT {
         assertThat(persisted.getCustomerId()).isEqualTo(customerId);
         assertThat(persisted.getWineId()).isEqualTo(wineId);
         assertThat(persisted.getQuantity()).isEqualTo(6);
-        assertThat(persisted.getStatus()).isEqualTo(ReservationStatus.PENDING);
 
         mockMvc.perform(get("/reservations/{id}", created.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -83,58 +75,48 @@ class ReservationIT {
     }
 
     @Test
-    void updateStatus_toCompleted_decreasesStockQuantityAndReservedQuantity() throws Exception {
-        UUID wineId = UUID.randomUUID();
-
-        Stock stock = new Stock();
-        stock.setWineId(wineId);
-        stock.setQuantity(100);
-        stock.setReservedQuantity(10);
-        stockRepository.saveAndFlush(stock);
-
+    void updateReservation_persistsChangedQuantityAndReflectsItThroughApi() throws Exception {
         Reservation reservation = new Reservation();
         reservation.setCustomerId(UUID.randomUUID());
-        reservation.setWineId(wineId);
-        reservation.setQuantity(10);
-        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setWineId(UUID.randomUUID());
+        reservation.setQuantity(5);
         reservation.setCreatedAt(LocalDate.now());
         reservation = reservationRepository.saveAndFlush(reservation);
 
-        mockMvc.perform(patch("/reservations/{id}/status", reservation.getId())
-                .param("status", ReservationStatus.COMPLETED.name()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("COMPLETED"));
+        ReservationDetailedViewDto updateDto = new ReservationDetailedViewDto();
+        updateDto.setId(reservation.getId());
+        updateDto.setCustomerId(reservation.getCustomerId());
+        updateDto.setWineId(reservation.getWineId());
+        updateDto.setQuantity(12);
+        updateDto.setCreatedAt(reservation.getCreatedAt());
 
-        Stock refreshed = stockRepository.findByWineId(wineId).orElseThrow();
-        assertThat(refreshed.getQuantity()).isEqualTo(90);
-        assertThat(refreshed.getReservedQuantity()).isEqualTo(0);
+        mockMvc.perform(put("/reservations/{id}", reservation.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateDto)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.quantity").value(12));
+
+        Reservation refreshed = reservationRepository.findById(reservation.getId()).orElseThrow();
+        assertThat(refreshed.getQuantity()).isEqualTo(12);
     }
 
     @Test
-    void updateStatus_toCanceled_releasesReservedQuantityOnly() throws Exception {
-        UUID wineId = UUID.randomUUID();
-
-        Stock stock = new Stock();
-        stock.setWineId(wineId);
-        stock.setQuantity(100);
-        stock.setReservedQuantity(10);
-        stockRepository.saveAndFlush(stock);
-
+    void deleteReservation_removesEntityAndSubsequentGetReturnsNotFound() throws Exception {
         Reservation reservation = new Reservation();
         reservation.setCustomerId(UUID.randomUUID());
-        reservation.setWineId(wineId);
-        reservation.setQuantity(10);
-        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setWineId(UUID.randomUUID());
+        reservation.setQuantity(3);
         reservation.setCreatedAt(LocalDate.now());
         reservation = reservationRepository.saveAndFlush(reservation);
+        UUID reservationId = reservation.getId();
 
-        mockMvc.perform(patch("/reservations/{id}/status", reservation.getId())
-                .param("status", ReservationStatus.CANCELED.name()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("CANCELED"));
+        mockMvc.perform(delete("/reservations/{id}", reservationId))
+            .andExpect(status().isNoContent());
 
-        Stock refreshed = stockRepository.findByWineId(wineId).orElseThrow();
-        assertThat(refreshed.getQuantity()).isEqualTo(100);
-        assertThat(refreshed.getReservedQuantity()).isEqualTo(0);
+        assertThat(reservationRepository.findById(reservationId)).isEmpty();
+
+        mockMvc.perform(get("/reservations/{id}", reservationId)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 }

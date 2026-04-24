@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-24`.
 
 ## M2 povinne body
 
@@ -38,7 +38,7 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 - [x] `customer-service` ma aspon jeden integracny test.
 - [x] `harvest-service` ma aspon jeden integracny test.
 - [x] `production-service` ma aspon jeden integracny test.
-- [ ] `inventory-service` ma aspon jeden integracny test typu `@SpringBootTest` / `*IT`.
+- [x] `inventory-service` ma aspon jeden integracny test typu `@SpringBootTest` / `*IT`.
 
 ### 5. End-to-end prepojenie
 
@@ -47,12 +47,12 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 
 ### 6. Async komunikacia
 
-- [ ] Existuje komunikacia medzi 2 services cez Apache ActiveMQ Artemis.
-- [ ] Producer zapisuje JSON spravy do queue.
-- [ ] Consumer spravy asynchronne spracovava.
-- [ ] Spravy sa ukladaju do databazy.
-- [ ] Producer/consumer konfiguracia je v `application.yml`.
-- [ ] Lokalne transakcie su osetrene na producer aj consumer strane.
+- [x] Existuje komunikacia medzi 2 services cez Apache ActiveMQ Artemis.
+- [x] Producer zapisuje JSON spravy do queue.
+- [x] Consumer spravy asynchronne spracovava.
+- [x] Spravy sa ukladaju do databazy.
+- [x] Producer/consumer konfiguracia je v `application.yml`.
+- [x] Lokalne transakcie su osetrene na producer aj consumer strane.
 
 ### 7. Docker / Compose / README
 
@@ -64,9 +64,9 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 - [x] README obsahuje kompletne Docker build/run instrukcie pre `inventory-service`.
 - [x] README obsahuje Docker build/run instrukcie pre `production-service`.
 - [x] README obsahuje Swagger UI a OpenAPI odkazy pre vsetky 4 domenove services.
-- [ ] README popisuje aj broker / supporting infrastructure, ak bude pridany Artemis.
-- [ ] Po zavedeni Artemis je broker infrastructure doplnena do compose.
-- [ ] Kratky architektonicky popis JMS flow je doplneny v README alebo `docs`.
+- [x] README popisuje aj broker / supporting infrastructure, ak bude pridany Artemis.
+- [x] Po zavedeni Artemis je broker infrastructure doplnena do compose.
+- [x] Kratky architektonicky popis JMS flow je doplneny v README alebo `docs`.
 
 ### 8. OpenAPI
 
@@ -76,16 +76,16 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 - [x] `harvest-service` ma doplnene `@ApiResponses` na endpointoch.
 - [x] `harvest-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
 - [x] `harvest-service` ma zmysluplne summary/description texty bez placeholderov.
-- [ ] `customer-service` ma konzistentne OpenAPI anotacie na vsetkych controlleroch a endpointoch.
-- [ ] `inventory-service` ma konzistentne OpenAPI anotacie na vsetkych controlleroch a endpointoch.
-- [ ] `production-service` ma skontrolovane a zjednotene OpenAPI popisy na vsetkych endpointoch.
-- [ ] `production-service` ma doplnene `@ApiResponses` tam, kde este chybaju.
-- [ ] `production-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
-- [ ] `customer-service` ma doplnene `@ApiResponses` na endpointoch.
-- [ ] `customer-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
-- [ ] `inventory-service` ma doplnene `@ApiResponses` na endpointoch.
-- [ ] `inventory-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
-- [ ] Vsetky 4 domenove services maju pouzite aspon `@Tag` na controlleroch, `@Operation` na endpointoch, `@ApiResponses` na hlavnych endpointoch, `@Schema` na hlavnych DTO a zmysluplne summary/description texty bez placeholderov.
+- [x] `customer-service` ma konzistentne OpenAPI anotacie na vsetkych controlleroch a endpointoch.
+- [x] `inventory-service` ma konzistentne OpenAPI anotacie na vsetkych controlleroch a endpointoch.
+- [x] `production-service` ma skontrolovane a zjednotene OpenAPI popisy na vsetkych endpointoch.
+- [x] `production-service` ma doplnene `@ApiResponses` tam, kde este chybaju.
+- [x] `production-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
+- [x] `customer-service` ma doplnene `@ApiResponses` na endpointoch.
+- [x] `customer-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
+- [x] `inventory-service` ma doplnene `@ApiResponses` na endpointoch.
+- [x] `inventory-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
+- [x] Vsetky 4 domenove services maju pouzite aspon `@Tag` na controlleroch, `@Operation` na endpointoch, `@ApiResponses` na hlavnych endpointoch, `@Schema` na hlavnych DTO a zmysluplne summary/description texty bez placeholderov.
 - [ ] OpenAPI ma byt dorobene "na vybornu", nie len minimalne: konzistentne nazvy endpointov, jasne popisane business operacie, rozumne popisane request/response DTO a bez modulov, kde by dokumentacia chybala alebo bola len ciastocna.
 
 ## Opravy po M1 review
@@ -104,7 +104,7 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 
 ### Este otvorene
 
-- [ ] `customer-service`: odstranit alebo prehodnotit `RepositoryConfig`, ak este existuje alebo je zbytocny.
+- [x] `customer-service`: odstranit alebo prehodnotit `RepositoryConfig`, ak este existuje alebo je zbytocny.
 - [ ] `customer-service`: zvazit vztah `Review -> Customer` namiesto samotneho `customerId`.
 - [ ] `customer-service`: zvazit vztah `PurchaseRecord -> Customer` namiesto samotneho `customerId`.
 - [ ] `customer-service`: zvazit bidirectional mapovanie cez `Customer -> reviews`.
@@ -112,8 +112,8 @@ Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-15`.
 - [ ] `customer-service`: doplnit reviews do `CustomerDto`, ak to chcete dorobit podla feedbacku.
 - [ ] `customer-service`: doplnit purchase history do `CustomerDto`, ak to chcete dorobit podla feedbacku.
 - [x] `harvest-service`: zjednotit delete existence checks vo vsetkych service triedach.
-- [ ] `inventory-service`: rozhodnut, ci `ReservationStatus` ponechat alebo zjednodusit.
-- [ ] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne.
+- [x] `inventory-service`: rozhodnut, ci `ReservationStatus` ponechat alebo zjednodusit. (odstraneny 2026-04-24)
+- [x] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne. (N/A — odstraneny)
 - [ ] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key.
 
 ## Najblizsie odporucane kroky

@@ -1,6 +1,5 @@
 package cz.muni.fi.pa165.inventoryservice.config;
 
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
@@ -43,9 +42,9 @@ public class InsertInitialDataService {
             return;
         }
 
-        createReservation(stocks.get(0), 14, ReservationStatus.PENDING, LocalDate.now().minusDays(3));
-        createReservation(stocks.get(1), 8, ReservationStatus.PENDING, LocalDate.now().minusDays(1));
-        createReservation(stocks.get(0), 6, ReservationStatus.COMPLETED, LocalDate.now().minusDays(7));
+        createReservation(stocks.get(0), 14, LocalDate.now().minusDays(3));
+        createReservation(stocks.get(1), 8, LocalDate.now().minusDays(1));
+        createReservation(stocks.get(0), 6, LocalDate.now().minusDays(7));
     }
 
     private Stock createStock(UUID wineId, int quantity) {
@@ -56,28 +55,14 @@ public class InsertInitialDataService {
         return stockRepository.save(stock);
     }
 
-    private void createReservation(Stock stock, int quantity, ReservationStatus status, LocalDate createdAt) {
+    private void createReservation(Stock stock, int quantity, LocalDate createdAt) {
         Reservation reservation = new Reservation();
         reservation.setCustomerId(UUID.randomUUID());
         reservation.setWineId(stock.getWineId());
         reservation.setQuantity(quantity);
-        reservation.setStatus(status);
         reservation.setCreatedAt(createdAt);
         reservationRepository.save(reservation);
-        applyReservationToStock(stock, reservation);
-    }
-
-    private void applyReservationToStock(Stock stock, Reservation reservation) {
-        switch (reservation.getStatus()) {
-            case PENDING -> {
-                stock.setReservedQuantity(stock.getReservedQuantity() + reservation.getQuantity());
-                stockRepository.save(stock);
-            }
-            case COMPLETED -> {
-                stock.setQuantity(stock.getQuantity() - reservation.getQuantity());
-                stockRepository.save(stock);
-            }
-            case CANCELED -> { }
-        }
+        stock.setReservedQuantity(stock.getReservedQuantity() + reservation.getQuantity());
+        stockRepository.save(stock);
     }
 }
