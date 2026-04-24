@@ -48,14 +48,14 @@ public class InsertInitialDataService {
         customerRepository.save(customer2);
 
         Review review1 = new Review();
-        review1.setCustomerId(customer1.getId());
+        review1.setCustomer(customer1);
         review1.setWineId(UUID.randomUUID());
         review1.setRating(5);
         review1.setComment("Excellent wine!");
         reviewRepository.save(review1);
 
         Review review2 = new Review();
-        review2.setCustomerId(customer2.getId());
+        review2.setCustomer(customer2);
         review2.setWineId(UUID.randomUUID());
         review2.setRating(4);
         review2.setComment("Very good.");
@@ -63,7 +63,7 @@ public class InsertInitialDataService {
 
         // --- Purchases ---
         PurchaseRecord purchase1 = new PurchaseRecord();
-        purchase1.setCustomerId(customer1.getId());
+        purchase1.setCustomer(customer1);
         purchase1.setWineId(UUID.randomUUID());
         purchase1.setQuantity(10);
         purchase1.setPricePerBottle(12.5);
@@ -71,7 +71,7 @@ public class InsertInitialDataService {
         purchaseRecordRepository.save(purchase1);
 
         PurchaseRecord purchase2 = new PurchaseRecord();
-        purchase2.setCustomerId(customer1.getId());
+        purchase2.setCustomer(customer1);
         purchase2.setWineId(UUID.randomUUID());
         purchase2.setQuantity(3);
         purchase2.setPricePerBottle(20.0);

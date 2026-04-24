@@ -9,9 +9,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PurchaseRecordMapper {
 
+    @Mapping(target = "customerId", source = "customer.id")
     PurchaseRecordDto mapToDto(PurchaseRecord purchaseRecord);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "purchaseDate", ignore = true)
+    @Mapping(target = "customer.id", source = "customerId")
     PurchaseRecord mapToEntity(PurchaseRecordCreateDto dto);
 }

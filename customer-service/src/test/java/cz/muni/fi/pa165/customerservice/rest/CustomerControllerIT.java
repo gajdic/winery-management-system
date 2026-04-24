@@ -3,6 +3,8 @@ package cz.muni.fi.pa165.customerservice.rest;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Address;
 import cz.muni.fi.pa165.customerservice.data.model.customer.Customer;
 import cz.muni.fi.pa165.customerservice.data.repository.CustomerRepository;
+import cz.muni.fi.pa165.customerservice.data.repository.PurchaseRecordRepository;
+import cz.muni.fi.pa165.customerservice.data.repository.ReviewRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,12 @@ class CustomerControllerIT {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private PurchaseRecordRepository purchaseRecordRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Test
     void getCustomer_existingCustomer_returnsCustomerDto() throws Exception {
@@ -275,15 +283,12 @@ class CustomerControllerIT {
 
     @Test
     void getAllCustomers_emptyRepository_returnsEmptyList() throws Exception {
-        // Arrange
-        for (Customer customer : customerRepository.findAll()) {
-            // Act
-            customerRepository.deleteById(customer.getId());
-        }
+        reviewRepository.deleteAll();
+        purchaseRecordRepository.deleteAll();
+        customerRepository.deleteAll();
 
-        // Act + Assert
         mockMvc.perform(get("/customers")
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());

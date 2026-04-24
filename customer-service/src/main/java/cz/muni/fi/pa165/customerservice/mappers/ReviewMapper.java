@@ -13,18 +13,18 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
 
-    @Mapping(target = "customerId", source = "customerId")
+    @Mapping(target = "customerId", source = "customer.id")
     ReviewDto mapToDto(Review review);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "customerId", source = "customerId")
+    @Mapping(target = "customer.id", source = "customerId")
     Review mapToEntity(ReviewCreateDto dto);
 
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "customerId", source = "dto.customerId")
+    @Mapping(target = "customer.id", source = "dto.customerId")
     Review mapToEntity(UUID id, ReviewUpdateDto dto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "customerId", source = "customerId")
+    @Mapping(target = "customer.id", source = "customerId")
     void updateEntityFromDto(ReviewUpdateDto dto, @MappingTarget Review review);
 }

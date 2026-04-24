@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface PurchaseRecordRepository extends JpaRepository<PurchaseRecord, UUID> {
 
-    List<PurchaseRecord> findByCustomerId(UUID customerId);
+    List<PurchaseRecord> findByCustomer_Id(UUID customerId);
 
     List<PurchaseRecord> findByWineId(UUID wineId);
 
