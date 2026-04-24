@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import cz.muni.fi.pa165.productionservice.data.repository.ProductionBatchRepository;
+import cz.muni.fi.pa165.productionservice.messaging.ProductionBatchCompletedProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,15 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class ProductionBatchService {
     private final ProductionBatchRepository productionBatchRepository;
+    private final ProductionBatchCompletedProducer productionBatchCompletedProducer;
 
     @Autowired
-    public ProductionBatchService(ProductionBatchRepository productionBatchRepository) {
+    public ProductionBatchService(
+        ProductionBatchRepository productionBatchRepository,
+        ProductionBatchCompletedProducer productionBatchCompletedProducer
+    ) {
         this.productionBatchRepository = productionBatchRepository;
+        this.productionBatchCompletedProducer = productionBatchCompletedProducer;
     }
 
     @Transactional
@@ -47,8 +53,16 @@ public class ProductionBatchService {
     @Transactional
     public ProductionBatch updateStatus(UUID id, BatchStatus status) {
         ProductionBatch batch = findById(id);
+        boolean shouldPublishCompletedEvent =
+            batch.getStatus() != BatchStatus.COMPLETED && status == BatchStatus.COMPLETED;
+
         batch.setStatus(status);
-        return productionBatchRepository.save(batch);
+        ProductionBatch savedBatch = productionBatchRepository.save(batch);
+
+        if (shouldPublishCompletedEvent) {
+            productionBatchCompletedProducer.sendBatchCompleted(savedBatch);
+        }
+        return savedBatch;
     }
 
     @Transactional

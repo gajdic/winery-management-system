@@ -100,6 +100,7 @@ The project is built with:
 - springdoc-openapi
 - Spring Data JPA
 - H2 in-memory database
+- Apache ActiveMQ Artemis (JMS)
 - Docker
 
 ## Build And Run
@@ -148,11 +149,26 @@ Build and run services with Docker Compose:
 docker compose up --build
 ```
 
+Rebuild from scratch without cache (recommended after messaging changes):
+
+```bash
+docker compose build --no-cache
+docker compose up
+```
+
 Stop Docker Compose services:
 
 ```bash
 docker compose down
 ```
+
+### Artemis Broker
+
+Docker Compose includes an Apache ActiveMQ Artemis broker used for asynchronous communication.
+
+- Broker TCP endpoint: `localhost:61616`
+- Artemis web console: [http://localhost:8161](http://localhost:8161)
+- Default credentials: `artemis` / `artemis`
 
 ### Harvest-service
 
@@ -207,6 +223,31 @@ Run the customer-service container:
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
 
+## Asynchronous Communication (M2)
+
+Implemented message flow:
+
+- `production-service` (producer) sends `BatchCompletedMessage` to queue `batch-completed-queue`
+- `inventory-service` (consumer) reads message asynchronously, stores inbound log, and updates stock
+- `inventory-service` sends `StockUpdatedMessage` to `stock-updated-queue` (optional feedback event)
+
+Queue names are centralized in `common-service`:
+
+- `batch-completed-queue`
+- `stock-updated-queue`
+
+Message persistence:
+
+- Producer outbound log table: `OUTBOUND_MESSAGE_LOG` (`production-service` DB)
+- Consumer inbound log table: `INBOUND_MESSAGE_LOG` (`inventory-service` DB)
+
+How to verify messaging end-to-end:
+
+1. Start stack with Docker Compose (`docker compose up --build`).
+2. Create/update a production batch and set status to `COMPLETED` in production-service API.
+3. Check Artemis console queue metrics (message count/delivering count).
+4. Check DB logs in both services (`OUTBOUND_MESSAGE_LOG`, `INBOUND_MESSAGE_LOG`).
+
 ## CI Pipeline
 
 The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
@@ -229,8 +270,7 @@ checks inside CI jobs.
 Recommended local Docker verification commands:
 
 ```bash
-docker compose up --build harvest-service
-docker compose up --build production-service
+docker compose up --build artemis production-service inventory-service
 docker compose down
 ```
 

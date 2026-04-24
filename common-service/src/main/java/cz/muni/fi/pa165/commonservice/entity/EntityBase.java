@@ -1,4 +1,4 @@
-package cz.muni.fi.pa165.inventoryservice.data.models;
+package cz.muni.fi.pa165.commonservice.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
