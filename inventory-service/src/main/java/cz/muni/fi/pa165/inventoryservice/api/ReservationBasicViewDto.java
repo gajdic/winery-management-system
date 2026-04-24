@@ -1,6 +1,5 @@
 package cz.muni.fi.pa165.inventoryservice.api;
 
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -19,10 +18,6 @@ public class ReservationBasicViewDto {
     @Schema(description = "Unique identifier of the reservation", example = "880e8400-e29b-41d4-a716-446655440000")
     @NotNull(message = "Reservation id cannot be null")
     private UUID id;
-
-    @Schema(description = "Current lifecycle status of the reservation", example = "PENDING")
-    @NotNull(message = "Reservation status cannot be null")
-    private ReservationStatus status;
 
     @Schema(description = "Date when the reservation was created", example = "2025-10-15")
     private LocalDate createdAt;

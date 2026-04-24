@@ -2,7 +2,6 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -88,18 +87,6 @@ public class ReservationController {
     public ResponseEntity<ReservationDetailedViewDto> update(@PathVariable UUID id, @RequestBody @Valid ReservationDetailedViewDto reservation) {
         reservation.setId(id);
         ReservationDetailedViewDto updated = reservationFacade.update(reservation);
-        return ResponseEntity.ok(updated);
-    }
-
-    @PatchMapping("/{id}/status")
-    @Operation(summary = "Update reservation status", description = "Transitions the reservation to the given lifecycle status")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Reservation status updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid status value or state transition"),
-        @ApiResponse(responseCode = "404", description = "Reservation not found")
-    })
-    public ResponseEntity<ReservationDetailedViewDto> updateStatus(@PathVariable UUID id, @RequestParam ReservationStatus status) {
-        ReservationDetailedViewDto updated = reservationFacade.updateStatus(id, status);
         return ResponseEntity.ok(updated);
     }
 

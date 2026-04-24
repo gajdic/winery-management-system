@@ -2,7 +2,6 @@ package cz.muni.fi.pa165.inventoryservice.facade;
 
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.mappers.ReservationMapper;
 import cz.muni.fi.pa165.inventoryservice.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +41,6 @@ public class ReservationFacade {
 
     public ReservationDetailedViewDto update(ReservationDetailedViewDto reservation) {
         return reservationMapper.mapToDetailViewDto(reservationService.update(reservationMapper.mapToEntity(reservation)));
-    }
-
-    public ReservationDetailedViewDto updateStatus(UUID id, ReservationStatus status) {
-        return reservationMapper.mapToDetailViewDto(reservationService.updateStatus(id, status));
     }
 
     public boolean delete(UUID id) {

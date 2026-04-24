@@ -1,11 +1,8 @@
 package cz.muni.fi.pa165.inventoryservice.data.models;
 
 import cz.muni.fi.pa165.commonservice.entity.EntityBase;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,10 +26,6 @@ public class Reservation extends EntityBase {
     @Column(nullable = false)
     private int quantity;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ReservationStatus status;
-
     @Column(nullable = false)
     private LocalDate createdAt;
 
@@ -46,13 +39,12 @@ public class Reservation extends EntityBase {
                 && Objects.equals(id, that.id)
                 && Objects.equals(customerId, that.customerId)
                 && Objects.equals(wineId, that.wineId)
-                && status == that.status
                 && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, customerId, wineId, quantity, status, createdAt);
+        return Objects.hash(id, customerId, wineId, quantity, createdAt);
     }
 
     @Override
@@ -62,7 +54,6 @@ public class Reservation extends EntityBase {
                 ", customerId=" + customerId +
                 ", wineId=" + wineId +
                 ", quantity=" + quantity +
-                ", status=" + status +
                 ", createdAt=" + createdAt +
                 '}';
     }

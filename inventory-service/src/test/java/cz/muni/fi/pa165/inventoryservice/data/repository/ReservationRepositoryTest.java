@@ -1,6 +1,5 @@
 package cz.muni.fi.pa165.inventoryservice.data.repository;
 
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,6 @@ class ReservationRepositoryTest {
         r1.setCustomerId(customerId1);
         r1.setWineId(wineId1);
         r1.setQuantity(10);
-        r1.setStatus(ReservationStatus.PENDING);
         r1.setCreatedAt(LocalDate.of(2026, 4, 1));
         testEntityManager.persist(r1);
 
@@ -49,7 +47,6 @@ class ReservationRepositoryTest {
         r2.setCustomerId(customerId1);
         r2.setWineId(wineId2);
         r2.setQuantity(5);
-        r2.setStatus(ReservationStatus.COMPLETED);
         r2.setCreatedAt(LocalDate.of(2026, 4, 5));
         testEntityManager.persist(r2);
 
@@ -57,7 +54,6 @@ class ReservationRepositoryTest {
         r3.setCustomerId(customerId2);
         r3.setWineId(wineId1);
         r3.setQuantity(8);
-        r3.setStatus(ReservationStatus.CANCELED);
         r3.setCreatedAt(LocalDate.of(2026, 4, 10));
         testEntityManager.persist(r3);
 
@@ -136,7 +132,6 @@ class ReservationRepositoryTest {
         // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getQuantity()).isEqualTo(10);
-        assertThat(result.get(0).getStatus()).isEqualTo(ReservationStatus.PENDING);
     }
 
     @Test
@@ -148,7 +143,6 @@ class ReservationRepositoryTest {
         // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getCustomerId()).isEqualTo(customerId2);
-        assertThat(result.get(0).getStatus()).isEqualTo(ReservationStatus.CANCELED);
     }
 
     @Test
@@ -170,7 +164,6 @@ class ReservationRepositoryTest {
         reservation.setCustomerId(UUID.randomUUID());
         reservation.setWineId(UUID.randomUUID());
         reservation.setQuantity(15);
-        reservation.setStatus(ReservationStatus.PENDING);
         reservation.setCreatedAt(LocalDate.of(2026, 4, 12));
 
         // Act
@@ -179,7 +172,6 @@ class ReservationRepositoryTest {
         // Assert
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getQuantity()).isEqualTo(15);
-        assertThat(saved.getStatus()).isEqualTo(ReservationStatus.PENDING);
     }
 
     @Test

@@ -1,11 +1,8 @@
 package cz.muni.fi.pa165.inventoryservice.service;
 
 import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
-import cz.muni.fi.pa165.inventoryservice.data.models.Stock;
 import cz.muni.fi.pa165.inventoryservice.data.repository.ReservationRepository;
-import cz.muni.fi.pa165.inventoryservice.data.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +13,10 @@ import java.util.UUID;
 @Service
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final StockRepository stockRepository;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository, StockRepository stockRepository) {
+    public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
-        this.stockRepository = stockRepository;
     }
 
     public Reservation create(Reservation reservation) {
@@ -44,35 +39,6 @@ public class ReservationService {
             throw new ResourceNotFoundException("Reservation not found: " + reservation.getId());
         }
         return reservationRepository.save(reservation);
-    }
-
-    public Reservation updateStatus(UUID id, ReservationStatus status) {
-        if (status == null) {
-            throw new IllegalArgumentException("Status must not be null");
-        }
-
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found: " + id));
-
-        reservation.setStatus(status);
-        reservationRepository.save(reservation);
-
-        Stock stock = stockRepository.findByWineId(reservation.getWineId())
-                .orElseThrow(() -> new ResourceNotFoundException("Stock not found for wine: " + reservation.getWineId()));
-
-        switch (status) {
-            case COMPLETED -> {
-                stock.setQuantity(stock.getQuantity() - reservation.getQuantity());
-                stock.setReservedQuantity(stock.getReservedQuantity() - reservation.getQuantity());
-                stockRepository.save(stock);
-            }
-            case CANCELED -> {
-                stock.setReservedQuantity(stock.getReservedQuantity() - reservation.getQuantity());
-                stockRepository.save(stock);
-            }
-        }
-
-        return reservation;
     }
 
     public List<Reservation> filter(UUID customerId, UUID wineId, LocalDate createdAfter, LocalDate createdBefore) {

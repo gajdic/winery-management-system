@@ -1,12 +1,10 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.config.JpaConfig;
 import cz.muni.fi.pa165.inventoryservice.config.TestJacksonConfig;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
 import cz.muni.fi.pa165.inventoryservice.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
@@ -55,8 +53,7 @@ class ReservationControllerTest {
             .andExpect(jsonPath("$.id").value(TestDataFactory.RESERVATION_ID.toString()))
             .andExpect(jsonPath("$.wineId").value(TestDataFactory.WINE_ID.toString()))
             .andExpect(jsonPath("$.customerId").value(TestDataFactory.CUSTOMER_ID.toString()))
-            .andExpect(jsonPath("$.quantity").value(15))
-            .andExpect(jsonPath("$.status").value("PENDING"));
+            .andExpect(jsonPath("$.quantity").value(15));
     }
 
     @Test
@@ -81,43 +78,6 @@ class ReservationControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(TestDataFactory.RESERVATION_ID.toString()));
-    }
-
-    @Test
-    void updateStatus_validStatus_returnsUpdatedReservation() throws Exception {
-        // Arrange
-        ReservationDetailedViewDto dto = TestDataFactory.reservationDetailedViewDto(ReservationStatus.COMPLETED, 15);
-        Mockito.when(reservationFacade.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED)).thenReturn(dto);
-
-        // Act + Assert
-        mockMvc.perform(patch("/reservations/{id}/status", TestDataFactory.RESERVATION_ID)
-                .param("status", "COMPLETED"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("COMPLETED"));
-    }
-
-    @Test
-    void updateStatus_reservationNotFound_returnsNotFound() throws Exception {
-        // Arrange
-        Mockito.when(reservationFacade.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .thenThrow(new ResourceNotFoundException("Reservation not found: " + TestDataFactory.RESERVATION_ID));
-
-        // Act + Assert
-        mockMvc.perform(patch("/reservations/{id}/status", TestDataFactory.RESERVATION_ID)
-                .param("status", "COMPLETED"))
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void updateStatus_invalidStatusTransition_returnsBadRequest() throws Exception {
-        // Arrange
-        Mockito.when(reservationFacade.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.CANCELED))
-            .thenThrow(new IllegalArgumentException("Status must not be null"));
-
-        // Act + Assert
-        mockMvc.perform(patch("/reservations/{id}/status", TestDataFactory.RESERVATION_ID)
-                .param("status", "CANCELED"))
-            .andExpect(status().isBadRequest());
     }
 
     @Test

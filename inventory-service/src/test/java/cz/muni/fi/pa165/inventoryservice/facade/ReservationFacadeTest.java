@@ -2,7 +2,6 @@ package cz.muni.fi.pa165.inventoryservice.facade;
 
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
-import cz.muni.fi.pa165.inventoryservice.data.enums.ReservationStatus;
 import cz.muni.fi.pa165.inventoryservice.data.models.Reservation;
 import cz.muni.fi.pa165.inventoryservice.mappers.ReservationMapper;
 import cz.muni.fi.pa165.inventoryservice.service.ReservationService;
@@ -70,22 +69,6 @@ class ReservationFacadeTest {
 
         // Act
         ReservationDetailedViewDto result = reservationFacade.create(dto);
-
-        // Assert
-        assertThat(result).isEqualTo(dto);
-    }
-
-    @Test
-    void updateStatus_validStatus_returnsUpdatedReservationDetailedViewDto() {
-        // Arrange
-        Reservation reservation = TestDataFactory.reservationEntity(ReservationStatus.COMPLETED, 15);
-        ReservationDetailedViewDto dto = TestDataFactory.reservationDetailedViewDto(ReservationStatus.COMPLETED, 15);
-        Mockito.when(reservationService.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED))
-            .thenReturn(reservation);
-        Mockito.when(reservationMapper.mapToDetailViewDto(reservation)).thenReturn(dto);
-
-        // Act
-        ReservationDetailedViewDto result = reservationFacade.updateStatus(TestDataFactory.RESERVATION_ID, ReservationStatus.COMPLETED);
 
         // Assert
         assertThat(result).isEqualTo(dto);
