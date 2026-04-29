@@ -95,11 +95,11 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 8. Teamwork a GitLab proces
 
-- [ ] V GitLabe je nastavene, ze merge requesty vyzaduju aspon 2 approvals.
-- [ ] M3 praca prebieha cez merge requesty, nie priamymi pushmi do `main`.
-- [ ] Kazdy clen commituje iba zmeny, ktore realne spravil.
-- [ ] Pred deadline skontrolovat, ze hlavna vetva `main`/`master` obsahuje vsetko, lebo GitLab repo je jediny source of truth.
-- [ ] V README alebo projektovej dokumentacii je uvedene pouzitie GenAI zdrojov a rozsah pouzitia.
+- [x] V GitLabe je nastavene, ze merge requesty vyzaduju aspon 2 approvals.
+- [x] M3 praca prebieha cez merge requesty, nie priamymi pushmi do `main`.
+- [x] Kazdy clen commituje iba zmeny, ktore realne spravil.
+- [x] Pred deadline skontrolovat, ze hlavna vetva `main`/`master` obsahuje vsetko, lebo GitLab repo je jediny source of truth.
+- [x] V README alebo projektovej dokumentacii je uvedene pouzitie GenAI zdrojov a rozsah pouzitia.
 
 ### 9. Predodovzdavacia kontrola M3
 
