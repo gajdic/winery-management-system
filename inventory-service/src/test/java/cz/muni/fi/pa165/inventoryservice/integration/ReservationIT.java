@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,6 +39,9 @@ class ReservationIT {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Test
@@ -51,6 +57,7 @@ class ReservationIT {
         createDto.setCreatedAt(LocalDate.of(2025, 10, 15));
 
         MvcResult createResult = mockMvc.perform(post("/reservations")
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated())
@@ -69,6 +76,7 @@ class ReservationIT {
         assertThat(persisted.getQuantity()).isEqualTo(6);
 
         mockMvc.perform(get("/reservations/{id}", created.getId())
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_read")))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(created.getId().toString()));
@@ -91,6 +99,7 @@ class ReservationIT {
         updateDto.setCreatedAt(reservation.getCreatedAt());
 
         mockMvc.perform(put("/reservations/{id}", reservation.getId())
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateDto)))
             .andExpect(status().isOk())
@@ -110,12 +119,14 @@ class ReservationIT {
         reservation = reservationRepository.saveAndFlush(reservation);
         UUID reservationId = reservation.getId();
 
-        mockMvc.perform(delete("/reservations/{id}", reservationId))
+        mockMvc.perform(delete("/reservations/{id}", reservationId)
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_write")))            )
             .andExpect(status().isNoContent());
 
         assertThat(reservationRepository.findById(reservationId)).isEmpty();
 
         mockMvc.perform(get("/reservations/{id}", reservationId)
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_read")))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }

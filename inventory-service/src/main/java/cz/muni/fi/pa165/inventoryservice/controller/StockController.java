@@ -2,10 +2,12 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
+import cz.muni.fi.pa165.inventoryservice.config.SecurityConfig;
 import cz.muni.fi.pa165.inventoryservice.facade.StockFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,11 @@ public class StockController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a stock", description = "Creates a new stock entry for a wine item")
+    @Operation(
+        summary = "Create a stock",
+        description = "Creates a new stock entry for a wine item",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Stock created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid stock payload")
@@ -40,7 +46,11 @@ public class StockController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a stock by id", description = "Returns one stock entry by its unique identifier")
+    @Operation(
+        summary = "Get a stock by id",
+        description = "Returns one stock entry by its unique identifier",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
@@ -54,7 +64,11 @@ public class StockController {
     }
 
     @GetMapping
-    @Operation(summary = "List all stocks", description = "Returns all stock entries currently registered in the inventory service")
+    @Operation(
+        summary = "List all stocks",
+        description = "Returns all stock entries currently registered in the inventory service",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stocks returned successfully")
     })
@@ -63,7 +77,11 @@ public class StockController {
     }
 
     @GetMapping("/wine/{wineId}")
-    @Operation(summary = "Get a stock by wine id", description = "Returns the stock entry associated with the given wine identifier")
+    @Operation(
+        summary = "Get a stock by wine id",
+        description = "Returns the stock entry associated with the given wine identifier",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
         @ApiResponse(responseCode = "404", description = "Stock not found for the given wine")
@@ -77,7 +95,11 @@ public class StockController {
     }
 
     @PostMapping("/{id}/add")
-    @Operation(summary = "Add quantity to a stock", description = "Increases the stock quantity by the value supplied in the request body")
+    @Operation(
+        summary = "Add quantity to a stock",
+        description = "Increases the stock quantity by the value supplied in the request body",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid quantity payload"),
@@ -89,7 +111,11 @@ public class StockController {
     }
 
     @PostMapping("/{id}/remove")
-    @Operation(summary = "Remove quantity from a stock", description = "Decreases the stock quantity by the value supplied in the request body")
+    @Operation(
+        summary = "Remove quantity from a stock",
+        description = "Decreases the stock quantity by the value supplied in the request body",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid quantity payload or insufficient stock"),
@@ -101,7 +127,11 @@ public class StockController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a stock", description = "Updates an existing stock entry by its identifier")
+    @Operation(
+        summary = "Update a stock",
+        description = "Updates an existing stock entry by its identifier",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid stock payload"),
@@ -114,7 +144,11 @@ public class StockController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a stock", description = "Removes a stock entry from the inventory service")
+    @Operation(
+        summary = "Delete a stock",
+        description = "Removes a stock entry from the inventory service",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Stock deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
