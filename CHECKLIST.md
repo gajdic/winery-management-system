@@ -36,7 +36,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Pouzit aspon dva rozne `test_*` scopes.
 - [ ] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
 - [ ] `customer-service` endpointy maju nastavene scope pravidla.
-- [ ] `harvest-service` endpointy maju nastavene scope pravidla.
+- [x] `harvest-service` endpointy maju nastavene scope pravidla.
 - [ ] `production-service` endpointy maju nastavene scope pravidla.
 - [ ] `inventory-service` endpointy maju nastavene scope pravidla.
 - [ ] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.

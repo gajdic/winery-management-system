@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -69,6 +70,7 @@ class HarvestRecordIT {
         );
 
         MvcResult createResult = mockMvc.perform(post("/harvest-records")
+                .with(jwt().jwt(token -> token.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated())
@@ -94,6 +96,7 @@ class HarvestRecordIT {
         assertThat(persistedRecord.getVineyard().getId()).isEqualTo(vineyard.getId());
 
         mockMvc.perform(get("/harvest-records/{id}", createdRecord.getId())
+                .with(jwt().jwt(token -> token.claim("scope", "test_read")))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(createdRecord.getId().toString()))

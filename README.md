@@ -317,6 +317,23 @@ docker compose up --build artemis production-service inventory-service
 docker compose down
 ```
 
+## Security (M3)
+
+The `harvest-service` is configured as an OAuth 2 Resource Server based on the PA165 seminar security setup.
+It validates MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
+
+Harvest API authorization rules:
+
+- `GET /vineyards/**`, `GET /grape-types/**`, and `GET /harvest-records/**` require scope `test_read`.
+- `POST`, `PUT`, and `DELETE` operations on harvest endpoints require scope `test_write`.
+- Swagger UI and OpenAPI docs remain publicly accessible so that an access token can be provided through Swagger UI.
+
+Swagger OAuth configuration for `harvest-service` requests the following scopes:
+
+- `openid`
+- `test_read`
+- `test_write`
+
 ## Kubernetes / OpenShift Deployment
 
 Kubernetes/OpenShift deployment is not implemented for this milestone.
