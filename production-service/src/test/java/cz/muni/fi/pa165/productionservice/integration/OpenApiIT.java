@@ -24,6 +24,10 @@ class OpenApiIT {
             .andExpect(jsonPath("$.info.title").value("Production Service API"))
             .andExpect(jsonPath("$.paths['/production/recipes']").exists())
             .andExpect(jsonPath("$.paths['/production/planning']").exists())
-            .andExpect(jsonPath("$.paths['/production/batches']").exists());
+            .andExpect(jsonPath("$.paths['/production/batches']").exists())
+            .andExpect(jsonPath("$.components.securitySchemes.MUNI.type").value("oauth2"))
+            .andExpect(jsonPath("$.paths['/production/recipes'].get.security[0].MUNI[0]").value("test_read"))
+            .andExpect(jsonPath("$.paths['/production/recipes'].post.security[0].MUNI[0]").value("test_write"))
+            .andExpect(jsonPath("$.paths['/production/planning'].post.security[0].MUNI[0]").value("test_read"));
     }
 }

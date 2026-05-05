@@ -5,12 +5,14 @@ import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationDto;
 import cz.muni.fi.pa165.productionservice.api.QualityEvaluationRequestDto;
+import cz.muni.fi.pa165.productionservice.config.SecurityConfig;
 import cz.muni.fi.pa165.productionservice.facade.ProductionPlanningFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public class ProductionPlanningController {
     }
 
     @PostMapping("/planning")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Plan production from harvest lots and recipe requirements",
         description = "Calculates how many bottles can be produced for a recipe from the provided harvest lots."
@@ -59,6 +62,7 @@ public class ProductionPlanningController {
     }
 
     @PostMapping("/quality-evaluations")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Evaluate expected blend quality for a recipe and harvest set",
         description = "Calculates weighted quality and recommendation for a recipe using the supplied harvest lots."
