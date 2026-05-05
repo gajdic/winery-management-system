@@ -252,16 +252,59 @@ How to verify messaging end-to-end:
 
 The project includes a GitLab CI pipeline configured in [`.gitlab-ci.yml`](.gitlab-ci.yml).
 
-The pipeline currently validates the project in three steps:
+The pipeline is executed for:
 
-- `test` stage: runs Maven tests for all executable services (`customer-service`, `harvest-service`,
-  `inventory-service`, `production-service`) including their required module dependencies,
-- `build` stage: verifies that all executable services can be built as Maven modules without rerunning tests,
-- `docker_build` stage: builds Docker images for all executable services
-  (`customer-service`, `harvest-service`, `inventory-service`, `production-service`).
+- pushes to the `main` branch,
+- merge requests.
 
-This means the repository is checked both as a multi-module Maven project and, for supported services,
-also as Dockerized applications.
+The pipeline uses the Maven image `maven:3.9.12-eclipse-temurin-25` for Java/Maven jobs and caches the local
+Maven repository in `.m2/repository` to speed up repeated builds.
+
+Pipeline stages:
+
+1. `test`
+   Runs Maven tests for each executable service module:
+
+- `customer-service`
+- `harvest-service`
+- `inventory-service`
+- `production-service`
+
+Each test job uses:
+
+```bash
+mvn -pl "${SERVICE_NAME}" -am test
+```
+
+The `-am` flag also builds required dependent modules, for example `common-service`, so every service is tested
+with the modules it needs.
+
+2. `build`
+   Verifies that every executable service can be built as a Maven module:
+
+```bash
+mvn -pl "${SERVICE_NAME}" -am -DskipTests -Dmaven.test.skip=true clean install
+```
+
+Tests are intentionally skipped in this stage because they already run in the previous `test` stage. This stage
+checks packaging and module build correctness.
+
+3. `docker_build`
+   Verifies Docker image builds for all executable services:
+
+- `customer-service/Dockerfile`
+- `harvest-service/Dockerfile`
+- `inventory-service/Dockerfile`
+- `production-service/Dockerfile`
+
+Docker builds are performed with Kaniko using `--no-push`, so CI validates the Dockerfiles without publishing
+images to a container registry.
+
+In short, the CI pipeline checks that every service:
+
+- passes its Maven tests,
+- can be built together with required module dependencies,
+- has a Dockerfile that can be built successfully.
 
 Container runtime validation with Docker Compose is currently intended to be performed locally, because the
 current GitLab runner setup does not provide a working Docker daemon for `docker compose up` / `docker run`
@@ -273,6 +316,28 @@ Recommended local Docker verification commands:
 docker compose up --build artemis production-service inventory-service
 docker compose down
 ```
+
+## Security (M3)
+
+The `harvest-service` is configured as an OAuth 2 Resource Server based on the PA165 seminar security setup.
+It validates MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
+
+Harvest API authorization rules:
+
+- `GET /vineyards/**`, `GET /grape-types/**`, and `GET /harvest-records/**` require scope `test_read`.
+- `POST`, `PUT`, and `DELETE` operations on harvest endpoints require scope `test_write`.
+- Swagger UI and OpenAPI docs remain publicly accessible so that an access token can be provided through Swagger UI.
+
+Swagger OAuth configuration for `harvest-service` requests the following scopes:
+
+- `openid`
+- `test_read`
+- `test_write`
+
+## Kubernetes / OpenShift Deployment
+
+Kubernetes/OpenShift deployment is not implemented for this milestone.
+The application is intended to be built, started, and verified locally using Docker Compose.
 
 ## OpenAPI / Swagger
 
@@ -334,6 +399,6 @@ Rendered `.png` exports are stored next to the PlantUML sources.
 
 ## GenAI Usage Disclosure
 
-GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions, and
-documentation drafting).
+GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions,
+README generation and updates, and documentation drafting).
 All generated suggestions were manually reviewed and adjusted by team members before integration.

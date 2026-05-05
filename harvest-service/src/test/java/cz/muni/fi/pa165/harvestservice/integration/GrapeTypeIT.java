@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,6 +40,7 @@ class GrapeTypeIT {
         GrapeTypeCreateDto createDto = new GrapeTypeCreateDto("Rulandske sede", "Aromatic white grape");
 
         MvcResult createResult = mockMvc.perform(post("/grape-types")
+                .with(jwt().jwt(token -> token.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated())
@@ -56,6 +58,7 @@ class GrapeTypeIT {
         assertThat(persistedGrapeType.getDescription()).isEqualTo("Aromatic white grape");
 
         mockMvc.perform(get("/grape-types/{id}", createdGrapeType.getId())
+                .with(jwt().jwt(token -> token.claim("scope", "test_read")))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(createdGrapeType.getId().toString()))
