@@ -149,13 +149,13 @@ development runs are deterministic.
 Run `production-service` with realistic seed data:
 
 ```bash
-mvn -pl production-service spring-boot:run -Dspring-boot.run.profiles=seed
+mvn -pl production-service -Dspring-boot.run.profiles=seed spring-boot:run
 ```
 
 PowerShell equivalent:
 
 ```powershell
-mvn -pl production-service spring-boot:run '-Dspring-boot.run.profiles=seed'
+mvn -pl production-service -D"spring-boot.run.profiles"=seed spring-boot:run
 ```
 
 The seed data is stored in the Liquibase `seed` context and includes realistic wine recipes, grape components,
@@ -208,11 +208,13 @@ docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ### Inventory-service
 
 Build the inventory-service Docker image:
+
 ```bash
 docker build -t inventory-service -f .\inventory-service\Dockerfile .
 ```
 
 Run the inventory-service container:
+
 ```bash
 docker run -d --name winery-inventory -p 8083:8083 inventory-service
 ```
@@ -253,6 +255,7 @@ docker build -f customer-service/Dockerfile -t winery-management/customer-servic
 ```
 
 Run the customer-service container:
+
 ```bash
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
@@ -389,8 +392,10 @@ After starting a service, Swagger UI and raw OpenAPI documentation are available
 
 ### Inventory-service
 
-- Swagger UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
-- OpenAPI JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
+- Swagger
+  UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
+- OpenAPI
+  JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
 
 ### Production-service
 
