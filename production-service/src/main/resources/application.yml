@@ -46,3 +46,17 @@ springdoc:
         - openid
         - test_read
         - test_write
+
+---
+
+# For generating a Bearer token through Swagger UI.
+# Run with: mvn -pl production-service spring-boot:run -Dspring-boot.run.profiles=swagger
+spring:
+  config:
+    activate:
+      on-profile: swagger
+
+server:
+  port: 8090
+  servlet:
+    context-path: /
