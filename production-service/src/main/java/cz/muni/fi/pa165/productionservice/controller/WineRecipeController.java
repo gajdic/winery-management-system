@@ -46,6 +46,8 @@ public class WineRecipeController {
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -70,6 +72,8 @@ public class WineRecipeController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Wine recipes returned",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = WineRecipeDto.class)))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -87,6 +91,8 @@ public class WineRecipeController {
         @ApiResponse(responseCode = "200", description = "Wine recipe returned",
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -110,6 +116,8 @@ public class WineRecipeController {
         @ApiResponse(responseCode = "200", description = "Wine recipe updated",
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format or request body",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -138,6 +146,8 @@ public class WineRecipeController {
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Wine recipe deleted", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
