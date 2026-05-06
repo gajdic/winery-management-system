@@ -1,0 +1,433 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+    name: winery-management-system
+    annotations:
+        description: OpenShift deployment for the Winery Management System services.
+labels:
+    app.kubernetes.io/part-of: winery-management-system
+objects:
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: artemis
+            labels:
+                app: artemis
+                app.kubernetes.io/name: artemis
+                app.kubernetes.io/component: messaging
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: artemis
+            template:
+                metadata:
+                    labels:
+                        app: artemis
+                        app.kubernetes.io/name: artemis
+                        app.kubernetes.io/component: messaging
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: artemis
+                            image: apache/activemq-artemis:latest-alpine
+                            ports:
+                                -   containerPort: 61616
+                                    protocol: TCP
+                                -   containerPort: 8161
+                                    protocol: TCP
+                            env:
+                                -   name: ARTEMIS_USER
+                                    value: artemis
+                                -   name: ARTEMIS_PASSWORD
+                                    value: artemis
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 250m
+                                    memory: 512Mi
+                            readinessProbe:
+                                tcpSocket:
+                                    port: 61616
+                                initialDelaySeconds: 20
+                                periodSeconds: 10
+                            livenessProbe:
+                                tcpSocket:
+                                    port: 61616
+                                initialDelaySeconds: 60
+                                periodSeconds: 20
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: artemis
+            labels:
+                app: artemis
+                app.kubernetes.io/name: artemis
+                app.kubernetes.io/component: messaging
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: artemis
+            ports:
+                -   name: core
+                    port: 61616
+                    targetPort: 61616
+                -   name: console
+                    port: 8161
+                    targetPort: 8161
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: customer-service
+            labels:
+                app: customer-service
+                app.kubernetes.io/name: customer-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: customer-service
+            template:
+                metadata:
+                    labels:
+                        app: customer-service
+                        app.kubernetes.io/name: customer-service
+                        app.kubernetes.io/component: api
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: customer-service
+                            image: quay.io/${QUAY_NAMESPACE}/customer-service:${IMAGE_TAG}
+                            ports:
+                                -   containerPort: 8084
+                                    protocol: TCP
+                            env:
+                                -   name: SPRING_DATASOURCE_URL
+                                    value: jdbc:h2:mem:customer-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                tcpSocket:
+                                    port: 8084
+                                initialDelaySeconds: 40
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                tcpSocket:
+                                    port: 8084
+                                initialDelaySeconds: 90
+                                periodSeconds: 20
+                                failureThreshold: 6
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: customer-service
+            labels:
+                app: customer-service
+                app.kubernetes.io/name: customer-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: customer-service
+            ports:
+                -   name: http
+                    port: 8084
+                    targetPort: 8084
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: customer-service
+            labels:
+                app: customer-service
+                app.kubernetes.io/name: customer-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            to:
+                kind: Service
+                name: customer-service
+            port:
+                targetPort: http
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: harvest-service
+            labels:
+                app: harvest-service
+                app.kubernetes.io/name: harvest-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: harvest-service
+            template:
+                metadata:
+                    labels:
+                        app: harvest-service
+                        app.kubernetes.io/name: harvest-service
+                        app.kubernetes.io/component: api
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: harvest-service
+                            image: quay.io/${QUAY_NAMESPACE}/harvest-service:${IMAGE_TAG}
+                            ports:
+                                -   containerPort: 8081
+                                    protocol: TCP
+                            env:
+                                -   name: SPRING_DATASOURCE_URL
+                                    value: jdbc:h2:mem:harvest-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                tcpSocket:
+                                    port: 8081
+                                initialDelaySeconds: 40
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                tcpSocket:
+                                    port: 8081
+                                initialDelaySeconds: 90
+                                periodSeconds: 20
+                                failureThreshold: 6
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: harvest-service
+            labels:
+                app: harvest-service
+                app.kubernetes.io/name: harvest-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: harvest-service
+            ports:
+                -   name: http
+                    port: 8081
+                    targetPort: 8081
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: harvest-service
+            labels:
+                app: harvest-service
+                app.kubernetes.io/name: harvest-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            to:
+                kind: Service
+                name: harvest-service
+            port:
+                targetPort: http
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: inventory-service
+            labels:
+                app: inventory-service
+                app.kubernetes.io/name: inventory-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: inventory-service
+            template:
+                metadata:
+                    labels:
+                        app: inventory-service
+                        app.kubernetes.io/name: inventory-service
+                        app.kubernetes.io/component: api
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: inventory-service
+                            image: quay.io/${QUAY_NAMESPACE}/inventory-service:${IMAGE_TAG}
+                            ports:
+                                -   containerPort: 8083
+                                    protocol: TCP
+                            env:
+                                -   name: SPRING_DATASOURCE_URL
+                                    value: jdbc:h2:mem:inventory-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+                                -   name: SPRING_ARTEMIS_MODE
+                                    value: native
+                                -   name: SPRING_ARTEMIS_BROKER_URL
+                                    value: tcp://artemis:61616
+                                -   name: SPRING_ARTEMIS_USER
+                                    value: artemis
+                                -   name: SPRING_ARTEMIS_PASSWORD
+                                    value: artemis
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                tcpSocket:
+                                    port: 8083
+                                initialDelaySeconds: 40
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                tcpSocket:
+                                    port: 8083
+                                initialDelaySeconds: 90
+                                periodSeconds: 20
+                                failureThreshold: 6
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: inventory-service
+            labels:
+                app: inventory-service
+                app.kubernetes.io/name: inventory-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: inventory-service
+            ports:
+                -   name: http
+                    port: 8083
+                    targetPort: 8083
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: inventory-service
+            labels:
+                app: inventory-service
+                app.kubernetes.io/name: inventory-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            to:
+                kind: Service
+                name: inventory-service
+            port:
+                targetPort: http
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: production-service
+            labels:
+                app: production-service
+                app.kubernetes.io/name: production-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: production-service
+            template:
+                metadata:
+                    labels:
+                        app: production-service
+                        app.kubernetes.io/name: production-service
+                        app.kubernetes.io/component: api
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: production-service
+                            image: quay.io/${QUAY_NAMESPACE}/production-service:${IMAGE_TAG}
+                            ports:
+                                -   containerPort: 8082
+                                    protocol: TCP
+                            env:
+                                -   name: SPRING_DATASOURCE_URL
+                                    value: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+                                -   name: SPRING_ARTEMIS_MODE
+                                    value: native
+                                -   name: SPRING_ARTEMIS_BROKER_URL
+                                    value: tcp://artemis:61616
+                                -   name: SPRING_ARTEMIS_USER
+                                    value: artemis
+                                -   name: SPRING_ARTEMIS_PASSWORD
+                                    value: artemis
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                tcpSocket:
+                                    port: 8082
+                                initialDelaySeconds: 40
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                tcpSocket:
+                                    port: 8082
+                                initialDelaySeconds: 90
+                                periodSeconds: 20
+                                failureThreshold: 6
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: production-service
+            labels:
+                app: production-service
+                app.kubernetes.io/name: production-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: production-service
+            ports:
+                -   name: http
+                    port: 8082
+                    targetPort: 8082
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: production-service
+            labels:
+                app: production-service
+                app.kubernetes.io/name: production-service
+                app.kubernetes.io/component: api
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            to:
+                kind: Service
+                name: production-service
+            port:
+                targetPort: http
+parameters:
+    -   name: QUAY_NAMESPACE
+        displayName: Quay namespace
+        description: Quay user or organization that owns the service image repositories.
+        required: true
+    -   name: IMAGE_TAG
+        displayName: Image tag
+        description: Image tag to deploy from Quay.
+        value: latest

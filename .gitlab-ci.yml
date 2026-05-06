@@ -6,6 +6,7 @@ stages:
   - test
   - build
   - docker_build
+  - docker_publish
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -43,6 +44,20 @@ cache:
   stage: docker_build
   script:
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
+
+.docker_publish_template:
+  extends: .docker_template
+  stage: docker_publish
+  only:
+    - main
+  script:
+    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
+    - test -n "${QUAY_USERNAME}" || (echo "Missing QUAY_USERNAME CI/CD variable" && exit 1)
+    - test -n "${QUAY_PASSWORD}" || (echo "Missing QUAY_PASSWORD CI/CD variable" && exit 1)
+    - mkdir -p /kaniko/.docker
+    - AUTH="$(printf "%s:%s" "${QUAY_USERNAME}" "${QUAY_PASSWORD}" | base64 | tr -d '\n')"
+    - echo "{\"auths\":{\"quay.io\":{\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:${CI_COMMIT_SHORT_SHA}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:latest"
 
 test_customer:
   extends: .test_template
@@ -111,3 +126,27 @@ docker_customer:
     SERVICE_NAME: customer-service
     DOCKERFILE_PATH: customer-service/Dockerfile
     IMAGE_NAME: winery-management/customer-service:${CI_COMMIT_SHORT_SHA}
+
+publish_harvest:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: harvest-service
+    DOCKERFILE_PATH: harvest-service/Dockerfile
+
+publish_inventory:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: inventory-service
+    DOCKERFILE_PATH: inventory-service/Dockerfile
+
+publish_production:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: production-service
+    DOCKERFILE_PATH: production-service/Dockerfile
+
+publish_customer:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: customer-service
+    DOCKERFILE_PATH: customer-service/Dockerfile

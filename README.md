@@ -187,11 +187,13 @@ docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ### Inventory-service
 
 Build the inventory-service Docker image:
+
 ```bash
 docker build -t inventory-service -f .\inventory-service\Dockerfile .
 ```
 
 Run the inventory-service container:
+
 ```bash
 docker run -d --name winery-inventory -p 8083:8083 inventory-service
 ```
@@ -219,6 +221,7 @@ docker build -f customer-service/Dockerfile -t winery-management/customer-servic
 ```
 
 Run the customer-service container:
+
 ```bash
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
@@ -300,11 +303,23 @@ checks packaging and module build correctness.
 Docker builds are performed with Kaniko using `--no-push`, so CI validates the Dockerfiles without publishing
 images to a container registry.
 
+4. `docker_publish`
+   Publishes Docker images for all executable services to Quay on pushes to the `main` branch:
+
+- `quay.io/${QUAY_NAMESPACE}/customer-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/harvest-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/inventory-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/production-service:${CI_COMMIT_SHORT_SHA}`
+
+Each image is also tagged as `latest`. The publish jobs use the GitLab CI/CD variables `QUAY_NAMESPACE`,
+`QUAY_USERNAME`, and `QUAY_PASSWORD`.
+
 In short, the CI pipeline checks that every service:
 
 - passes its Maven tests,
 - can be built together with required module dependencies,
-- has a Dockerfile that can be built successfully.
+- has a Dockerfile that can be built successfully,
+- is published to Quay from `main`.
 
 Container runtime validation with Docker Compose is currently intended to be performed locally, because the
 current GitLab runner setup does not provide a working Docker daemon for `docker compose up` / `docker run`
@@ -336,8 +351,126 @@ Swagger OAuth configuration for `harvest-service` requests the following scopes:
 
 ## Kubernetes / OpenShift Deployment
 
-Kubernetes/OpenShift deployment is not implemented for this milestone.
-The application is intended to be built, started, and verified locally using Docker Compose.
+The project contains an OpenShift template in [
+`openshift/winery-stack-template.yaml`](openshift/winery-stack-template.yaml).
+It deploys:
+
+- Apache ActiveMQ Artemis as an internal broker,
+- `customer-service`,
+- `harvest-service`,
+- `inventory-service`,
+- `production-service`.
+
+All API services get OpenShift `Route` objects so they can be tested from outside the cluster. Artemis is exposed only
+inside the OpenShift project and is used by `production-service` and `inventory-service` through
+`tcp://artemis:61616`.
+
+### Quay Setup
+
+Create or use an existing Quay namespace, for example your faculty login. In that namespace, create these public
+repositories:
+
+- `customer-service`
+- `harvest-service`
+- `inventory-service`
+- `production-service`
+
+Create a Quay robot account or token with write access to these repositories.
+
+In GitLab, configure these project CI/CD variables:
+
+- `QUAY_NAMESPACE`: your Quay namespace, for example `xlogin`
+- `QUAY_USERNAME`: Quay username or robot account name
+- `QUAY_PASSWORD`: Quay password or robot token
+
+Mark `QUAY_USERNAME` and `QUAY_PASSWORD` as masked. If the `main` branch is protected, mark the variables as protected
+too.
+
+After merging to `main`, wait for the `docker_publish` jobs to finish. They publish each service image with both the
+commit tag and the `latest` tag.
+
+### OpenShift Setup
+
+Create or open your Red Hat Developer Sandbox and log in with the `oc` CLI. In the OpenShift console, use
+`Copy login command`, then run the copied command locally:
+
+```bash
+oc login --token=<your-token> --server=<your-openshift-api-url>
+```
+
+Deploy the full stack from the repository root:
+
+```bash
+oc process -f openshift/winery-stack-template.yaml \
+  -p QUAY_NAMESPACE=<your-quay-namespace> \
+  -p IMAGE_TAG=latest \
+  | oc apply -f -
+```
+
+To deploy a specific Git commit image instead of `latest`, use the commit short SHA from the successful GitLab pipeline:
+
+```bash
+oc process -f openshift/winery-stack-template.yaml \
+  -p QUAY_NAMESPACE=<your-quay-namespace> \
+  -p IMAGE_TAG=<commit-short-sha> \
+  | oc apply -f -
+```
+
+Check that all deployments become ready:
+
+```bash
+oc get deployments
+oc get pods
+```
+
+Get the public API URLs:
+
+```bash
+oc get routes
+```
+
+### OpenShift Smoke Checks
+
+Use the route hostnames from `oc get routes`. If the OpenShift console opens a route with `https://` and the service is
+not configured for TLS termination, use `http://`.
+
+Swagger/OpenAPI checks:
+
+```bash
+curl http://<customer-service-route>/v3/api-docs
+curl http://<harvest-service-route>/v3/api-docs
+curl http://<inventory-service-route>/inventory-service/api/v1/api-docs
+curl http://<production-service-route>/api/v3/api-docs
+```
+
+Messaging connection check:
+
+```bash
+oc logs deployment/production-service
+oc logs deployment/inventory-service
+```
+
+The logs should not contain connection errors for `tcp://artemis:61616`.
+
+### Scaling And Cleanup
+
+Scale an API service, for example `harvest-service`, to two pods:
+
+```bash
+oc scale deployment/harvest-service --replicas=2
+```
+
+Scale it back down:
+
+```bash
+oc scale deployment/harvest-service --replicas=1
+```
+
+Delete all Winery Management System OpenShift resources:
+
+```bash
+oc delete all,route -l app.kubernetes.io/part-of=winery-management-system
+```
 
 ## OpenAPI / Swagger
 
@@ -355,8 +488,10 @@ After starting a service, Swagger UI and raw OpenAPI documentation are available
 
 ### Inventory-service
 
-- Swagger UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
-- OpenAPI JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
+- Swagger
+  UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
+- OpenAPI
+  JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
 
 ### Production-service
 
