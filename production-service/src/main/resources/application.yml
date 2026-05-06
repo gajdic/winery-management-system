@@ -13,9 +13,11 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     open-in-view: false
     show-sql: false
+  liquibase:
+    change-log: classpath:db/changelog/main-changelog.xml
   artemis:
     mode: native
     broker-url: tcp://localhost:61616
@@ -46,6 +48,29 @@ springdoc:
         - openid
         - test_read
         - test_write
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed
 
 ---
 

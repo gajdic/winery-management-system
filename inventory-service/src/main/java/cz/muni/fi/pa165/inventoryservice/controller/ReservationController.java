@@ -2,10 +2,12 @@ package cz.muni.fi.pa165.inventoryservice.controller;
 
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
+import cz.muni.fi.pa165.inventoryservice.config.SecurityConfig;
 import cz.muni.fi.pa165.inventoryservice.facade.ReservationFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,11 @@ public class ReservationController {
     }
 
     @PostMapping
-    @Operation(summary = "Create a reservation", description = "Creates a reservation of a given wine quantity for a customer")
+    @Operation(
+        summary = "Create a reservation",
+        description = "Creates a reservation of a given wine quantity for a customer",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Reservation created successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid reservation payload")
@@ -41,7 +47,11 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a reservation by id", description = "Returns one reservation with detailed customer and wine references")
+    @Operation(
+        summary = "Get a reservation by id",
+        description = "Returns one reservation with detailed customer and wine references",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservation found"),
         @ApiResponse(responseCode = "404", description = "Reservation not found")
@@ -55,7 +65,11 @@ public class ReservationController {
     }
 
     @GetMapping
-    @Operation(summary = "List all reservations", description = "Returns all reservations currently registered in the inventory service")
+    @Operation(
+        summary = "List all reservations",
+        description = "Returns all reservations currently registered in the inventory service",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservations returned successfully")
     })
@@ -64,7 +78,11 @@ public class ReservationController {
     }
 
     @GetMapping("/filter")
-    @Operation(summary = "Filter reservations", description = "Returns reservations filtered by customer, wine and creation date range")
+    @Operation(
+        summary = "Filter reservations",
+        description = "Returns reservations filtered by customer, wine and creation date range",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservations returned successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid filter parameters")
@@ -78,7 +96,11 @@ public class ReservationController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a reservation", description = "Updates an existing reservation by its identifier")
+    @Operation(
+        summary = "Update a reservation",
+        description = "Updates an existing reservation by its identifier",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservation updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid reservation payload"),
@@ -91,7 +113,11 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a reservation", description = "Removes a reservation from the inventory service")
+    @Operation(
+        summary = "Delete a reservation",
+        description = "Removes a reservation from the inventory service",
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Reservation deleted successfully"),
         @ApiResponse(responseCode = "404", description = "Reservation not found")

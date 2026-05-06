@@ -29,9 +29,48 @@ spring:
       default-destination: batch-completed-queue
     listener:
       acknowledge-mode: auto
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://id.muni.cz/oidc/
+          audiences: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
 
 springdoc:
   api-docs:
     path: /v1/api-docs
   swagger-ui:
     path: /swagger-ui.html
+    oauth:
+      client-id: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
+      client-secret: 48a2b2e3-4b2b-471e-b7b7-b81a85b6eeef22f347f2-3fc9-4e16-8698-3e2492701a89
+      scopes:
+        - openid
+        - test_read
+        - test_write
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+---
+# For generating Bearer token for Swagger UI testing
+# run with: mvn -pl inventory-service spring-boot:run -Dspring-boot.run.profiles=swagger
+spring:
+  config:
+    activate:
+      on-profile: swagger
+server:
+  port: 8090
+  servlet:
+    context-path: /

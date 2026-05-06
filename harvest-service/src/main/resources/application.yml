@@ -10,13 +10,13 @@ spring:
     username: sa
     password:
   jpa:
-    open-in-view: false
     hibernate:
       ddl-auto: validate
+    open-in-view: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
   liquibase:
     change-log: classpath:db/changelog/main-changelog.xml
   security:
@@ -39,6 +39,20 @@ springdoc:
         - openid
         - test_read
         - test_write
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
 
 ---
 
