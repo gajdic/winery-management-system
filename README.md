@@ -477,7 +477,7 @@ Prometheus is configured to automatically scrape metrics from all application se
 - Prometheus targets: [http://localhost:9090/targets](http://localhost:9090/targets)
 - Grafana UI: [http://localhost:3000](http://localhost:3000)
 - Grafana credentials: `admin` / `admin`
-- Preloaded Grafana dashboard: `Winery Management Overview`
+- Preloaded Grafana dashboards: `Winery Management Overview`, `Winery Service Details`
 
 Actuator endpoints exposed by services:
 
