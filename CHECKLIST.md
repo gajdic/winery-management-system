@@ -21,7 +21,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### 2. Database seeding a clear/reset
 
 - [ ] `customer-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] `harvest-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] `harvest-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [x] `production-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [ ] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [ ] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.

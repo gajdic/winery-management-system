@@ -162,6 +162,26 @@ The seed data is stored in the Liquibase `seed` context and includes realistic w
 additional ingredients, and production batches in several lifecycle states. The seed changeset also contains rollback
 delete statements, so the seeded data can be cleared by rolling back that Liquibase changeset.
 
+### Harvest-service Database Seed
+
+`harvest-service` uses Liquibase for schema creation. By default it starts with an empty schema.
+
+Run `harvest-service` with realistic seed data:
+
+```bash
+mvn -pl harvest-service -Dspring-boot.run.profiles=seed spring-boot:run
+```
+
+PowerShell equivalent:
+
+```powershell
+mvn -pl harvest-service -D"spring-boot.run.profiles"=seed spring-boot:run
+```
+
+The seed data is stored in the Liquibase `seed` context and includes realistic grape varieties, vineyards, and harvest
+records across multiple seasons. The seed changeset also contains rollback delete statements, so the seeded data can be
+cleared by rolling back that Liquibase changeset.
+
 ## Docker
 
 Build and run services with Docker Compose:
@@ -203,6 +223,19 @@ Run the harvest-service container:
 
 ```bash
 docker run --rm -p 8081:8081 winery-management/harvest-service:latest
+```
+
+Run Docker Compose with seeded `harvest-service` data:
+
+```bash
+HARVEST_SERVICE_PROFILES=seed docker compose up --build harvest-service
+```
+
+PowerShell equivalent:
+
+```powershell
+$env:HARVEST_SERVICE_PROFILES = "seed"
+docker compose up --build harvest-service
 ```
 
 ### Inventory-service

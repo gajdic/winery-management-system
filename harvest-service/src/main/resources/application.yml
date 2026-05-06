@@ -12,13 +12,13 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
     show-sql: true
   liquibase:
-    enabled: false
+    change-log: classpath:db/changelog/main-changelog.xml
   security:
     oauth2:
       resourceserver:
@@ -39,3 +39,12 @@ springdoc:
         - openid
         - test_read
         - test_write
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed
