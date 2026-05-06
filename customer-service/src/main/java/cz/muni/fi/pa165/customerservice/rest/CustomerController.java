@@ -4,6 +4,7 @@ import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.customerservice.api.CustomerCreateDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerDto;
 import cz.muni.fi.pa165.customerservice.api.CustomerUpdateDto;
+import cz.muni.fi.pa165.customerservice.config.SecurityConfig;
 import cz.muni.fi.pa165.customerservice.facade.CustomerFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,12 +37,19 @@ public class CustomerController {
     @PostMapping
     @Operation(
         summary = "Create a new customer",
-        description = "Creates a new customer with provided personal and address data."
+        description = "Creates a new customer with provided personal and address data.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Customer created",
             content = @Content(schema = @Schema(implementation = CustomerDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -61,12 +70,19 @@ public class CustomerController {
     @GetMapping("/{id}")
     @Operation(
         summary = "Get customer by ID",
-        description = "Returns a customer identified by UUID."
+        description = "Returns a customer identified by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customer found",
             content = @Content(schema = @Schema(implementation = CustomerDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -82,11 +98,18 @@ public class CustomerController {
     @GetMapping
     @Operation(
         summary = "Get all customers",
-        description = "Returns a list of all customers."
+        description = "Returns a list of all customers.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customers retrieved",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = CustomerDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -97,12 +120,19 @@ public class CustomerController {
     @PutMapping("/{id}")
     @Operation(
         summary = "Update customer",
-        description = "Updates an existing customer identified by UUID."
+        description = "Updates an existing customer identified by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customer updated",
             content = @Content(schema = @Schema(implementation = CustomerDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -125,11 +155,18 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     @Operation(
         summary = "Delete customer",
-        description = "Deletes a customer identified by UUID."
+        description = "Deletes a customer identified by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Customer deleted"),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))

@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.customerservice.rest;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordCreateDto;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
+import cz.muni.fi.pa165.customerservice.config.SecurityConfig;
 import cz.muni.fi.pa165.customerservice.facade.PurchaseRecordFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,11 +36,19 @@ public class PurchaseRecordController {
     @PostMapping
     @Operation(
         summary = "Create purchase record",
-        description = "Creates a new purchase record for a customer and wine."
+        description = "Creates a new purchase record for a customer and wine.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"write"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Purchase record created",
             content = @Content(schema = @Schema(implementation = PurchaseRecordDto.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -58,12 +68,20 @@ public class PurchaseRecordController {
     @GetMapping("/{id}")
     @Operation(
         summary = "Get purchase by ID",
-        description = "Returns a purchase record identified by UUID."
+        description = "Returns a purchase record identified by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Purchase found",
             content = @Content(schema = @Schema(implementation = PurchaseRecordDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Purchase not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -78,11 +96,19 @@ public class PurchaseRecordController {
     @GetMapping
     @Operation(
         summary = "Get all purchases",
-        description = "Returns all purchase records."
+        description = "Returns all purchase records.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Purchases retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<List<PurchaseRecordDto>> getAllPurchases() {
         return ResponseEntity.ok(purchaseRecordFacade.getAllPurchases());
@@ -91,11 +117,19 @@ public class PurchaseRecordController {
     @GetMapping("/customer/{customerId}")
     @Operation(
         summary = "Get purchases by customer",
-        description = "Returns all purchase records for a given customer."
+        description = "Returns all purchase records for a given customer.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Purchases retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<List<PurchaseRecordDto>> getByCustomerId(
         @Parameter(description = "Customer ID", example = "22222222-2222-2222-2222-222222222222")
@@ -107,11 +141,19 @@ public class PurchaseRecordController {
     @GetMapping("/wine/{wineId}")
     @Operation(
         summary = "Get purchases by wine",
-        description = "Returns all purchase records for a given wine."
+        description = "Returns all purchase records for a given wine.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Purchases retrieved",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -125,11 +167,19 @@ public class PurchaseRecordController {
     @GetMapping("/quantity")
     @Operation(
         summary = "Filter purchases by quantity",
-        description = "Returns purchases filtered by optional min and max quantity."
+        description = "Returns purchases filtered by optional min and max quantity.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Purchases retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = PurchaseRecordDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<List<PurchaseRecordDto>> getByQuantity(
         @Parameter(description = "Minimum quantity", example = "1")
@@ -144,11 +194,19 @@ public class PurchaseRecordController {
     @GetMapping("/customer/{customerId}/total-spent")
     @Operation(
         summary = "Get total spent by customer",
-        description = "Calculates total amount spent by a given customer."
+        description = "Calculates total amount spent by a given customer.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Total calculated",
-            content = @Content(schema = @Schema(implementation = Double.class)))
+            content = @Content(schema = @Schema(implementation = Double.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<Double> getTotalSpent(
         @Parameter(description = "Customer ID", example = "22222222-2222-2222-2222-222222222222")
@@ -160,10 +218,18 @@ public class PurchaseRecordController {
     @DeleteMapping("/{id}")
     @Operation(
         summary = "Delete purchase",
-        description = "Deletes a purchase record by UUID."
+        description = "Deletes a purchase record by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"write"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Purchase deleted"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Purchase not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })

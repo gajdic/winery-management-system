@@ -6,8 +6,10 @@ import cz.muni.fi.pa165.customerservice.api.CustomerDto;
 import cz.muni.fi.pa165.customerservice.facade.CustomerFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CustomerController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class CustomerControllerWebMvcTest {
 
     @Autowired
@@ -35,6 +39,9 @@ class CustomerControllerWebMvcTest {
 
     @MockitoBean
     private CustomerFacade customerFacade;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
 
     @Test
     void createCustomer_validRequest_returnsCreatedCustomer() throws Exception {
@@ -44,6 +51,7 @@ class CustomerControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(post("/customers")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreateCustomerRequestJson()))
             .andExpect(status().isCreated())
@@ -57,6 +65,7 @@ class CustomerControllerWebMvcTest {
     void createCustomer_invalidRequest_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(post("/customers")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreateCustomerRequestJson()))
             .andExpect(status().isBadRequest());
@@ -70,7 +79,8 @@ class CustomerControllerWebMvcTest {
         when(customerFacade.getCustomer(customerId)).thenReturn(customerDto);
 
         // Act + Assert
-        mockMvc.perform(get("/customers/{id}", customerId))
+        mockMvc.perform(get("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(customerId.toString()))
             .andExpect(jsonPath("$.name").value("John Doe"))
@@ -84,7 +94,8 @@ class CustomerControllerWebMvcTest {
         when(customerFacade.getCustomer(customerId)).thenThrow(new ResourceNotFoundException("Customer not found: " + customerId));
 
         // Act + Assert
-        mockMvc.perform(get("/customers/{id}", customerId))
+        mockMvc.perform(get("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
             .andExpect(jsonPath("$.message").value("Customer not found: " + customerId));
@@ -98,7 +109,8 @@ class CustomerControllerWebMvcTest {
         when(customerFacade.getAllCustomers()).thenReturn(List.of(firstCustomer, secondCustomer));
 
         // Act + Assert
-        mockMvc.perform(get("/customers"))
+        mockMvc.perform(get("/customers")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(firstCustomer.getId().toString()))
             .andExpect(jsonPath("$[0].name").value("John Doe"))
@@ -115,6 +127,7 @@ class CustomerControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
             .andExpect(status().isOk())
@@ -132,6 +145,7 @@ class CustomerControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(put("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
             .andExpect(status().isNotFound())
@@ -143,6 +157,7 @@ class CustomerControllerWebMvcTest {
     void updateCustomer_invalidRequest_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(put("/customers/{id}", UUID.randomUUID())
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreateCustomerRequestJson()))
             .andExpect(status().isBadRequest());
@@ -155,7 +170,8 @@ class CustomerControllerWebMvcTest {
         doNothing().when(customerFacade).deleteCustomer(customerId);
 
         // Act + Assert
-        mockMvc.perform(delete("/customers/{id}", customerId))
+        mockMvc.perform(delete("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isNoContent());
 
         // Assert
@@ -170,7 +186,8 @@ class CustomerControllerWebMvcTest {
             .when(customerFacade).deleteCustomer(customerId);
 
         // Act + Assert
-        mockMvc.perform(delete("/customers/{id}", customerId))
+        mockMvc.perform(delete("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
             .andExpect(jsonPath("$.message").value("Customer not found: " + customerId));
@@ -179,7 +196,8 @@ class CustomerControllerWebMvcTest {
     @Test
     void getCustomer_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/customers/not-a-uuid"))
+        mockMvc.perform(get("/customers/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -187,6 +205,7 @@ class CustomerControllerWebMvcTest {
     void updateCustomer_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(put("/customers/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateCustomerRequestJson()))
             .andExpect(status().isBadRequest());
@@ -195,7 +214,8 @@ class CustomerControllerWebMvcTest {
     @Test
     void deleteCustomer_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(delete("/customers/not-a-uuid"))
+        mockMvc.perform(delete("/customers/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -205,7 +225,8 @@ class CustomerControllerWebMvcTest {
         when(customerFacade.getAllCustomers()).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/customers"))
+        mockMvc.perform(get("/customers")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -218,7 +239,8 @@ class CustomerControllerWebMvcTest {
         when(customerFacade.getCustomer(customerId)).thenThrow(new RuntimeException("Unexpected failure"));
 
         // Act + Assert
-        mockMvc.perform(get("/customers/{id}", customerId))
+        mockMvc.perform(get("/customers/{id}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value("500 INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.message").value("Unexpected failure"));
