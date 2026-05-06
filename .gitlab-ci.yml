@@ -7,6 +7,7 @@ stages:
   - build
   - docker_build
   - docker_publish
+  - deploy
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -25,7 +26,7 @@ cache:
   extends: .job_template
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
-    entrypoint: [""]
+    entrypoint: [ "" ]
 
 .build_template:
   extends: .job_template
@@ -58,6 +59,27 @@ cache:
     - AUTH="$(printf "%s:%s" "${QUAY_USERNAME}" "${QUAY_PASSWORD}" | base64 | tr -d '\n')"
     - echo "{\"auths\":{\"quay.io\":{\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:${CI_COMMIT_SHORT_SHA}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:latest"
+
+.deploy_template:
+  stage: deploy
+  image:
+    name: quay.io/openshift/origin-cli:4.18
+    entrypoint: [ "" ]
+  only:
+    - main
+  script:
+    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
+    - test -n "${OPENSHIFT_SERVER}" || (echo "Missing OPENSHIFT_SERVER CI/CD variable" && exit 1)
+    - test -n "${OPENSHIFT_TOKEN}" || (echo "Missing OPENSHIFT_TOKEN CI/CD variable" && exit 1)
+    - test -n "${OPENSHIFT_PROJECT}" || (echo "Missing OPENSHIFT_PROJECT CI/CD variable" && exit 1)
+    - oc login --token="${OPENSHIFT_TOKEN}" --server="${OPENSHIFT_SERVER}"
+    - oc project "${OPENSHIFT_PROJECT}"
+    - oc process -f openshift/winery-stack-template.yaml -p QUAY_NAMESPACE="${QUAY_NAMESPACE}" -p IMAGE_TAG="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
+    - oc rollout status deployment/artemis --timeout=240s
+    - oc rollout status deployment/customer-service --timeout=240s
+    - oc rollout status deployment/harvest-service --timeout=240s
+    - oc rollout status deployment/inventory-service --timeout=240s
+    - oc rollout status deployment/production-service --timeout=240s
 
 test_customer:
   extends: .test_template
@@ -150,3 +172,11 @@ publish_customer:
   variables:
     SERVICE_NAME: customer-service
     DOCKERFILE_PATH: customer-service/Dockerfile
+
+deploy_openshift:
+  extends: .deploy_template
+  needs:
+    - publish_harvest
+    - publish_inventory
+    - publish_production
+    - publish_customer

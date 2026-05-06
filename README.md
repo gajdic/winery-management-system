@@ -314,12 +314,18 @@ images to a container registry.
 Each image is also tagged as `latest`. The publish jobs use the GitLab CI/CD variables `QUAY_NAMESPACE`,
 `QUAY_USERNAME`, and `QUAY_PASSWORD`.
 
+5. `deploy`
+   Deploys the newly published commit image tag to OpenShift on pushes to the `main` branch. The deployment job logs in
+   with the GitLab CI/CD variables `OPENSHIFT_SERVER`, `OPENSHIFT_TOKEN`, and `OPENSHIFT_PROJECT`, applies the OpenShift
+   template, and waits until all deployments finish rolling out.
+
 In short, the CI pipeline checks that every service:
 
 - passes its Maven tests,
 - can be built together with required module dependencies,
 - has a Dockerfile that can be built successfully,
-- is published to Quay from `main`.
+- is published to Quay from `main`,
+- is deployed to OpenShift from `main`.
 
 Container runtime validation with Docker Compose is currently intended to be performed locally, because the
 current GitLab runner setup does not provide a working Docker daemon for `docker compose up` / `docker run`
@@ -382,34 +388,40 @@ In GitLab, configure these project CI/CD variables:
 - `QUAY_NAMESPACE`: your Quay namespace, for example `xlogin`
 - `QUAY_USERNAME`: Quay username or robot account name
 - `QUAY_PASSWORD`: Quay password or robot token
+- `OPENSHIFT_SERVER`: OpenShift API server URL from the `oc login` command
+- `OPENSHIFT_TOKEN`: OpenShift token from the `oc login` command
+- `OPENSHIFT_PROJECT`: OpenShift project/namespace, for example `xlogin-dev`
 
-Mark `QUAY_USERNAME` and `QUAY_PASSWORD` as masked. If the `main` branch is protected, mark the variables as protected
-too.
+Mark `QUAY_USERNAME`, `QUAY_PASSWORD`, and `OPENSHIFT_TOKEN` as masked. If the `main` branch is protected, mark the
+variables as protected too.
 
-After merging to `main`, wait for the `docker_publish` jobs to finish. They publish each service image with both the
-commit tag and the `latest` tag.
+After merging to `main`, wait for the `docker_publish` jobs and the `deploy_openshift` job to finish. The publish jobs
+push each service image with both the commit tag and the `latest` tag. The deployment job uses the commit tag
+`${CI_COMMIT_SHORT_SHA}` so every main-branch deployment is tied to an exact Git commit.
 
 ### OpenShift Setup
 
-Create or open your Red Hat Developer Sandbox and log in with the `oc` CLI. In the OpenShift console, use
-`Copy login command`, then run the copied command locally:
+Create or open your Red Hat Developer Sandbox. In the OpenShift console, use `Copy login command`, display the token,
+and copy these values into GitLab CI/CD variables:
 
-```bash
-oc login --token=<your-token> --server=<your-openshift-api-url>
-```
+- server URL into `OPENSHIFT_SERVER`,
+- token into `OPENSHIFT_TOKEN`,
+- project name into `OPENSHIFT_PROJECT`.
 
-Deploy the full stack from the repository root:
+After this setup, deployment is automatic from the GitLab `main` pipeline. The job runs the equivalent of:
 
 ```bash
 oc process -f openshift/winery-stack-template.yaml \
   -p QUAY_NAMESPACE=<your-quay-namespace> \
-  -p IMAGE_TAG=latest \
+  -p IMAGE_TAG=<commit-short-sha> \
   | oc apply -f -
 ```
 
-To deploy a specific Git commit image instead of `latest`, use the commit short SHA from the successful GitLab pipeline:
+For local troubleshooting, log in with `oc` and run the same command manually:
 
 ```bash
+oc login --token=<your-token> --server=<your-openshift-api-url>
+oc project <your-openshift-project>
 oc process -f openshift/winery-stack-template.yaml \
   -p QUAY_NAMESPACE=<your-quay-namespace> \
   -p IMAGE_TAG=<commit-short-sha> \
