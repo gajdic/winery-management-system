@@ -41,14 +41,14 @@ public class SecurityConfigTest {
     @Test
     void getCustomers_withWrongScope_returns403() throws Exception {
         mockMvc.perform(get("/customers")
-                .with(jwt().jwt(token -> token.claim("scope", "write"))))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isForbidden());
     }
 
     @Test
     void getCustomers_withRightScope_returns200() throws Exception {
         mockMvc.perform(get("/customers")
-                .with(jwt().jwt(token -> token.claim("scope", "read"))))
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isOk());
     }
 
@@ -57,7 +57,7 @@ public class SecurityConfigTest {
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .with(jwt().jwt(token -> token.claim("scope", "read"))))
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isForbidden());
     }
 
@@ -66,7 +66,7 @@ public class SecurityConfigTest {
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .with(jwt().jwt(token -> token.claim("scope", "write"))))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isBadRequest());
     }
 }

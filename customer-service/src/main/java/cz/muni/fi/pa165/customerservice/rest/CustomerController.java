@@ -40,7 +40,7 @@ public class CustomerController {
         description = "Creates a new customer with provided personal and address data.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"})
+            scopes = {"test_write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Customer created",
@@ -73,7 +73,7 @@ public class CustomerController {
         description = "Returns a customer identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"})
+            scopes = {"test_read"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customer found",
@@ -101,7 +101,7 @@ public class CustomerController {
         description = "Returns a list of all customers.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"})
+            scopes = {"test_read"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customers retrieved",
@@ -123,7 +123,7 @@ public class CustomerController {
         description = "Updates an existing customer identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"})
+            scopes = {"test_write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Customer updated",
@@ -158,7 +158,7 @@ public class CustomerController {
         description = "Deletes a customer identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"})
+            scopes = {"test_write"})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Customer deleted"),

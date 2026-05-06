@@ -40,7 +40,7 @@ public class ReviewController {
         description = "Creates a new review for a wine by a customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"}
+            scopes = {"test_write"}
         )
     )
     @ApiResponses({
@@ -72,7 +72,7 @@ public class ReviewController {
         description = "Returns a review identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -100,7 +100,7 @@ public class ReviewController {
         description = "Returns all reviews.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -121,7 +121,7 @@ public class ReviewController {
         description = "Returns all reviews created by a specific customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -147,7 +147,7 @@ public class ReviewController {
         description = "Returns all reviews for a specific wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -173,7 +173,7 @@ public class ReviewController {
         description = "Updates an existing review.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"}
+            scopes = {"test_write"}
         )
     )
     @ApiResponses({
@@ -208,7 +208,7 @@ public class ReviewController {
         description = "Deletes a review by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"}
+            scopes = {"test_write"}
         )
     )
     @ApiResponses({

@@ -39,7 +39,7 @@ public class PurchaseRecordController {
         description = "Creates a new purchase record for a customer and wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"}
+            scopes = {"test_write"}
         )
     )
     @ApiResponses({
@@ -71,7 +71,7 @@ public class PurchaseRecordController {
         description = "Returns a purchase record identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -99,7 +99,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -120,7 +120,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records for a given customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -144,7 +144,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records for a given wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -170,7 +170,7 @@ public class PurchaseRecordController {
         description = "Returns purchases filtered by optional min and max quantity.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -197,7 +197,7 @@ public class PurchaseRecordController {
         description = "Calculates total amount spent by a given customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"read"}
+            scopes = {"test_read"}
         )
     )
     @ApiResponses({
@@ -221,7 +221,7 @@ public class PurchaseRecordController {
         description = "Deletes a purchase record by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"write"}
+            scopes = {"test_write"}
         )
     )
     @ApiResponses({
