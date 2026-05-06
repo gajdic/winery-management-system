@@ -32,6 +32,7 @@ objects:
                     containers:
                         -   name: artemis
                             image: apache/activemq-artemis:latest-alpine
+                            workingDir: /tmp
                             ports:
                                 -   containerPort: 61616
                                     protocol: TCP
