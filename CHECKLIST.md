@@ -20,26 +20,27 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 2. Database seeding a clear/reset
 
-- [ ] `customer-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] `customer-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [x] `harvest-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [x] `production-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.
+- [x] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.
 - [x] Existuje sposob, ako databazy vycistit alebo resetnut pred novym demo behom.
 - [x] README popisuje, ako sa seedovanie a pripadny clear/reset databaz spusta.
 
 ### 3. Security - OAuth 2 Resource Server
 
-- [ ] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
+- [x] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
 - [ ] Pouzit seminarovy `client_id` a `client_secret` pre client aj resource servery.
 - [ ] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
 - [x] Pouzit aspon dva rozne `test_*` scopes.
 - [x] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
-- [ ] `customer-service` endpointy maju nastavene scope pravidla.
+- [x] `customer-service` endpointy maju nastavene scope pravidla.
 - [x] `harvest-service` endpointy maju nastavene scope pravidla.
 - [x] `production-service` endpointy maju nastavene scope pravidla.
 - [x] `inventory-service` endpointy maju nastavene scope pravidla.
 - [x] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
+- [x] `customer-service` ma pridane `/actuator/**` medzi public endpointy, aby Prometheus vedel scrapeovat metriky bez tokenu.
 - [x] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
 - [ ] Rucne overit, ze request bez tokenu zlyha na chranenych endpointoch.
 - [ ] Rucne overit, ze token bez potrebneho scope zlyha na endpointoch s vyssim opravnenim.
@@ -226,13 +227,35 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne. (N/A — odstraneny)
 - [ ] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key.
 
+## Opravy po M2 review
+
+### Povinne alebo odporucane opravy s dopadom na hodnotenie
+
+- [ ] JMS queue names konfigurovat z jedneho miesta, nie duplicitne v `application.yml` a `Queues.java`.
+- [ ] Zaviest napr. `app.jms.queues.batch-completed=batch-completed-queue`.
+- [ ] Zaviest napr. `app.jms.queues.stock-updated=stock-updated-queue`.
+- [ ] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie.
+- [ ] Upravit testy messagingu po presune queue names do konfiguracie.
+- [ ] `production-service` ma spracovat ACK z `inventory-service` po update stocku.
+- [ ] `production-service` ma ulozit inbound ACK message do databazy.
+- [ ] Doplnit test uspesneho ACK flow.
+- [ ] Doplnit test pre pripad, ked ACK nepride alebo consumer zlyha.
+- [ ] V `docker-compose.yml` nepouzivat externe image tagy `latest`, hlavne pre `apache/activemq-artemis`.
+- [ ] Odstranit nepotrebnu PostgreSQL dependency z `harvest-service/pom.xml`, ak sa pouziva iba H2.
+
+### Nice to have z M2 review
+
+- [ ] Zvazit vytiahnutie opakovanych OpenAPI kodov a popisov do triedy typu `SwaggerConstants`.
+- [ ] Zvazit explicitnu dedicated Docker network v `docker-compose.yml`.
+- [ ] Zvazit presun hardcoded secrets z `docker-compose.yml` do `.env`.
+
 ## Najblizsie odporucane kroky
 
-1. Pridat Spring Security OAuth 2 Resource Server do vsetkych 4 services a rozdelit endpointy medzi aspon 2 `test_*` scopes.
-2. Pridat actuator + Prometheus metriky do services a rozsirit `docker-compose.yml` o Prometheus a Grafanu s provisioningom dashboardu.
-3. Zjednotit database seeding/reset pre vsetky services a zdokumentovat ho v README.
-4. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
-5. Overit v GitLabe, ze merge requesty realne vyzaduju aspon 2 approvals, kedze to sa z lokalneho repozitara neda potvrdit.
+1. Doplnit `customer-service` `/actuator/**` medzi public endpointy, aby Prometheus po zapnuti security stale scrapeoval metriky.
+2. Rucne overit security flow pre vsetky services: bez tokenu `401`, zly scope `403`, spravny scope `2xx`.
+3. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
+4. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta, ACK handling v `production-service`, odstranit `latest` image tagy.
+5. Spustit finalne `mvn clean install` a cisty `docker compose up --build` po vsetkych mergeoch.
 6. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
 
 ## Nice to have
@@ -266,7 +289,7 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 ## Poznamky k finalnemu odovzdaniu
 
 - Povinne M2 body su v repozitari momentalne pokryte.
-- M3 checklist bol doplneny dna `2026-04-29`; vacsina M3 infrastruktury este nie je oznacena ako hotova.
+- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-06`.
 - `mvn install` prechadza nad celym multi-module projektom.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.

@@ -182,6 +182,32 @@ The seed data is stored in the Liquibase `seed` context and includes realistic g
 records across multiple seasons. The seed changeset also contains rollback delete statements, so the seeded data can be
 cleared by rolling back that Liquibase changeset.
 
+### Customer-service Database Seed
+
+`customer-service` loads initial data on application startup using `InsertInitialDataService`.
+
+Run `customer-service` with startup seed data:
+
+```bash
+mvn -pl customer-service spring-boot:run
+```
+
+The startup seed includes customer profiles with addresses, reviews, and purchase records. Because the service uses an
+H2 in-memory database, the data is reset by restarting the service.
+
+### Inventory-service Database Seed
+
+`inventory-service` loads initial data on application startup using `InsertInitialDataService`.
+
+Run `inventory-service` with startup seed data:
+
+```bash
+mvn -pl inventory-service spring-boot:run
+```
+
+The startup seed includes stock records and reservations. Because the service uses an H2 in-memory database, the data is
+reset by restarting the service.
+
 ## Docker
 
 Build and run services with Docker Compose:
@@ -189,6 +215,9 @@ Build and run services with Docker Compose:
 ```bash
 docker compose up --build
 ```
+
+`customer-service` and `inventory-service` load their startup seed data automatically. `harvest-service` and
+`production-service` use the `seed` Spring profile for Liquibase seed data.
 
 Rebuild from scratch without cache (recommended after messaging changes):
 
@@ -285,7 +314,7 @@ Run the customer-service container:
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
 
-## Asynchronous Communication (M2)
+## Asynchronous Communication 
 
 Implemented message flow:
 
@@ -379,10 +408,16 @@ docker compose up --build
 docker compose down
 ```
 
-## Security (M3)
+## Security
 
-The `harvest-service`, `production-service`, and `inventory-service` are configured as OAuth 2 Resource Servers based on the
-PA165 seminar security setup. They validate MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
+The `customer-service`, `harvest-service`, `production-service`, and `inventory-service` are configured as OAuth 2
+Resource Servers based on the PA165 seminar security setup. They validate MUNI-issued JWT access tokens from
+`https://id.muni.cz/oidc/`.
+
+Customer API authorization rules:
+
+- `GET /customers/**`, `GET /purchases/**`, and `GET /reviews/**` require scope `test_read`.
+- `POST`, `PUT`, and `DELETE` operations on customer, purchase, and review endpoints require scope `test_write`.
 
 Harvest API authorization rules:
 
