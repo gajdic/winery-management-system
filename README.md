@@ -443,35 +443,39 @@ oc get routes
 
 ### Current OpenShift Routes
 
-The application is currently deployed in the course OpenShift Sandbox and can be inspected through these public routes:
-
-- Customer
-  service: [http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
-- Harvest
-  service: [http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
-- Inventory
-  service: [http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
-- Production
-  service: [http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
+The application is currently deployed in the course OpenShift Sandbox. The service root URLs do not serve a landing
+page;
+use the Swagger UI or OpenAPI links below for inspection.
 
 Swagger UI:
 
 - Customer
-  service: [http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html](http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html)
+  service: [https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html](https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html)
 - Harvest
-  service: [http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html](http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html)
+  service: [https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html](https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html)
 - Inventory
-  service: [http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui.html](http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui.html)
+  service: [https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui/index.html](https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui/index.html)
 - Production
-  service: [http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui.html](http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui.html)
+  service: [https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui/index.html](https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui/index.html)
+
+OpenAPI JSON:
+
+- Customer
+  service: [https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs](https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs)
+- Harvest
+  service: [https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs](https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs)
+- Inventory
+  service: [https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/v1/api-docs](https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/v1/api-docs)
+- Production
+  service: [https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs](https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs)
 
 These URLs are tied to the current OpenShift Sandbox cluster and namespace. If the Sandbox is recreated or the routes
 change, redeploy the project and run `oc get routes` to get the new public hosts.
 
 ### OpenShift Smoke Checks
 
-Use the route hostnames from `oc get routes`. If the OpenShift console opens a route with `https://` and the service is
-not configured for TLS termination, use `http://`.
+Use the route hostnames from `oc get routes`. The OpenShift routes use edge TLS termination, so public links are
+available through `https://`.
 
 Swagger/OpenAPI checks:
 
