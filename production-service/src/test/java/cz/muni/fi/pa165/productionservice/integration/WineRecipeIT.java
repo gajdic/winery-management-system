@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +41,7 @@ class WineRecipeIT {
         String request = objectMapper.writeValueAsString(TestDataFactory.wineRecipeCreateDto());
 
         String response = mockMvc.perform(post("/production/recipes")
+                .with(jwt().jwt(token -> token.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
             .andExpect(status().isCreated())
@@ -52,7 +54,8 @@ class WineRecipeIT {
 
         UUID recipeId = UUID.fromString(JsonPath.read(response, "$.id"));
 
-        mockMvc.perform(get("/production/recipes/{id}", recipeId))
+        mockMvc.perform(get("/production/recipes/{id}", recipeId)
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(recipeId.toString()))
             .andExpect(jsonPath("$.name").value("Riesling"))

@@ -3,6 +3,7 @@ package cz.muni.fi.pa165.productionservice.controller;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
+import cz.muni.fi.pa165.productionservice.config.SecurityConfig;
 import cz.muni.fi.pa165.productionservice.data.enums.BatchStatus;
 import cz.muni.fi.pa165.productionservice.facade.ProductionBatchFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +37,7 @@ public class ProductionBatchController {
     }
 
     @PostMapping
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Create a production batch from a requested bottle count",
         description = "Creates a planned batch by calculating feasible production from the selected recipe and supplied harvest lots."
@@ -43,6 +46,8 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "201", description = "Production batch created",
             content = @Content(schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body or production input",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -63,6 +68,7 @@ public class ProductionBatchController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Get all production batches",
         description = "Returns all production batches managed by the production service."
@@ -70,6 +76,8 @@ public class ProductionBatchController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Production batches returned",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductionBatchDto.class)))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -78,6 +86,7 @@ public class ProductionBatchController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Get a production batch by id",
         description = "Returns a single production batch identified by UUID."
@@ -86,6 +95,8 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "200", description = "Production batch returned",
             content = @Content(schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Production batch not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -100,6 +111,7 @@ public class ProductionBatchController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Delete a production batch by id",
         description = "Deletes an existing production batch identified by UUID."
@@ -107,6 +119,8 @@ public class ProductionBatchController {
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Production batch deleted", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Production batch not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -122,6 +136,7 @@ public class ProductionBatchController {
     }
 
     @PatchMapping("/{id}/status")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Update a production batch status",
         description = "Changes the lifecycle status of an existing production batch."
@@ -130,6 +145,8 @@ public class ProductionBatchController {
         @ApiResponse(responseCode = "200", description = "Production batch status updated",
             content = @Content(schema = @Schema(implementation = ProductionBatchDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format or status value",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Production batch not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
