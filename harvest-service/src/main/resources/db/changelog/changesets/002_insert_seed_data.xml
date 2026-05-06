@@ -15,7 +15,7 @@
     </insert>
     <insert tableName="grape_type">
       <column name="id" value="22222222-2222-4222-8222-222222222222"/>
-      <column name="name" value="Pálava"/>
+      <column name="name" value="Palava"/>
       <column name="description" value="Aromatic Moravian grape variety with rose, lychee, and honey notes."/>
     </insert>
     <insert tableName="grape_type">
