@@ -216,8 +216,9 @@ Build and run services with Docker Compose:
 docker compose up --build
 ```
 
-`customer-service` and `inventory-service` load their startup seed data automatically. `harvest-service` and
-`production-service` use the `seed` Spring profile for Liquibase seed data.
+`customer-service` and `inventory-service` load their startup seed data automatically. In Docker Compose,
+`harvest-service` starts with the `seed` Spring profile by default, while `production-service` uses the `seed` profile
+only when `PRODUCTION_SERVICE_PROFILES=seed` is set.
 
 Rebuild from scratch without cache (recommended after messaging changes):
 
@@ -258,6 +259,9 @@ PowerShell equivalent:
 $env:HARVEST_SERVICE_PROFILES = "seed"
 docker compose up --build harvest-service
 ```
+
+The Docker Compose default already enables the `seed` profile for `harvest-service`. Set
+`HARVEST_SERVICE_PROFILES` to another value if a different profile setup is needed.
 
 ### Inventory-service
 
