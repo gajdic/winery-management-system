@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-29`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-06`.
 
 ## M3 povinne body
 
@@ -25,41 +25,41 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `production-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [ ] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
 - [ ] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.
-- [ ] Existuje sposob, ako databazy vycistit alebo resetnut pred novym demo behom.
-- [ ] README popisuje, ako sa seedovanie a pripadny clear/reset databaz spusta.
+- [x] Existuje sposob, ako databazy vycistit alebo resetnut pred novym demo behom.
+- [x] README popisuje, ako sa seedovanie a pripadny clear/reset databaz spusta.
 
 ### 3. Security - OAuth 2 Resource Server
 
 - [ ] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
 - [ ] Pouzit seminarovy `client_id` a `client_secret` pre client aj resource servery.
 - [ ] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
-- [ ] Pouzit aspon dva rozne `test_*` scopes.
-- [ ] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
+- [x] Pouzit aspon dva rozne `test_*` scopes.
+- [x] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
 - [ ] `customer-service` endpointy maju nastavene scope pravidla.
 - [x] `harvest-service` endpointy maju nastavene scope pravidla.
-- [ ] `production-service` endpointy maju nastavene scope pravidla.
-- [ ] `inventory-service` endpointy maju nastavene scope pravidla.
-- [ ] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
-- [ ] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
+- [x] `production-service` endpointy maju nastavene scope pravidla.
+- [x] `inventory-service` endpointy maju nastavene scope pravidla.
+- [x] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
+- [x] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
 - [ ] Rucne overit, ze request bez tokenu zlyha na chranenych endpointoch.
 - [ ] Rucne overit, ze token bez potrebneho scope zlyha na endpointoch s vyssim opravnenim.
 - [ ] Rucne overit, ze token so spravnym scope prejde.
 
 ### 4. Observability - Actuator, Prometheus, Grafana
 
-- [ ] Do vsetkych services pridat `spring-boot-starter-actuator`.
-- [ ] Do vsetkych services pridat Prometheus/Micrometer registry.
-- [ ] `customer-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `harvest-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `production-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `inventory-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `docker-compose.yml` obsahuje Prometheus.
+- [x] Do vsetkych services pridat `spring-boot-starter-actuator`.
+- [x] Do vsetkych services pridat Prometheus/Micrometer registry.
+- [x] `customer-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `harvest-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `production-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `inventory-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `docker-compose.yml` obsahuje Prometheus.
 - [ ] Prometheus scrapeuje vsetky 4 services.
-- [ ] `docker-compose.yml` obsahuje Grafanu.
-- [ ] Grafana ma provisioning pre datasource, aby sa nemusela konfigurovat rucne po starte.
-- [ ] Grafana ma preloaded dashboard zobrazujuci stav systemu.
-- [ ] Dashboard ukazuje aspon health/up stav, request rate/latenciu a JVM alebo HTTP metriky pre services.
-- [ ] README obsahuje URL pre actuator, Prometheus a Grafanu.
+- [x] `docker-compose.yml` obsahuje Grafanu.
+- [x] Grafana ma provisioning pre datasource, aby sa nemusela konfigurovat rucne po starte.
+- [x] Grafana ma preloaded dashboard zobrazujuci stav systemu.
+- [x] Dashboard ukazuje aspon health/up stav, request rate/latenciu a JVM alebo HTTP metriky pre services.
+- [x] README obsahuje URL pre actuator, Prometheus a Grafanu.
 
 ### 5. Deployment a CI
 
@@ -86,12 +86,12 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### 7. README a dokumentacia pre M3
 
 - [ ] README obsahuje kompletny M3 runbook: build, start, seed/reset, token, Swagger, scenario, monitoring.
-- [ ] README obsahuje OAuth scopes a priklady requestov s tokenom.
-- [ ] README obsahuje zoznam service URL a portov.
-- [ ] README obsahuje observability URL: actuator endpoints, Prometheus, Grafana.
-- [ ] README obsahuje popis GitLab CI.
-- [ ] README obsahuje informaciu, ci a ako bol pouzity GenAI pri vyvoji.
-- [ ] README jasne rozlisuje povinne funkcionality a optional deployment.
+- [x] README obsahuje OAuth scopes a priklady requestov s tokenom.
+- [x] README obsahuje zoznam service URL a portov.
+- [x] README obsahuje observability URL: actuator endpoints, Prometheus, Grafana.
+- [x] README obsahuje popis GitLab CI.
+- [x] README obsahuje informaciu, ci a ako bol pouzity GenAI pri vyvoji.
+- [x] README jasne rozlisuje povinne funkcionality a optional deployment.
 
 ### 8. Teamwork a GitLab proces
 
