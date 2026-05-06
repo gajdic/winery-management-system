@@ -441,6 +441,33 @@ Get the public API URLs:
 oc get routes
 ```
 
+### Current OpenShift Routes
+
+The application is currently deployed in the course OpenShift Sandbox and can be inspected through these public routes:
+
+- Customer
+  service: [http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
+- Harvest
+  service: [http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
+- Inventory
+  service: [http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
+- Production
+  service: [http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com](http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com)
+
+Swagger UI:
+
+- Customer
+  service: [http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html](http://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html)
+- Harvest
+  service: [http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html](http://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui.html)
+- Inventory
+  service: [http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui.html](http://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui.html)
+- Production
+  service: [http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui.html](http://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui.html)
+
+These URLs are tied to the current OpenShift Sandbox cluster and namespace. If the Sandbox is recreated or the routes
+change, redeploy the project and run `oc get routes` to get the new public hosts.
+
 ### OpenShift Smoke Checks
 
 Use the route hostnames from `oc get routes`. If the OpenShift console opens a route with `https://` and the service is
