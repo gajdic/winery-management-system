@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +37,9 @@ class ReviewControllerWebMvcTest {
     @MockitoBean
     private ReviewFacade reviewFacade;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     @Test
     void createReview_validRequest_returnsCreatedReview() throws Exception {
         // Arrange
@@ -46,6 +51,7 @@ class ReviewControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(post("/reviews")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreateReviewRequestJson(wineId, customerId)))
             .andExpect(status().isCreated())
@@ -60,6 +66,7 @@ class ReviewControllerWebMvcTest {
     void createReview_invalidRequest_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(post("/reviews")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidReviewRequestJson()))
             .andExpect(status().isBadRequest());
@@ -75,7 +82,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReview(reviewId)).thenReturn(reviewDto);
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/{id}", reviewId))
+        mockMvc.perform(get("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(reviewId.toString()))
             .andExpect(jsonPath("$.wineId").value(wineId.toString()))
@@ -91,7 +99,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReview(reviewId)).thenThrow(new ResourceNotFoundException("Review not found: " + reviewId));
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/{id}", reviewId))
+        mockMvc.perform(get("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
             .andExpect(jsonPath("$.message").value("Review not found: " + reviewId));
@@ -105,7 +114,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getAllReviews()).thenReturn(List.of(firstReview, secondReview));
 
         // Act + Assert
-        mockMvc.perform(get("/reviews"))
+        mockMvc.perform(get("/reviews")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(firstReview.getId().toString()))
             .andExpect(jsonPath("$[0].comment").value("First review"))
@@ -119,7 +129,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getAllReviews()).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/reviews"))
+        mockMvc.perform(get("/reviews")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -133,7 +144,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReviewsByCustomer(customerId)).thenReturn(List.of(review));
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/customer/{customerId}", customerId))
+        mockMvc.perform(get("/reviews/customer/{customerId}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].customerId").value(customerId.toString()))
             .andExpect(jsonPath("$[0].comment").value("Customer review"));
@@ -146,7 +158,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReviewsByCustomer(customerId)).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/customer/{customerId}", customerId))
+        mockMvc.perform(get("/reviews/customer/{customerId}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -160,7 +173,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReviewsByWine(wineId)).thenReturn(List.of(review));
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/wine/{wineId}", wineId))
+        mockMvc.perform(get("/reviews/wine/{wineId}", wineId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].wineId").value(wineId.toString()))
             .andExpect(jsonPath("$[0].comment").value("Wine review"));
@@ -173,7 +187,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReviewsByWine(wineId)).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/wine/{wineId}", wineId))
+        mockMvc.perform(get("/reviews/wine/{wineId}", wineId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -190,6 +205,7 @@ class ReviewControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(put("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateReviewRequestJson(wineId, customerId)))
             .andExpect(status().isOk())
@@ -207,6 +223,7 @@ class ReviewControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(put("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateReviewRequestJson(UUID.randomUUID(), UUID.randomUUID())))
             .andExpect(status().isNotFound())
@@ -218,6 +235,7 @@ class ReviewControllerWebMvcTest {
     void updateReview_invalidRequest_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(put("/reviews/{id}", UUID.randomUUID())
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidReviewRequestJson()))
             .andExpect(status().isBadRequest());
@@ -230,7 +248,8 @@ class ReviewControllerWebMvcTest {
         doNothing().when(reviewFacade).deleteReview(reviewId);
 
         // Act + Assert
-        mockMvc.perform(delete("/reviews/{id}", reviewId))
+        mockMvc.perform(delete("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isNoContent());
 
         // Assert
@@ -245,7 +264,8 @@ class ReviewControllerWebMvcTest {
             .when(reviewFacade).deleteReview(reviewId);
 
         // Act + Assert
-        mockMvc.perform(delete("/reviews/{id}", reviewId))
+        mockMvc.perform(delete("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
             .andExpect(jsonPath("$.message").value("Review not found: " + reviewId));
@@ -254,7 +274,8 @@ class ReviewControllerWebMvcTest {
     @Test
     void getReview_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/reviews/not-a-uuid"))
+        mockMvc.perform(get("/reviews/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -262,6 +283,7 @@ class ReviewControllerWebMvcTest {
     void updateReview_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(put("/reviews/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validUpdateReviewRequestJson(UUID.randomUUID(), UUID.randomUUID())))
             .andExpect(status().isBadRequest());
@@ -270,21 +292,24 @@ class ReviewControllerWebMvcTest {
     @Test
     void deleteReview_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(delete("/reviews/not-a-uuid"))
+        mockMvc.perform(delete("/reviews/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getReviewsByCustomer_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/reviews/customer/not-a-uuid"))
+        mockMvc.perform(get("/reviews/customer/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getReviewsByWine_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/reviews/wine/not-a-uuid"))
+        mockMvc.perform(get("/reviews/wine/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -295,7 +320,8 @@ class ReviewControllerWebMvcTest {
         when(reviewFacade.getReview(reviewId)).thenThrow(new RuntimeException("Unexpected review failure"));
 
         // Act + Assert
-        mockMvc.perform(get("/reviews/{id}", reviewId))
+        mockMvc.perform(get("/reviews/{id}", reviewId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value("500 INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.message").value("Unexpected review failure"));

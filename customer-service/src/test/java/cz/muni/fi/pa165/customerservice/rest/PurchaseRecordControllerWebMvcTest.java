@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,6 +39,9 @@ class PurchaseRecordControllerWebMvcTest {
     @MockitoBean
     private PurchaseRecordFacade purchaseRecordFacade;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     @Test
     void createPurchase_validRequest_returnsCreatedPurchase() throws Exception {
         // Arrange
@@ -45,6 +50,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(post("/purchases")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(validCreatePurchaseRequestJson(dto.getCustomerId(), dto.getWineId(), 4, 12.0)))
             .andExpect(status().isCreated())
@@ -59,6 +65,7 @@ class PurchaseRecordControllerWebMvcTest {
     void createPurchase_invalidRequest_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(post("/purchases")
+                .with(jwt().jwt(token -> token.claim("scope", "write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidCreatePurchaseRequestJson()))
             .andExpect(status().isBadRequest());
@@ -71,7 +78,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getPurchase(dto.getId())).thenReturn(dto);
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/{id}", dto.getId()))
+        mockMvc.perform(get("/purchases/{id}", dto.getId())
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(dto.getId().toString()))
             .andExpect(jsonPath("$.customerId").value(dto.getCustomerId().toString()))
@@ -86,7 +94,8 @@ class PurchaseRecordControllerWebMvcTest {
             .thenThrow(new ResourceNotFoundException("PurchaseRecord not found: " + purchaseId));
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/{id}", purchaseId))
+        mockMvc.perform(get("/purchases/{id}", purchaseId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.status").value("404 NOT_FOUND"))
             .andExpect(jsonPath("$.message").value("PurchaseRecord not found: " + purchaseId));
@@ -100,7 +109,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getAllPurchases()).thenReturn(List.of(first, second));
 
         // Act + Assert
-        mockMvc.perform(get("/purchases"))
+        mockMvc.perform(get("/purchases")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(first.getId().toString()))
             .andExpect(jsonPath("$[1].id").value(second.getId().toString()));
@@ -112,7 +122,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getAllPurchases()).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/purchases"))
+        mockMvc.perform(get("/purchases")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -126,7 +137,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getByCustomerId(customerId)).thenReturn(List.of(dto));
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/customer/{customerId}", customerId))
+        mockMvc.perform(get("/purchases/customer/{customerId}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].customerId").value(customerId.toString()));
     }
@@ -138,7 +150,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getByCustomerId(customerId)).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/customer/{customerId}", customerId))
+        mockMvc.perform(get("/purchases/customer/{customerId}", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -152,7 +165,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getByWineId(wineId)).thenReturn(List.of(dto));
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/wine/{wineId}", wineId))
+        mockMvc.perform(get("/purchases/wine/{wineId}", wineId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].wineId").value(wineId.toString()));
     }
@@ -164,7 +178,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getByWineId(wineId)).thenReturn(List.of());
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/wine/{wineId}", wineId))
+        mockMvc.perform(get("/purchases/wine/{wineId}", wineId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
@@ -178,6 +193,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "2")
                 .param("max", "5"))
             .andExpect(status().isOk())
@@ -192,6 +208,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "5"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].quantity").value(6));
@@ -205,6 +222,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("max", "2"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].quantity").value(1));
@@ -217,6 +235,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "50")
                 .param("max", "60"))
             .andExpect(status().isOk())
@@ -231,6 +250,7 @@ class PurchaseRecordControllerWebMvcTest {
 
         // Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "10")
                 .param("max", "5"))
             .andExpect(status().isBadRequest())
@@ -245,7 +265,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getTotalSpentByCustomer(customerId)).thenReturn(42.5);
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/customer/{customerId}/total-spent", customerId))
+        mockMvc.perform(get("/purchases/customer/{customerId}/total-spent", customerId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", closeTo(42.5, 0.001)));
     }
@@ -257,7 +278,8 @@ class PurchaseRecordControllerWebMvcTest {
         doNothing().when(purchaseRecordFacade).deletePurchase(purchaseId);
 
         // Act + Assert
-        mockMvc.perform(delete("/purchases/{id}", purchaseId))
+        mockMvc.perform(delete("/purchases/{id}", purchaseId)
+                .with(jwt().jwt(token -> token.claim("scope", "write"))))
             .andExpect(status().isNoContent());
 
         // Assert
@@ -267,28 +289,32 @@ class PurchaseRecordControllerWebMvcTest {
     @Test
     void getPurchase_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/purchases/not-a-uuid"))
+        mockMvc.perform(get("/purchases/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByCustomerId_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/purchases/customer/not-a-uuid"))
+        mockMvc.perform(get("/purchases/customer/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getByWineId_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/purchases/wine/not-a-uuid"))
+        mockMvc.perform(get("/purchases/wine/not-a-uuid")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getTotalSpent_invalidUuid_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
-        mockMvc.perform(get("/purchases/customer/not-a-uuid/total-spent"))
+        mockMvc.perform(get("/purchases/customer/not-a-uuid/total-spent")
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -296,6 +322,7 @@ class PurchaseRecordControllerWebMvcTest {
     void getByQuantity_invalidMinType_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "abc")
                 .param("max", "5"))
             .andExpect(status().isBadRequest());
@@ -305,6 +332,7 @@ class PurchaseRecordControllerWebMvcTest {
     void getByQuantity_invalidMaxType_returnsBadRequest() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(get("/purchases/quantity")
+                .with(jwt().jwt(token -> token.claim("scope", "read")))
                 .param("min", "1")
                 .param("max", "xyz"))
             .andExpect(status().isBadRequest());
@@ -317,7 +345,8 @@ class PurchaseRecordControllerWebMvcTest {
         when(purchaseRecordFacade.getPurchase(purchaseId)).thenThrow(new RuntimeException("Unexpected purchase failure"));
 
         // Act + Assert
-        mockMvc.perform(get("/purchases/{id}", purchaseId))
+        mockMvc.perform(get("/purchases/{id}", purchaseId)
+                .with(jwt().jwt(token -> token.claim("scope", "read"))))
             .andExpect(status().isInternalServerError())
             .andExpect(jsonPath("$.status").value("500 INTERNAL_SERVER_ERROR"))
             .andExpect(jsonPath("$.message").value("Unexpected purchase failure"));
