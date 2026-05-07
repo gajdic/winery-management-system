@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="001" author="inventory-service">
+    <comment>Create inventory-service schema</comment>
+
+    <createTable tableName="stock">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="wine_id" type="UUID">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="quantity" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="reserved_quantity" type="INT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="reservation">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="customer_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="wine_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="quantity" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="DATE">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="inbound_message_log">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="queue_name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="payload" type="VARCHAR(4000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="batch_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="received_at" type="TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="outbound_message_log">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="queue_name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="payload" type="VARCHAR(4000)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="batch_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sent_at" type="TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>
