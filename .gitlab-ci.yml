@@ -66,6 +66,9 @@ cache:
     entrypoint: [ "" ]
   only:
     - main
+    # TODO: remove after testing with merge requests is complete
+    - merge_requests
+    # ENDTODO
   before_script:
     - test -n "${OPENSHIFT_SERVER}" || (echo "Missing OPENSHIFT_SERVER CI/CD variable" && exit 1)
     - test -n "${OPENSHIFT_TOKEN}" || (echo "Missing OPENSHIFT_TOKEN CI/CD variable" && exit 1)
