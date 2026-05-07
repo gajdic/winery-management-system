@@ -21,6 +21,7 @@ services:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+      SPRING_PROFILES_ACTIVE: ${PRODUCTION_SERVICE_PROFILES:-}
       SPRING_ARTEMIS_MODE: native
       SPRING_ARTEMIS_BROKER_URL: tcp://artemis:61616
       SPRING_ARTEMIS_USER: artemis
@@ -36,6 +37,7 @@ services:
       - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:harvest-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_PROFILES_ACTIVE: ${HARVEST_SERVICE_PROFILES:-}
 
   inventory-service:
     build:

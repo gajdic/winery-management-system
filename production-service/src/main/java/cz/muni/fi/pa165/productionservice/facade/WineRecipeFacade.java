@@ -7,6 +7,7 @@ import cz.muni.fi.pa165.productionservice.mappers.WineRecipeMapper;
 import cz.muni.fi.pa165.productionservice.service.WineRecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,10 +30,12 @@ public class WineRecipeFacade {
         return wineRecipeMapper.mapToDto(wineRecipeService.create(wineRecipeMapper.mapToEntity(dto)));
     }
 
+    @Transactional(readOnly = true)
     public WineRecipeDto findRecipe(UUID id) {
         return wineRecipeMapper.mapToDto(wineRecipeService.findById(id));
     }
 
+    @Transactional(readOnly = true)
     public List<WineRecipeDto> findAllRecipes() {
         return wineRecipeService.findAll().stream().map(wineRecipeMapper::mapToDto).toList();
     }

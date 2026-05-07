@@ -13,9 +13,11 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     open-in-view: false
     show-sql: false
+  liquibase:
+    change-log: classpath:db/changelog/main-changelog.xml
   artemis:
     mode: native
     broker-url: tcp://localhost:61616
@@ -60,3 +62,12 @@ server:
   port: 8090
   servlet:
     context-path: /
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed

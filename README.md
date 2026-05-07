@@ -141,6 +141,47 @@ Alternatively, you can enter a concrete service module directory and run:
 mvn spring-boot:run
 ```
 
+### Production-service Database Seed
+
+`production-service` uses Liquibase for schema creation. By default it starts with an empty schema so tests and local
+development runs are deterministic.
+
+Run `production-service` with realistic seed data:
+
+```bash
+mvn -pl production-service -Dspring-boot.run.profiles=seed spring-boot:run
+```
+
+PowerShell equivalent:
+
+```powershell
+mvn -pl production-service -D"spring-boot.run.profiles"=seed spring-boot:run
+```
+
+The seed data is stored in the Liquibase `seed` context and includes realistic wine recipes, grape components,
+additional ingredients, and production batches in several lifecycle states. The seed changeset also contains rollback
+delete statements, so the seeded data can be cleared by rolling back that Liquibase changeset.
+
+### Harvest-service Database Seed
+
+`harvest-service` uses Liquibase for schema creation. By default it starts with an empty schema.
+
+Run `harvest-service` with realistic seed data:
+
+```bash
+mvn -pl harvest-service -Dspring-boot.run.profiles=seed spring-boot:run
+```
+
+PowerShell equivalent:
+
+```powershell
+mvn -pl harvest-service -D"spring-boot.run.profiles"=seed spring-boot:run
+```
+
+The seed data is stored in the Liquibase `seed` context and includes realistic grape varieties, vineyards, and harvest
+records across multiple seasons. The seed changeset also contains rollback delete statements, so the seeded data can be
+cleared by rolling back that Liquibase changeset.
+
 ## Docker
 
 Build and run services with Docker Compose:
@@ -184,6 +225,19 @@ Run the harvest-service container:
 docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ```
 
+Run Docker Compose with seeded `harvest-service` data:
+
+```bash
+HARVEST_SERVICE_PROFILES=seed docker compose up --build harvest-service
+```
+
+PowerShell equivalent:
+
+```powershell
+$env:HARVEST_SERVICE_PROFILES = "seed"
+docker compose up --build harvest-service
+```
+
 ### Inventory-service
 
 Build the inventory-service Docker image:
@@ -210,6 +264,19 @@ Run the production-service container:
 
 ```bash
 docker run --rm -p 8082:8082 winery-management/production-service:latest
+```
+
+Run Docker Compose with seeded `production-service` data:
+
+```bash
+PRODUCTION_SERVICE_PROFILES=seed docker compose up --build artemis production-service
+```
+
+PowerShell equivalent:
+
+```powershell
+$env:PRODUCTION_SERVICE_PROFILES = "seed"
+docker compose up --build artemis production-service
 ```
 
 ### Customer-service
