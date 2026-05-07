@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-06`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-07`.
 
 ## M3 povinne body
 
@@ -31,8 +31,8 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### 3. Security - OAuth 2 Resource Server
 
 - [x] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
-- [ ] Pouzit seminarovy `client_id` a `client_secret` pre client aj resource servery.
-- [ ] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
+- [x] Pouzit seminarovy OAuth client nastavenia pre Swagger/client flow tam, kde ich service explicitne potrebuje.
+- [x] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
 - [x] Pouzit aspon dva rozne `test_*` scopes.
 - [x] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
 - [x] `customer-service` endpointy maju nastavene scope pravidla.
@@ -55,7 +55,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `production-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
 - [x] `inventory-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
 - [x] `docker-compose.yml` obsahuje Prometheus.
-- [ ] Prometheus scrapeuje vsetky 4 services.
+- [x] Prometheus je nakonfigurovany tak, aby automaticky scrapeoval vsetky 4 services.
 - [x] `docker-compose.yml` obsahuje Grafanu.
 - [x] Grafana ma provisioning pre datasource, aby sa nemusela konfigurovat rucne po starte.
 - [x] Grafana ma preloaded dashboard zobrazujuci stav systemu.
@@ -104,7 +104,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 9. Predodovzdavacia kontrola M3
 
-- [ ] `mvn clean install` prechadza nad celym multi-module projektom.
+- [x] `mvn clean install` prechadza nad celym multi-module projektom.
 - [ ] `docker compose up --build` nastartuje vsetky services a infrastructure komponenty.
 - [ ] Vsetky services maju dostupny Swagger/OpenAPI.
 - [ ] Chranene endpointy su bez tokenu odmietnute.
@@ -112,6 +112,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Seed/reset funguje po cistom starte.
 - [ ] Prometheus vidi vsetky services ako `up`.
 - [ ] Grafana dashboard po starte ukazuje data bez rucnej konfiguracie.
+- [x] Odstranit nahodne OneNote `.onetoc2` subory z `monitoring/`, ak maju byt trackovane v Gite.
 - [ ] Showcase scenar je spustitelny a ma ocakavany vysledok.
 - [ ] GitLab pipeline na aktualnom `main`/`master` prechadza.
 
@@ -241,7 +242,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Doplnit test uspesneho ACK flow.
 - [ ] Doplnit test pre pripad, ked ACK nepride alebo consumer zlyha.
 - [ ] V `docker-compose.yml` nepouzivat externe image tagy `latest`, hlavne pre `apache/activemq-artemis`.
-- [ ] Odstranit nepotrebnu PostgreSQL dependency z `harvest-service/pom.xml`, ak sa pouziva iba H2.
+- [ ] Rozhodnut, ci `harvest-service` bude nadalej drzat PostgreSQL dependency pre buduce externe DB behy, alebo ju odstranit, ak sa pouziva iba H2.
 
 ### Nice to have z M2 review
 
@@ -251,11 +252,11 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ## Najblizsie odporucane kroky
 
-1. Doplnit `customer-service` `/actuator/**` medzi public endpointy, aby Prometheus po zapnuti security stale scrapeoval metriky.
-2. Rucne overit security flow pre vsetky services: bez tokenu `401`, zly scope `403`, spravny scope `2xx`.
-3. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
+1. Rucne overit security flow pre vsetky services: bez tokenu `401`, zly scope `403`, spravny scope `2xx`.
+2. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
+3. Spustit cisty `docker compose up --build` po vsetkych mergeoch a overit Swagger, actuator endpointy, Prometheus targets a Grafana dashboardy.
 4. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta, ACK handling v `production-service`, odstranit `latest` image tagy.
-5. Spustit finalne `mvn clean install` a cisty `docker compose up --build` po vsetkych mergeoch.
+5. Overit GitLab pipeline na aktualnom `main`/`master`.
 6. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
 
 ## Nice to have
@@ -289,7 +290,8 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 ## Poznamky k finalnemu odovzdaniu
 
 - Povinne M2 body su v repozitari momentalne pokryte.
-- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-06`.
-- `mvn install` prechadza nad celym multi-module projektom.
+- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-07`.
+- `mvn clean install` prechadza nad celym multi-module projektom.
+- `docker compose config --quiet` prechadza, teda Compose konfiguracia je syntakticky validna.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.
