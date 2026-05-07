@@ -38,7 +38,9 @@ public class StockController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Stock created successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid stock payload")
+        @ApiResponse(responseCode = "400", description = "Invalid stock payload"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope")
     })
     public ResponseEntity<StockDetailedViewDto> create(@RequestBody @Valid StockDetailedViewDto stock) {
         StockDetailedViewDto created = stockFacade.create(stock);
@@ -53,6 +55,8 @@ public class StockController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<StockDetailedViewDto> findById(@PathVariable UUID id) {
@@ -70,7 +74,9 @@ public class StockController {
         security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
     )
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Stocks returned successfully")
+        @ApiResponse(responseCode = "200", description = "Stocks returned successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope")
     })
     public ResponseEntity<List<StockDetailedViewDto>> findAll() {
         return ResponseEntity.ok(stockFacade.findAll());
@@ -84,6 +90,8 @@ public class StockController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found for the given wine")
     })
     public ResponseEntity<StockDetailedViewDto> findByWine(@PathVariable UUID wineId) {
@@ -103,6 +111,8 @@ public class StockController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid quantity payload"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<StockDetailedViewDto> addToStock(@PathVariable UUID id, @RequestBody @Valid StockQuantityChangeDto change) {
@@ -119,6 +129,8 @@ public class StockController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid quantity payload or insufficient stock"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<StockDetailedViewDto> removeFromStock(@PathVariable UUID id, @RequestBody @Valid StockQuantityChangeDto change) {
@@ -135,6 +147,8 @@ public class StockController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock updated successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid stock payload"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<StockDetailedViewDto> update(@PathVariable UUID id, @RequestBody @Valid StockDetailedViewDto stock) {
@@ -151,6 +165,8 @@ public class StockController {
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Stock deleted successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - authentication is required"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient scope"),
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
