@@ -1,6 +1,6 @@
 services:
   artemis:
-    image: apache/activemq-artemis:latest-alpine
+    image: apache/artemis:2.53.0-alpine
     container_name: artemis
     ports:
       - "61616:61616"
