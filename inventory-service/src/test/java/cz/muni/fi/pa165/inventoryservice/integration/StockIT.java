@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +37,9 @@ class StockIT {
     @Autowired
     private StockRepository stockRepository;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Test
@@ -47,6 +53,7 @@ class StockIT {
         createDto.setReservedQuantity(20);
 
         MvcResult createResult = mockMvc.perform(post("/stocks")
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated())
@@ -65,6 +72,7 @@ class StockIT {
         assertThat(persisted.getReservedQuantity()).isEqualTo(20);
 
         mockMvc.perform(get("/stocks/{id}", created.getId())
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_read")))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(created.getId().toString()))
@@ -83,6 +91,7 @@ class StockIT {
         change.setQuantity(15);
 
         mockMvc.perform(post("/stocks/{id}/add", stock.getId())
+                .with(jwt().jwt(jwt -> jwt.claim("scope", "test_write")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(change)))
             .andExpect(status().isOk())
