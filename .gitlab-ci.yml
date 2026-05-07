@@ -51,9 +51,6 @@ cache:
   stage: docker_publish
   only:
     - main
-    # TODO: remove after testing with merge requests is complete
-    - merge_requests
-    # ENDTODO
   script:
     - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
     - test -n "${QUAY_USERNAME}" || (echo "Missing QUAY_USERNAME CI/CD variable" && exit 1)
@@ -69,9 +66,6 @@ cache:
     entrypoint: [ "" ]
   only:
     - main
-    # TODO: remove after testing with merge requests is complete
-    - merge_requests
-    # ENDTODO
   before_script:
     - test -n "${OPENSHIFT_SERVER}" || (echo "Missing OPENSHIFT_SERVER CI/CD variable" && exit 1)
     - test -n "${OPENSHIFT_TOKEN}" || (echo "Missing OPENSHIFT_TOKEN CI/CD variable" && exit 1)
