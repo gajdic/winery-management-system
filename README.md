@@ -187,11 +187,13 @@ docker run --rm -p 8081:8081 winery-management/harvest-service:latest
 ### Inventory-service
 
 Build the inventory-service Docker image:
+
 ```bash
 docker build -t inventory-service -f .\inventory-service\Dockerfile .
 ```
 
 Run the inventory-service container:
+
 ```bash
 docker run -d --name winery-inventory -p 8083:8083 inventory-service
 ```
@@ -219,6 +221,7 @@ docker build -f customer-service/Dockerfile -t winery-management/customer-servic
 ```
 
 Run the customer-service container:
+
 ```bash
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
@@ -319,16 +322,23 @@ docker compose down
 
 ## Security (M3)
 
-The `harvest-service` is configured as an OAuth 2 Resource Server based on the PA165 seminar security setup.
-It validates MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
+The `harvest-service` and `production-service` are configured as OAuth 2 Resource Servers based on the
+PA165 seminar security setup. They validate MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
 
 Harvest API authorization rules:
 
 - `GET /vineyards/**`, `GET /grape-types/**`, and `GET /harvest-records/**` require scope `test_read`.
 - `POST`, `PUT`, and `DELETE` operations on harvest endpoints require scope `test_write`.
+
+Production API authorization rules:
+
+- `GET /production/**`, `POST /production/planning`, and `POST /production/quality-evaluations` require scope
+  `test_read`.
+- `POST /production/recipes`, `POST /production/batches`, `PUT /production/**`, `PATCH /production/**`, and
+  `DELETE /production/**` require scope `test_write`.
 - Swagger UI and OpenAPI docs remain publicly accessible so that an access token can be provided through Swagger UI.
 
-Swagger OAuth configuration for `harvest-service` requests the following scopes:
+Swagger OAuth configuration for secured services requests the following scopes:
 
 - `openid`
 - `test_read`
@@ -355,8 +365,10 @@ After starting a service, Swagger UI and raw OpenAPI documentation are available
 
 ### Inventory-service
 
-- Swagger UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
-- OpenAPI JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
+- Swagger
+  UI: [http://localhost:8083/inventory-service/api/swagger-ui.html](http://localhost:8083/inventory-service/api/swagger-ui.html)
+- OpenAPI
+  JSON: [http://localhost:8083/inventory-service/api/v1/api-docs](http://localhost:8083/inventory-service/api/v1/api-docs)
 
 ### Production-service
 
