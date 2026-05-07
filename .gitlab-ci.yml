@@ -60,21 +60,42 @@ cache:
     - echo "{\"auths\":{\"quay.io\":{\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:${CI_COMMIT_SHORT_SHA}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:latest"
 
-.deploy_template:
-  stage: deploy
+.openshift_template:
   image:
     name: quay.io/openshift/origin-cli:4.18
     entrypoint: [ "" ]
   only:
     - main
-  script:
-    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
+  before_script:
     - test -n "${OPENSHIFT_SERVER}" || (echo "Missing OPENSHIFT_SERVER CI/CD variable" && exit 1)
     - test -n "${OPENSHIFT_TOKEN}" || (echo "Missing OPENSHIFT_TOKEN CI/CD variable" && exit 1)
     - test -n "${OPENSHIFT_PROJECT}" || (echo "Missing OPENSHIFT_PROJECT CI/CD variable" && exit 1)
     - oc login --token="${OPENSHIFT_TOKEN}" --server="${OPENSHIFT_SERVER}"
     - oc project "${OPENSHIFT_PROJECT}"
+
+.deploy_template:
+  extends: .openshift_template
+  stage: deploy
+  script:
+    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
     - oc process -f openshift/winery-stack-template.yaml -p QUAY_NAMESPACE="${QUAY_NAMESPACE}" -p IMAGE_TAG="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
+    - oc rollout status deployment/artemis --timeout=240s
+    - oc rollout status deployment/customer-service --timeout=240s
+    - oc rollout status deployment/harvest-service --timeout=240s
+    - oc rollout status deployment/inventory-service --timeout=240s
+    - oc rollout status deployment/production-service --timeout=240s
+
+.wake_template:
+  extends: .openshift_template
+  stage: deploy
+  when: manual
+  allow_failure: false
+  script:
+    - oc scale deployment/artemis --replicas=1
+    - oc scale deployment/customer-service --replicas=1
+    - oc scale deployment/harvest-service --replicas=1
+    - oc scale deployment/inventory-service --replicas=1
+    - oc scale deployment/production-service --replicas=1
     - oc rollout status deployment/artemis --timeout=240s
     - oc rollout status deployment/customer-service --timeout=240s
     - oc rollout status deployment/harvest-service --timeout=240s
@@ -180,3 +201,6 @@ deploy_openshift:
     - publish_inventory
     - publish_production
     - publish_customer
+
+wake_openshift:
+  extends: .wake_template

@@ -495,6 +495,33 @@ oc logs deployment/inventory-service
 
 The logs should not contain connection errors for `tcp://artemis:61616`.
 
+### Waking Idle OpenShift Pods
+
+The Red Hat Developer Sandbox can scale idle workloads down automatically. To wake the application without changing the
+deployed image, run the manual GitLab CI job `wake_openshift` from the latest `main` pipeline. The job uses the same
+`OPENSHIFT_SERVER`, `OPENSHIFT_TOKEN`, and `OPENSHIFT_PROJECT` variables as deployment, scales all deployments to one
+replica, and waits for rollout completion.
+
+Equivalent manual commands:
+
+```bash
+oc scale deployment/artemis --replicas=1
+oc scale deployment/customer-service --replicas=1
+oc scale deployment/harvest-service --replicas=1
+oc scale deployment/inventory-service --replicas=1
+oc scale deployment/production-service --replicas=1
+```
+
+Wait until the pods are available:
+
+```bash
+oc rollout status deployment/artemis
+oc rollout status deployment/customer-service
+oc rollout status deployment/harvest-service
+oc rollout status deployment/inventory-service
+oc rollout status deployment/production-service
+```
+
 ### Scaling And Cleanup
 
 Scale an API service, for example `harvest-service`, to two pods:
