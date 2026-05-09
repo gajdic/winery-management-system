@@ -238,13 +238,13 @@ docker compose down
 Build the harvest-service Docker image:
 
 ```bash
-docker build -f harvest-service/Dockerfile -t winery-management/harvest-service:latest .
+docker build -f harvest-service/Dockerfile -t winery-management/harvest-service:1.0.0 .
 ```
 
 Run the harvest-service container:
 
 ```bash
-docker run --rm -p 8081:8081 winery-management/harvest-service:latest
+docker run --rm -p 8081:8081 winery-management/harvest-service:1.0.0
 ```
 
 Run Docker Compose with seeded `harvest-service` data:
@@ -282,13 +282,13 @@ docker run -d --name winery-inventory -p 8083:8083 inventory-service
 Build the production-service Docker image:
 
 ```bash
-docker build -f production-service/Dockerfile -t winery-management/production-service:latest .
+docker build -f production-service/Dockerfile -t winery-management/production-service:1.0.0 .
 ```
 
 Run the production-service container:
 
 ```bash
-docker run --rm -p 8082:8082 winery-management/production-service:latest
+docker run --rm -p 8082:8082 winery-management/production-service:1.0.0
 ```
 
 Run Docker Compose with seeded `production-service` data:
@@ -309,13 +309,13 @@ docker compose up --build artemis production-service
 Build the customer-service Docker image:
 
 ```bash
-docker build -f customer-service/Dockerfile -t winery-management/customer-service:latest .
+docker build -f customer-service/Dockerfile -t winery-management/customer-service:1.0.0 .
 ```
 
 Run the customer-service container:
 
 ```bash
-docker run --rm -p 8084:8084 winery-management/customer-service:latest
+docker run --rm -p 8084:8084 winery-management/customer-service:1.0.0
 ```
 
 ## Asynchronous Communication 
@@ -464,8 +464,73 @@ curl -X POST http://localhost:8081/vineyards \
   -d '{"name":"Demo Vineyard","location":"Mikulov","areaSize":4.2,"description":"Small demo vineyard"}'
 ```
 
-Access tokens can be obtained using the seminar OAuth client or through the Swagger UI `Authorize` dialog for secured
-services.
+The showcase section below contains a concrete authorization-code flow for obtaining an access token with the required
+`test_read` and `test_write` scopes.
+
+## Showcase Scenario
+
+The runnable showcase scenario demonstrates the flow from recorded harvest data to completed production and updated
+inventory stock.
+
+Scenario goal:
+
+- read realistic harvest seed data,
+- read a seeded production batch,
+- mark the production batch as `COMPLETED`,
+- let `production-service` publish a JMS `BatchCompletedMessage`,
+- let `inventory-service` consume the message and update stock,
+- verify that inventory stock increased for the produced wine.
+
+Start the system with production seed data enabled:
+
+```powershell
+$env:PRODUCTION_SERVICE_PROFILES = "seed"
+docker compose up --build
+```
+
+Get an access token with scopes `test_read` and `test_write`:
+
+1. In PowerShell, generate the authorization URL:
+
+```powershell
+$clientId = "7e02a0a9-446a-412d-ad2b-90add47b0fdd"
+$clientSecret = "48a2b2e3-4b2b-471e-b7b7-b81a85b6eeef22f347f2-3fc9-4e16-8698-3e2492701a89"
+$redirectUri = "http://localhost:8090/swagger-ui/oauth2-redirect.html"
+$scope = "openid test_read test_write"
+$authorizeUrl = "https://id.muni.cz/oidc/authorize?response_type=code&client_id=$clientId&redirect_uri=$([uri]::EscapeDataString($redirectUri))&scope=$([uri]::EscapeDataString($scope))&state=showcase&nonce=showcase"
+$authorizeUrl
+```
+
+2. Open the printed URL in a browser, sign in, and after redirect copy the `code` query parameter from the browser URL.
+   The redirect page does not need to load successfully; the important part is the `code=...` value in the URL.
+
+3. Exchange the authorization code for an access token:
+
+```powershell
+$code = "<code_from_redirect_url>"
+$basicAuth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${clientId}:${clientSecret}"))
+$tokenResponse = Invoke-RestMethod `
+  -Method Post `
+  -Uri "https://id.muni.cz/oidc/token" `
+  -Headers @{ Authorization = "Basic $basicAuth" } `
+  -ContentType "application/x-www-form-urlencoded" `
+  -Body @{
+    grant_type = "authorization_code"
+    code = $code
+    redirect_uri = $redirectUri
+  }
+$accessToken = $tokenResponse.access_token
+```
+
+Then run the showcase script from the project root:
+
+```powershell
+.\scripts\showcase.ps1 -AccessToken $accessToken
+```
+
+The script uses the seeded production batch `cccccccc-cccc-4ccc-8ccc-cccccccccccc`, which produces wine
+`33333333-3333-4333-8333-333333333333`. The expected result is that the batch status changes to `COMPLETED` and the
+inventory stock for that wine increases by the completed batch bottle count.
 
 ## Kubernetes / OpenShift Deployment
 
