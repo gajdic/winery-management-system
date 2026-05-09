@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-07`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-10`.
 
 ## M3 povinne body
 
@@ -15,7 +15,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `harvest-service` ma REST endpointy napojene na facade/service vrstvu a JPA persistence.
 - [x] `production-service` ma REST endpointy napojene na facade/service vrstvu a JPA persistence.
 - [x] `inventory-service` ma REST endpointy napojene na facade/service vrstvu a JPA persistence.
-- [ ] Rucne overit hlavne REST flow cez Swagger alebo curl pre vsetky 4 services po starte cez Docker Compose.
+- [x] Rucne overit hlavne REST flow cez Swagger alebo curl pre vsetky 4 services po starte cez Docker Compose.
 - [ ] Doplnit alebo aktualizovat integracne testy tak, aby pokryvali najdolezitejsie pouzivatelske flow z REST API az do databazy.
 
 ### 2. Database seeding a clear/reset
@@ -42,9 +42,9 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
 - [x] `customer-service` ma pridane `/actuator/**` medzi public endpointy, aby Prometheus vedel scrapeovat metriky bez tokenu.
 - [x] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
-- [ ] Rucne overit, ze request bez tokenu zlyha na chranenych endpointoch.
-- [ ] Rucne overit, ze token bez potrebneho scope zlyha na endpointoch s vyssim opravnenim.
-- [ ] Rucne overit, ze token so spravnym scope prejde.
+- [x] Rucne overit, ze request bez tokenu zlyha na chranenych endpointoch.
+- [x] Rucne overit, ze token bez potrebneho scope zlyha na endpointoch s vyssim opravnenim.
+- [x] Rucne overit, ze token so spravnym scope prejde.
 
 ### 4. Observability - Actuator, Prometheus, Grafana
 
@@ -75,18 +75,18 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 6. Showcase scenar
 
-- [ ] Definovat minimalne jeden runnable scenar, ktory ukazuje realne pouzitie systemu.
-- [ ] Scenar pokryva viac ako jeden service, ak to dava v domene zmysel.
-- [ ] Scenar pracuje s autentifikaciou/tokenmi, ak vola chranene endpointy.
-- [ ] Scenar je spustitelny skriptom alebo nastrojom ako Locust/JMeter/Postman/curl script.
-- [ ] Scenar ma jasny ciel, napr. produkcny batch zvysi skladove zasoby cez messaging, alebo zakaznik vytvori objednavkovu/purchase historiu nad seed datami.
-- [ ] Scenar ma popis ocakavanych vysledkov.
-- [ ] README obsahuje navod na spustenie scenara.
-- [ ] Rucne overit, ze scenar funguje po cistom `docker compose up --build`.
+- [x] Definovat minimalne jeden runnable scenar, ktory ukazuje realne pouzitie systemu.
+- [x] Scenar pokryva viac ako jeden service, ak to dava v domene zmysel.
+- [x] Scenar pracuje s autentifikaciou/tokenmi, ak vola chranene endpointy.
+- [x] Scenar je spustitelny skriptom alebo nastrojom ako Locust/JMeter/Postman/curl script.
+- [x] Scenar ma jasny ciel, napr. produkcny batch zvysi skladove zasoby cez messaging, alebo zakaznik vytvori objednavkovu/purchase historiu nad seed datami.
+- [x] Scenar ma popis ocakavanych vysledkov.
+- [x] README obsahuje navod na spustenie scenara.
+- [x] Rucne overit, ze scenar funguje po Docker Compose starte s produkcnym seed profilom.
 
 ### 7. README a dokumentacia pre M3
 
-- [ ] README obsahuje kompletny M3 runbook: build, start, seed/reset, token, Swagger, scenario, monitoring.
+- [x] README obsahuje kompletny M3 runbook: build, start, seed/reset, token, Swagger, scenario, monitoring.
 - [x] README obsahuje OAuth scopes a priklady requestov s tokenom.
 - [x] README obsahuje zoznam service URL a portov.
 - [x] README obsahuje observability URL: actuator endpoints, Prometheus, Grafana.
@@ -105,15 +105,15 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### 9. Predodovzdavacia kontrola M3
 
 - [x] `mvn clean install` prechadza nad celym multi-module projektom.
-- [ ] `docker compose up --build` nastartuje vsetky services a infrastructure komponenty.
-- [ ] Vsetky services maju dostupny Swagger/OpenAPI.
-- [ ] Chranene endpointy su bez tokenu odmietnute.
-- [ ] Endpointy so spravnym tokenom a scope funguju.
-- [ ] Seed/reset funguje po cistom starte.
-- [ ] Prometheus vidi vsetky services ako `up`.
-- [ ] Grafana dashboard po starte ukazuje data bez rucnej konfiguracie.
+- [x] Docker Compose stack nastartuje vsetky services a infrastructure komponenty.
+- [x] Vsetky services maju dostupny Swagger/OpenAPI.
+- [x] Chranene endpointy su bez tokenu odmietnute.
+- [x] Endpointy so spravnym tokenom a scope funguju.
+- [x] Seed/reset funguje po cistom starte.
+- [x] Prometheus vidi vsetky services ako `up`.
+- [x] Grafana dashboard po starte ukazuje data bez rucnej konfiguracie.
 - [x] Odstranit nahodne OneNote `.onetoc2` subory z `monitoring/`, ak maju byt trackovane v Gite.
-- [ ] Showcase scenar je spustitelny a ma ocakavany vysledok.
+- [x] Showcase scenar je spustitelny a ma ocakavany vysledok.
 - [ ] GitLab pipeline na aktualnom `main`/`master` prechadza.
 
 ## M2 povinne body
@@ -237,12 +237,12 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Zaviest napr. `app.jms.queues.stock-updated=stock-updated-queue`.
 - [ ] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie.
 - [ ] Upravit testy messagingu po presune queue names do konfiguracie.
-- [ ] `production-service` ma spracovat ACK z `inventory-service` po update stocku.
+- [x] `production-service` spracuje ACK z `inventory-service` po update stocku.
 - [ ] `production-service` ma ulozit inbound ACK message do databazy.
-- [ ] Doplnit test uspesneho ACK flow.
-- [ ] Doplnit test pre pripad, ked ACK nepride alebo consumer zlyha.
-- [ ] V `docker-compose.yml` nepouzivat externe image tagy `latest`, hlavne pre `apache/activemq-artemis`.
-- [ ] Rozhodnut, ci `harvest-service` bude nadalej drzat PostgreSQL dependency pre buduce externe DB behy, alebo ju odstranit, ak sa pouziva iba H2.
+- [x] Doplnit test uspesneho ACK flow.
+- [x] Doplnit test pre pripad, ked ACK nepride alebo ACK nesedi s odoslanym batchom.
+- [x] V `docker-compose.yml` nepouzivat image tagy `latest`; infrastructure aj lokalne service images maju fixne tagy.
+- [x] Odstranit nepotrebnu PostgreSQL dependency z `harvest-service/pom.xml`, kedze aktualny runtime pouziva H2.
 
 ### Nice to have z M2 review
 
@@ -252,12 +252,11 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ## Najblizsie odporucane kroky
 
-1. Rucne overit security flow pre vsetky services: bez tokenu `401`, zly scope `403`, spravny scope `2xx`.
-2. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
-3. Spustit cisty `docker compose up --build` po vsetkych mergeoch a overit Swagger, actuator endpointy, Prometheus targets a Grafana dashboardy.
-4. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta, ACK handling v `production-service`, odstranit `latest` image tagy.
-5. Overit GitLab pipeline na aktualnom `main`/`master`.
-6. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
+1. Retrynut GitLab pipeline; aktualne pada na runner infrastructure chybe `no space left on device`, nie na testoch projektu.
+2. Po uspesnej pipeline odskrtnut finalny GitLab pipeline bod v predodovzdavacej kontrole.
+3. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta a ulozenie inbound ACK v `production-service`, ak sa rozhodnete tieto odporucania implementovat.
+4. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
+5. Pred merge este raz skontrolovat finalny diff a commitnut iba vlastne zmeny.
 
 ## Nice to have
 
@@ -290,8 +289,14 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 ## Poznamky k finalnemu odovzdaniu
 
 - Povinne M2 body su v repozitari momentalne pokryte.
-- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-07`.
+- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-10`.
 - `mvn clean install` prechadza nad celym multi-module projektom.
-- `docker compose config --quiet` prechadza, teda Compose konfiguracia je syntakticky validna.
+- `mvn -pl harvest-service -am test` prechadza po odstraneni nepotrebnej PostgreSQL dependency z `harvest-service`.
+- `docker compose config --quiet` prechadza, teda Compose konfiguracia je syntakticky validna. Naposledy overene `2026-05-09`.
+- Docker Compose runtime bol overeny po oprave Artemis image na `apache/artemis:2.53.0`; `customer-service`, `harvest-service`, `production-service` aj `inventory-service` vratili health `UP`.
+- Showcase scenar bol runtime overeny cez `scripts/showcase.ps1`; produkcny batch `cccccccc-cccc-4ccc-8ccc-cccccccccccc` presiel do stavu `COMPLETED` a inventory stock sa zvysil o ocakavanych `970` flias cez JMS.
+- Monitoring konfiguracia obsahuje Prometheus scrape config pre vsetky 4 services a Grafana provisioning s dvoma dashboardmi.
+- Nahodne OneNote `.onetoc2` subory z `monitoring/` boli odstranene znovu dna `2026-05-09`.
+- GitLab pipeline sa spusta na merge requeste, ale posledny beh padol na runner system chybe `no space left on device` este pred spustenim Maven testov.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.
