@@ -11,18 +11,29 @@ spring:
     username: sa
     password:
 
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
+        format_sql: true
 
-    h2:
-      console:
-        enabled: true
-        path: /h2-console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-    liquibase:
-      enabled: false
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+---
+# Activates Liquibase seed context (changeset 002 with realistic demo data)
+# run with: mvn -pl customer-service spring-boot:run -Dspring-boot.run.profiles=seed
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed

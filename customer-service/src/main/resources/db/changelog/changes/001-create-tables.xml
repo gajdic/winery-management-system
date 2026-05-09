@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="001" author="customer-service">
+    <comment>Create customer-service schema</comment>
+
+    <createTable tableName="customer">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="VARCHAR(100)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <!-- Embedded Address -->
+      <column name="street" type="VARCHAR(150)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="city" type="VARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="post_code" type="VARCHAR(20)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="country" type="VARCHAR(100)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="review">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="customer_id" type="UUID">
+        <constraints nullable="false"
+                     foreignKeyName="fk_review_customer"
+                     references="customer(id)"/>
+      </column>
+      <column name="wine_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="rating" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="comment" type="VARCHAR(1000)"/>
+    </createTable>
+
+    <createTable tableName="purchase_record">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="customer_id" type="UUID">
+        <constraints nullable="false"
+                     foreignKeyName="fk_purchase_customer"
+                     references="customer(id)"/>
+      </column>
+      <column name="wine_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="quantity" type="INT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="price_per_bottle" type="DECIMAL(10,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="purchase_date" type="TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+  </changeSet>
+
+</databaseChangeLog>
