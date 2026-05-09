@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/swagger-ui.html", "/swagger-ui/**",
                     "/v1/api-docs/**", "/v3/api-docs/**",
-                    "/h2-console/**"
+                    "/h2-console/**",
+                    "/actuator/**"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/stocks/**").access(hasScope("test_read"))
                 .requestMatchers(HttpMethod.GET, "/reservations/**").access(hasScope("test_read"))

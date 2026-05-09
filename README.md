@@ -182,6 +182,32 @@ The seed data is stored in the Liquibase `seed` context and includes realistic g
 records across multiple seasons. The seed changeset also contains rollback delete statements, so the seeded data can be
 cleared by rolling back that Liquibase changeset.
 
+### Customer-service Database Seed
+
+`customer-service` loads initial data on application startup using `InsertInitialDataService`.
+
+Run `customer-service` with startup seed data:
+
+```bash
+mvn -pl customer-service spring-boot:run
+```
+
+The startup seed includes customer profiles with addresses, reviews, and purchase records. Because the service uses an
+H2 in-memory database, the data is reset by restarting the service.
+
+### Inventory-service Database Seed
+
+`inventory-service` loads initial data on application startup using `InsertInitialDataService`.
+
+Run `inventory-service` with startup seed data:
+
+```bash
+mvn -pl inventory-service spring-boot:run
+```
+
+The startup seed includes stock records and reservations. Because the service uses an H2 in-memory database, the data is
+reset by restarting the service.
+
 ## Docker
 
 Build and run services with Docker Compose:
@@ -189,6 +215,10 @@ Build and run services with Docker Compose:
 ```bash
 docker compose up --build
 ```
+
+`customer-service` and `inventory-service` load their startup seed data automatically. In Docker Compose,
+`harvest-service` starts with the `seed` Spring profile by default, while `production-service` uses the `seed` profile
+only when `PRODUCTION_SERVICE_PROFILES=seed` is set.
 
 Rebuild from scratch without cache (recommended after messaging changes):
 
@@ -202,14 +232,6 @@ Stop Docker Compose services:
 ```bash
 docker compose down
 ```
-
-### Artemis Broker
-
-Docker Compose includes an Apache ActiveMQ Artemis broker used for asynchronous communication.
-
-- Broker TCP endpoint: `localhost:61616`
-- Artemis web console: [http://localhost:8161](http://localhost:8161)
-- Default credentials: `artemis` / `artemis`
 
 ### Harvest-service
 
@@ -237,6 +259,9 @@ PowerShell equivalent:
 $env:HARVEST_SERVICE_PROFILES = "seed"
 docker compose up --build harvest-service
 ```
+
+The Docker Compose default already enables the `seed` profile for `harvest-service`. Set
+`HARVEST_SERVICE_PROFILES` to another value if a different profile setup is needed.
 
 ### Inventory-service
 
@@ -293,7 +318,7 @@ Run the customer-service container:
 docker run --rm -p 8084:8084 winery-management/customer-service:latest
 ```
 
-## Asynchronous Communication (M2)
+## Asynchronous Communication 
 
 Implemented message flow:
 
@@ -383,14 +408,20 @@ checks inside CI jobs.
 Recommended local Docker verification commands:
 
 ```bash
-docker compose up --build artemis production-service inventory-service
+docker compose up --build
 docker compose down
 ```
 
-## Security (M3)
+## Security
 
-The `harvest-service` and `production-service` are configured as OAuth 2 Resource Servers based on the
-PA165 seminar security setup. They validate MUNI-issued JWT access tokens from `https://id.muni.cz/oidc/`.
+The `customer-service`, `harvest-service`, `production-service`, and `inventory-service` are configured as OAuth 2
+Resource Servers based on the PA165 seminar security setup. They validate MUNI-issued JWT access tokens from
+`https://id.muni.cz/oidc/`.
+
+Customer API authorization rules:
+
+- `GET /customers/**`, `GET /purchases/**`, and `GET /reviews/**` require scope `test_read`.
+- `POST`, `PUT`, and `DELETE` operations on customer, purchase, and review endpoints require scope `test_write`.
 
 Harvest API authorization rules:
 
@@ -403,13 +434,38 @@ Production API authorization rules:
   `test_read`.
 - `POST /production/recipes`, `POST /production/batches`, `PUT /production/**`, `PATCH /production/**`, and
   `DELETE /production/**` require scope `test_write`.
-- Swagger UI and OpenAPI docs remain publicly accessible so that an access token can be provided through Swagger UI.
+
+Inventory API authorization rules:
+
+- `GET /stocks/**` and `GET /reservations/**` require scope `test_read`.
+- `POST`, `PUT`, and `DELETE` operations on stock and reservation endpoints require scope `test_write`.
+
+Swagger UI, OpenAPI docs, and actuator endpoints remain publicly accessible so that an access token can be provided
+through Swagger UI and Prometheus can scrape service metrics.
 
 Swagger OAuth configuration for secured services requests the following scopes:
 
 - `openid`
 - `test_read`
 - `test_write`
+
+Example authenticated request:
+
+```bash
+curl -H "Authorization: Bearer <access_token>" http://localhost:8081/vineyards
+```
+
+Example write request:
+
+```bash
+curl -X POST http://localhost:8081/vineyards \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Demo Vineyard","location":"Mikulov","areaSize":4.2,"description":"Small demo vineyard"}'
+```
+
+Access tokens can be obtained using the seminar OAuth client or through the Swagger UI `Authorize` dialog for secured
+services.
 
 ## Kubernetes / OpenShift Deployment
 
@@ -441,6 +497,44 @@ After starting a service, Swagger UI and raw OpenAPI documentation are available
 
 - Swagger UI: [http://localhost:8082/api/swagger-ui.html](http://localhost:8082/api/swagger-ui.html)
 - OpenAPI JSON: [http://localhost:8082/api/v3/api-docs](http://localhost:8082/api/v3/api-docs)
+
+### Artemis Broker
+
+Docker Compose includes an Apache ActiveMQ Artemis broker used for asynchronous communication.
+
+- Broker TCP endpoint: `localhost:61616`
+- Artemis web console: [http://localhost:8161](http://localhost:8161)
+- Default credentials: `artemis` / `artemis`
+
+### Observability
+
+Docker Compose also starts Prometheus and Grafana for automated metrics collection and dashboarding.
+Prometheus is configured to automatically scrape metrics from all application services through their
+`/actuator/prometheus` endpoints.
+
+- Prometheus UI: [http://localhost:9090](http://localhost:9090)
+- Prometheus targets: [http://localhost:9090/targets](http://localhost:9090/targets)
+- Grafana UI: [http://localhost:3000](http://localhost:3000)
+- Grafana credentials: `admin` / `admin`
+- Preloaded Grafana dashboards: `Winery Management Overview`, `Winery Service Details`
+
+Actuator endpoints exposed by services:
+
+- Customer service health: [http://localhost:8084/actuator/health](http://localhost:8084/actuator/health)
+- Customer service actuator metrics: [http://localhost:8084/actuator/metrics](http://localhost:8084/actuator/metrics)
+- Customer service Prometheus metrics: [http://localhost:8084/actuator/prometheus](http://localhost:8084/actuator/prometheus)
+- Harvest service health: [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
+- Harvest service actuator metrics: [http://localhost:8081/actuator/metrics](http://localhost:8081/actuator/metrics)
+- Harvest service Prometheus metrics: [http://localhost:8081/actuator/prometheus](http://localhost:8081/actuator/prometheus)
+- Production service health: [http://localhost:8082/api/actuator/health](http://localhost:8082/api/actuator/health)
+- Production service actuator metrics: [http://localhost:8082/api/actuator/metrics](http://localhost:8082/api/actuator/metrics)
+- Production service Prometheus metrics: [http://localhost:8082/api/actuator/prometheus](http://localhost:8082/api/actuator/prometheus)
+- Inventory service health: [http://localhost:8083/inventory-service/api/actuator/health](http://localhost:8083/inventory-service/api/actuator/health)
+- Inventory service actuator metrics: [http://localhost:8083/inventory-service/api/actuator/metrics](http://localhost:8083/inventory-service/api/actuator/metrics)
+- Inventory service Prometheus metrics: [http://localhost:8083/inventory-service/api/actuator/prometheus](http://localhost:8083/inventory-service/api/actuator/prometheus)
+
+The Prometheus scrape configuration is stored in `monitoring/prometheus.yml`. Grafana provisioning files are stored under
+`monitoring/grafana/provisioning`, and the preloaded dashboard is stored under `monitoring/grafana/dashboards`.
 
 ## Use Case Diagram
 

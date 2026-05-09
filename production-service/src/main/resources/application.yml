@@ -49,6 +49,29 @@ springdoc:
         - test_read
         - test_write
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed
+
 ---
 
 # For generating a Bearer token through Swagger UI.
@@ -62,12 +85,3 @@ server:
   port: 8090
   servlet:
     context-path: /
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: seed
-  liquibase:
-    contexts: seed

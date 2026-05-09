@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 5s
+  external_labels:
+    monitor: winery-management-system
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: customer-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["customer-service:8084"]
+
+  - job_name: harvest-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["harvest-service:8081"]
+
+  - job_name: production-service
+    metrics_path: /api/actuator/prometheus
+    static_configs:
+      - targets: ["production-service:8082"]
+
+  - job_name: inventory-service
+    metrics_path: /inventory-service/api/actuator/prometheus
+    static_configs:
+      - targets: ["inventory-service:8083"]

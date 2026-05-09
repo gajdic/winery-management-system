@@ -52,6 +52,20 @@ springdoc:
         - test_read
         - test_write
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
 ---
 # Activates Liquibase seed context (changeset 002 with realistic demo data)
 # run with: mvn -pl inventory-service spring-boot:run -Dspring-boot.run.profiles=seed

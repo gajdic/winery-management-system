@@ -39,6 +39,12 @@ public class SecurityConfigTest {
     }
 
     @Test
+    void getActuatorHealth_withoutToken_returns200() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
     void getCustomers_withWrongScope_returns403() throws Exception {
         mockMvc.perform(get("/customers")
                 .with(jwt().jwt(token -> token.claim("scope", "test_write"))))

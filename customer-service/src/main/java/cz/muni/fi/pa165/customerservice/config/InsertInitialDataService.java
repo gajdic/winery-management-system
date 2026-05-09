@@ -32,6 +32,10 @@ public class InsertInitialDataService {
 
     @PostConstruct
     public void insertDummyData() {
+        if (customerRepository.count() > 0) {
+            return;
+        }
+
         // --- Customers ---
         Customer customer1 = new Customer(
             "John Doe",
@@ -77,9 +81,5 @@ public class InsertInitialDataService {
         purchase2.setPricePerBottle(20.0);
         purchase2.setPurchaseDate(LocalDateTime.now());
         purchaseRecordRepository.save(purchase2);
-    }
-
-    private void insertDummyCustomers() {
-
     }
 }

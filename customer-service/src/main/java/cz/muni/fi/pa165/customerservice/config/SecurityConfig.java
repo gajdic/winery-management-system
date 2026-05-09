@@ -34,7 +34,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/**")
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, "/customers/**").access(hasScope("test_read"))
                 .requestMatchers(HttpMethod.POST, "/customers/**").access(hasScope("test_write"))

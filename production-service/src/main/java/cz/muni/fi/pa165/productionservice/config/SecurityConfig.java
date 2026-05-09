@@ -42,12 +42,14 @@ public class SecurityConfig {
     public static final String SWAGGER_UI_HTML = "/swagger-ui.html";
     public static final String SWAGGER_UI_ENDPOINTS = "/swagger-ui/**";
     public static final String OPENAPI_ENDPOINTS = "/v3/api-docs/**";
+    public static final String ACTUATOR_ENDPOINT = "/actuator/**";
 
     private static final String[] PUBLIC_ENDPOINTS = {
         ERROR_ENDPOINT,
         SWAGGER_UI_HTML,
         SWAGGER_UI_ENDPOINTS,
-        OPENAPI_ENDPOINTS
+        OPENAPI_ENDPOINTS,
+        ACTUATOR_ENDPOINT
     };
 
     @Bean

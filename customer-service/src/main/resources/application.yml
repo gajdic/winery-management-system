@@ -11,21 +11,21 @@ spring:
     username: sa
     password:
 
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
       hibernate:
-        ddl-auto: update
-      show-sql: true
-      properties:
-        hibernate:
-          format_sql: true
+        format_sql: true
 
-    h2:
-      console:
-        enabled: true
-        path: /h2-console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-    liquibase:
-      enabled: false
+  liquibase:
+    enabled: false
 
   security:
     oauth2:
@@ -33,3 +33,17 @@ spring:
         jwt:
           issuer-uri: https://id.muni.cz/oidc/
           audiences: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true

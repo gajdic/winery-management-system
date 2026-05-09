@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Winery Management Dashboards
+    orgId: 1
+    folder: Winery Management
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
