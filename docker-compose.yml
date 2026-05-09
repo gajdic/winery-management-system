@@ -1,6 +1,6 @@
 services:
   artemis:
-    image: apache/artemis:2.53.0-alpine
+    image: apache/artemis:2.53.0
     container_name: artemis
     ports:
       - "61616:61616"
@@ -13,7 +13,7 @@ services:
     build:
       context: .
       dockerfile: production-service/Dockerfile
-    image: winery-management/production-service:latest
+    image: winery-management/production-service:1.0.0
     container_name: production-service
     depends_on:
       - artemis
@@ -31,7 +31,7 @@ services:
     build:
       context: .
       dockerfile: harvest-service/Dockerfile
-    image: winery-management/harvest-service:latest
+    image: winery-management/harvest-service:1.0.0
     container_name: harvest-service
     ports:
       - "8081:8081"
@@ -43,7 +43,7 @@ services:
     build:
       context: .
       dockerfile: inventory-service/Dockerfile
-    image: winery-management/inventory-service:latest
+    image: winery-management/inventory-service:1.0.0
     container_name: inventory-service
     depends_on:
       - artemis
@@ -51,6 +51,7 @@ services:
       - "8083:8083"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:inventory-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_PROFILES_ACTIVE: ${INVENTORY_SERVICE_PROFILES:-seed}
       SPRING_ARTEMIS_MODE: native
       SPRING_ARTEMIS_BROKER_URL: tcp://artemis:61616
       SPRING_ARTEMIS_USER: artemis
@@ -60,7 +61,7 @@ services:
     build:
       context: .
       dockerfile: customer-service/Dockerfile
-    image: winery-management/customer-service:latest
+    image: winery-management/customer-service:1.0.0
     container_name: customer-service
     ports:
       - "8084:8084"
