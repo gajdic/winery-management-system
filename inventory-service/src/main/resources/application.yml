@@ -28,8 +28,6 @@ spring:
     user: artemis
     password: artemis
   jms:
-    template:
-      default-destination: batch-completed-queue
     listener:
       acknowledge-mode: auto
   security:

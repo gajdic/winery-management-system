@@ -61,6 +61,11 @@ public class BatchCompletedConsumer {
             stock.getQuantity(),
             LocalDateTime.now()
         );
-        jmsTemplate.convertAndSend(Queues.STOCK_UPDATED, ack);
+
+        String correlationId = message.getBatchId().toString();
+        jmsTemplate.convertAndSend(Queues.STOCK_UPDATED, ack, jmsMessage -> {
+            jmsMessage.setJMSCorrelationID(correlationId);
+            return jmsMessage;
+        });
     }
 }

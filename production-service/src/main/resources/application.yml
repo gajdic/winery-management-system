@@ -25,7 +25,6 @@ spring:
     password: artemis
   jms:
     template:
-      default-destination: batch-completed-queue
       session-transacted: true
   security:
     oauth2:

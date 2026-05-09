@@ -6,12 +6,14 @@ import cz.muni.fi.pa165.commonservice.messaging.Queues;
 import cz.muni.fi.pa165.commonservice.messaging.data.OutboundMessageLogRepository;
 import cz.muni.fi.pa165.commonservice.messaging.data.entity.OutboundMessageLog;
 import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
+import cz.muni.fi.pa165.commonservice.messaging.messages.StockUpdatedMessage;
 import cz.muni.fi.pa165.productionservice.data.model.ProductionBatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class ProductionBatchCompletedProducer {
@@ -52,6 +54,28 @@ public class ProductionBatchCompletedProducer {
         messageLog.setSentAt(LocalDateTime.now());
         outboundMessageLogRepository.save(messageLog);
 
-        jmsTemplate.convertAndSend(Queues.BATCH_COMPLETED, message);
+        String correlationId = batch.getId().toString();
+        jmsTemplate.convertAndSend(Queues.BATCH_COMPLETED, message, jmsMessage -> {
+            jmsMessage.setJMSCorrelationID(correlationId);
+            return jmsMessage;
+        });
+
+        Object ack = jmsTemplate.receiveSelectedAndConvert(
+            Queues.STOCK_UPDATED,
+            "JMSCorrelationID = '" + correlationId + "'"
+        );
+        validateAck(batch.getId(), batch.getRecipeId(), ack);
+    }
+
+    private void validateAck(UUID batchId, UUID wineId, Object ack) {
+        if (ack == null) {
+            throw new IllegalStateException("Did not receive stock update ACK for batch " + batchId);
+        }
+        if (!(ack instanceof StockUpdatedMessage stockUpdatedMessage)) {
+            throw new IllegalStateException("Received unexpected ACK payload type for batch " + batchId);
+        }
+        if (!batchId.equals(stockUpdatedMessage.getBatchId()) || !wineId.equals(stockUpdatedMessage.getWineId())) {
+            throw new IllegalStateException("Received mismatched stock update ACK for batch " + batchId);
+        }
     }
 }
