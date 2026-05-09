@@ -26,6 +26,7 @@ spring:
   jms:
     template:
       session-transacted: true
+      receive-timeout: 10s
   security:
     oauth2:
       resourceserver:
