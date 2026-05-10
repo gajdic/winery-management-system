@@ -57,6 +57,32 @@ services:
       SPRING_ARTEMIS_USER: artemis
       SPRING_ARTEMIS_PASSWORD: artemis
 
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v5.17.14
+    container_name: swagger-ui
+    depends_on:
+      - customer-service
+      - harvest-service
+      - production-service
+      - inventory-service
+    ports:
+      - "8090:8080"
+    environment:
+      URLS: >
+        [
+          {"name":"Customer Service","url":"/api-docs/customer"},
+          {"name":"Harvest Service","url":"/api-docs/harvest"},
+          {"name":"Production Service","url":"/api-docs/production"},
+          {"name":"Inventory Service","url":"/api-docs/inventory"}
+        ]
+      URLS_PRIMARY_NAME: Customer Service
+      OAUTH_CLIENT_ID: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
+      OAUTH_CLIENT_SECRET: 48a2b2e3-4b2b-471e-b7b7-b81a85b6eeef22f347f2-3fc9-4e16-8698-3e2492701a89
+      OAUTH_SCOPES: openid test_read test_write
+      OAUTH2_REDIRECT_URL: http://localhost:8090/swagger-ui/oauth2-redirect.html
+    volumes:
+      - ./swagger-ui/nginx.conf:/etc/nginx/templates/default.conf.template:ro
+
   customer-service:
     build:
       context: .

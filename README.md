@@ -218,7 +218,9 @@ docker compose up --build
 
 `customer-service` and `inventory-service` load their startup seed data automatically. In Docker Compose,
 `harvest-service` starts with the `seed` Spring profile by default, while `production-service` uses the `seed` profile
-only when `PRODUCTION_SERVICE_PROFILES=seed` is set.
+only when `PRODUCTION_SERVICE_PROFILES=seed` is set. Docker Compose also starts a central Swagger UI on port `8090`
+so Swagger OAuth authorization can use the registered redirect URL
+`http://localhost:8090/swagger-ui/oauth2-redirect.html`.
 
 Rebuild from scratch without cache (recommended after messaging changes):
 
@@ -540,6 +542,9 @@ The application is intended to be built, started, and verified locally using Doc
 ## OpenAPI / Swagger
 
 After starting a service, Swagger UI and raw OpenAPI documentation are available at:
+
+Central Swagger UI with OAuth authorize flow for all services:
+[http://localhost:8090/swagger-ui.html](http://localhost:8090/swagger-ui.html)
 
 ### Customer-service
 
