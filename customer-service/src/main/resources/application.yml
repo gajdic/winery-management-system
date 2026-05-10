@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -25,7 +25,18 @@ spring:
       path: /h2-console
 
   liquibase:
-    enabled: false
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+---
+# Activates Liquibase seed context (changeset 002 with realistic demo data)
+# run with: mvn -pl customer-service spring-boot:run -Dspring-boot.run.profiles=seed
+spring:
+  config:
+    activate:
+      on-profile: seed
+  liquibase:
+    contexts: seed
 
   security:
     oauth2:
