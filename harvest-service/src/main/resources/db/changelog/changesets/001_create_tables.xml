@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="001" author="harvest-service">
+    <comment>Create harvest-service schema</comment>
+
+    <createTable tableName="grape_type">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="VARCHAR(512)"/>
+    </createTable>
+
+    <createTable tableName="vineyard">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(64)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="location" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="area_size" type="DOUBLE"/>
+      <column name="description" type="VARCHAR(512)"/>
+    </createTable>
+
+    <createTable tableName="harvest_record">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="grape_type_id" type="UUID">
+        <constraints nullable="false" foreignKeyName="fk_harvest_record_grape_type"
+                     references="grape_type(id)"/>
+      </column>
+      <column name="vineyard_id" type="UUID">
+        <constraints nullable="false" foreignKeyName="fk_harvest_record_vineyard"
+                     references="vineyard(id)"/>
+      </column>
+      <column name="harvest_date" type="DATE"/>
+      <column name="quantity" type="DOUBLE"/>
+      <column name="quality" type="DOUBLE"/>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>
