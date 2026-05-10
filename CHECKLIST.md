@@ -114,7 +114,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] Grafana dashboard po starte ukazuje data bez rucnej konfiguracie.
 - [x] Odstranit nahodne OneNote `.onetoc2` subory z `monitoring/`, ak maju byt trackovane v Gite.
 - [x] Showcase scenar je spustitelny a ma ocakavany vysledok.
-- [ ] GitLab pipeline na aktualnom `main`/`master` prechadza.
+- [x] GitLab pipeline na aktualnom `main`/`master` prechadza.
 
 ## M2 povinne body
 
@@ -252,11 +252,9 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ## Najblizsie odporucane kroky
 
-1. Retrynut GitLab pipeline; aktualne pada na runner infrastructure chybe `no space left on device`, nie na testoch projektu.
-2. Po uspesnej pipeline odskrtnut finalny GitLab pipeline bod v predodovzdavacej kontrole.
-3. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta a ulozenie inbound ACK v `production-service`, ak sa rozhodnete tieto odporucania implementovat.
-4. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
-5. Pred merge este raz skontrolovat finalny diff a commitnut iba vlastne zmeny.
+1. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta a ulozenie inbound ACK v `production-service`, ak sa rozhodnete tieto odporucania implementovat.
+2. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
+3. Pred merge este raz skontrolovat finalny diff a commitnut iba vlastne zmeny.
 
 ## Nice to have
 
@@ -297,6 +295,6 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 - Showcase scenar bol runtime overeny cez `scripts/showcase.ps1`; produkcny batch `cccccccc-cccc-4ccc-8ccc-cccccccccccc` presiel do stavu `COMPLETED` a inventory stock sa zvysil o ocakavanych `970` flias cez JMS.
 - Monitoring konfiguracia obsahuje Prometheus scrape config pre vsetky 4 services a Grafana provisioning s dvoma dashboardmi.
 - Nahodne OneNote `.onetoc2` subory z `monitoring/` boli odstranene znovu dna `2026-05-09`.
-- GitLab pipeline sa spusta na merge requeste, ale posledny beh padol na runner system chybe `no space left on device` este pred spustenim Maven testov.
+- GitLab pipeline na merge requeste bola po retry uspesna.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.
