@@ -31,7 +31,7 @@ objects:
                 spec:
                     containers:
                         -   name: artemis
-                            image: apache/activemq-artemis:latest-alpine
+                            image: apache/artemis:2.53.0-alpine
                             workingDir: /tmp
                             ports:
                                 -   containerPort: 61616
@@ -433,6 +433,219 @@ objects:
             to:
                 kind: Service
                 name: production-service
+            port:
+                targetPort: http
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: prometheus
+            labels:
+                app: prometheus
+                app.kubernetes.io/name: prometheus
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: prometheus
+            template:
+                metadata:
+                    labels:
+                        app: prometheus
+                        app.kubernetes.io/name: prometheus
+                        app.kubernetes.io/component: monitoring
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: prometheus
+                            image: prom/prometheus:v2.55.1
+                            args:
+                                - --config.file=/etc/prometheus/prometheus.yml
+                                - --storage.tsdb.path=/tmp/prometheus
+                            ports:
+                                -   containerPort: 9090
+                                    protocol: TCP
+                            volumeMounts:
+                                -   name: prometheus-config
+                                    mountPath: /etc/prometheus/prometheus.yml
+                                    subPath: prometheus.yml
+                                    readOnly: true
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                httpGet:
+                                    path: /-/ready
+                                    port: 9090
+                                initialDelaySeconds: 20
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                httpGet:
+                                    path: /-/healthy
+                                    port: 9090
+                                initialDelaySeconds: 60
+                                periodSeconds: 20
+                                failureThreshold: 6
+                    volumes:
+                        -   name: prometheus-config
+                            configMap:
+                                name: prometheus-config
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: prometheus
+            labels:
+                app: prometheus
+                app.kubernetes.io/name: prometheus
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: prometheus
+            ports:
+                -   name: http
+                    port: 9090
+                    targetPort: 9090
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: prometheus
+            labels:
+                app: prometheus
+                app.kubernetes.io/name: prometheus
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            tls:
+                termination: edge
+                insecureEdgeTerminationPolicy: Redirect
+            to:
+                kind: Service
+                name: prometheus
+            port:
+                targetPort: http
+
+    -   apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+            name: grafana
+            labels:
+                app: grafana
+                app.kubernetes.io/name: grafana
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            replicas: 1
+            selector:
+                matchLabels:
+                    app: grafana
+            template:
+                metadata:
+                    labels:
+                        app: grafana
+                        app.kubernetes.io/name: grafana
+                        app.kubernetes.io/component: monitoring
+                        app.kubernetes.io/part-of: winery-management-system
+                spec:
+                    containers:
+                        -   name: grafana
+                            image: grafana/grafana:11.3.0
+                            ports:
+                                -   containerPort: 3000
+                                    protocol: TCP
+                            env:
+                                -   name: GF_SECURITY_ADMIN_USER
+                                    value: admin
+                                -   name: GF_SECURITY_ADMIN_PASSWORD
+                                    value: admin
+                                -   name: GF_USERS_ALLOW_SIGN_UP
+                                    value: "false"
+                                -   name: GF_PATHS_DATA
+                                    value: /tmp/grafana-data
+                                -   name: GF_PATHS_LOGS
+                                    value: /tmp/grafana-logs
+                                -   name: GF_PATHS_PLUGINS
+                                    value: /tmp/grafana-plugins
+                            volumeMounts:
+                                -   name: grafana-datasources
+                                    mountPath: /etc/grafana/provisioning/datasources
+                                    readOnly: true
+                                -   name: grafana-dashboard-providers
+                                    mountPath: /etc/grafana/provisioning/dashboards
+                                    readOnly: true
+                                -   name: grafana-dashboards
+                                    mountPath: /tmp/grafana-dashboards
+                                    readOnly: true
+                            resources:
+                                requests:
+                                    cpu: 50m
+                                    memory: 256Mi
+                                limits:
+                                    cpu: 500m
+                                    memory: 768Mi
+                            readinessProbe:
+                                httpGet:
+                                    path: /api/health
+                                    port: 3000
+                                initialDelaySeconds: 30
+                                periodSeconds: 10
+                                failureThreshold: 6
+                            livenessProbe:
+                                httpGet:
+                                    path: /api/health
+                                    port: 3000
+                                initialDelaySeconds: 60
+                                periodSeconds: 20
+                                failureThreshold: 6
+                    volumes:
+                        -   name: grafana-datasources
+                            configMap:
+                                name: grafana-datasources
+                        -   name: grafana-dashboard-providers
+                            configMap:
+                                name: grafana-dashboard-providers
+                        -   name: grafana-dashboards
+                            configMap:
+                                name: grafana-dashboards
+    -   apiVersion: v1
+        kind: Service
+        metadata:
+            name: grafana
+            labels:
+                app: grafana
+                app.kubernetes.io/name: grafana
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            selector:
+                app: grafana
+            ports:
+                -   name: http
+                    port: 3000
+                    targetPort: 3000
+    -   apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+            name: grafana
+            labels:
+                app: grafana
+                app.kubernetes.io/name: grafana
+                app.kubernetes.io/component: monitoring
+                app.kubernetes.io/part-of: winery-management-system
+        spec:
+            tls:
+                termination: edge
+                insecureEdgeTerminationPolicy: Redirect
+            to:
+                kind: Service
+                name: grafana
             port:
                 targetPort: http
 parameters:

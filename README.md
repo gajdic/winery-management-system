@@ -495,11 +495,14 @@ It deploys:
 - `customer-service`,
 - `harvest-service`,
 - `inventory-service`,
-- `production-service`.
+- `production-service`,
+- Prometheus,
+- Grafana.
 
-All API services get OpenShift `Route` objects so they can be tested from outside the cluster. Artemis is exposed only
-inside the OpenShift project and is used by `production-service` and `inventory-service` through
-`tcp://artemis:61616`.
+All API services, Prometheus, and Grafana get OpenShift `Route` objects so they can be tested from outside the cluster.
+Artemis is exposed only inside the OpenShift project and is used by `production-service` and `inventory-service` through
+`tcp://artemis:61616`. Prometheus scrapes the application services through their `/actuator/prometheus` endpoints, and
+Grafana is provisioned with the Prometheus datasource and preloaded Winery Management dashboards.
 
 ### Quay Setup
 
@@ -552,6 +555,11 @@ For local troubleshooting, log in with `oc` and run the same command manually:
 ```bash
 oc login --token=<your-token> --server=<your-openshift-api-url>
 oc project <your-openshift-project>
+oc create configmap prometheus-config --from-file=prometheus.yml=monitoring/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-datasources --from-file=prometheus.yml=monitoring/grafana/provisioning/datasources/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-dashboard-providers --from-file=dashboards.yml=monitoring/grafana/provisioning/dashboards/dashboards.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-dashboards --from-file=monitoring/grafana/dashboards --dry-run=client -o yaml | oc apply -f -
+oc label configmap prometheus-config grafana-datasources grafana-dashboard-providers grafana-dashboards app.kubernetes.io/part-of=winery-management-system app.kubernetes.io/component=monitoring --overwrite
 oc process -f openshift/winery-stack-template.yaml \
   -p QUAY_NAMESPACE=<your-quay-namespace> \
   -p IMAGE_TAG=<commit-short-sha> \
@@ -599,6 +607,12 @@ OpenAPI JSON:
 - Production
   service: [https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs](https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs)
 
+Monitoring:
+
+- Prometheus: `https://prometheus-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com`
+- Grafana: `https://grafana-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com`
+- Grafana credentials: `admin` / `admin`
+
 These URLs are tied to the current OpenShift Sandbox cluster and namespace. If the Sandbox is recreated or the routes
 change, redeploy the project and run `oc get routes` to get the new public hosts.
 
@@ -614,6 +628,8 @@ curl http://<customer-service-route>/v3/api-docs
 curl http://<harvest-service-route>/v3/api-docs
 curl http://<inventory-service-route>/inventory-service/api/v1/api-docs
 curl http://<production-service-route>/api/v3/api-docs
+curl http://<prometheus-route>/-/ready
+curl http://<grafana-route>/api/health
 ```
 
 Messaging connection check:
@@ -640,6 +656,8 @@ oc scale deployment/customer-service --replicas=1
 oc scale deployment/harvest-service --replicas=1
 oc scale deployment/inventory-service --replicas=1
 oc scale deployment/production-service --replicas=1
+oc scale deployment/prometheus --replicas=1
+oc scale deployment/grafana --replicas=1
 ```
 
 Wait until the pods are available:
@@ -650,6 +668,8 @@ oc rollout status deployment/customer-service
 oc rollout status deployment/harvest-service
 oc rollout status deployment/inventory-service
 oc rollout status deployment/production-service
+oc rollout status deployment/prometheus
+oc rollout status deployment/grafana
 ```
 
 ### Scaling And Cleanup
@@ -669,7 +689,7 @@ oc scale deployment/harvest-service --replicas=1
 Delete all Winery Management System OpenShift resources:
 
 ```bash
-oc delete all,route -l app.kubernetes.io/part-of=winery-management-system
+oc delete all,route,configmap -l app.kubernetes.io/part-of=winery-management-system
 ```
 
 ## OpenAPI / Swagger
