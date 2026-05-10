@@ -6,6 +6,8 @@ stages:
   - test
   - build
   - docker_build
+  - docker_publish
+  - deploy
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -24,7 +26,7 @@ cache:
   extends: .job_template
   image:
     name: gcr.io/kaniko-project/executor:v1.23.2-debug
-    entrypoint: [""]
+    entrypoint: [ "" ]
 
 .build_template:
   extends: .job_template
@@ -43,6 +45,73 @@ cache:
   stage: docker_build
   script:
     - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --no-push
+
+.docker_publish_template:
+  extends: .docker_template
+  stage: docker_publish
+  only:
+    - main
+  script:
+    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
+    - test -n "${QUAY_USERNAME}" || (echo "Missing QUAY_USERNAME CI/CD variable" && exit 1)
+    - test -n "${QUAY_PASSWORD}" || (echo "Missing QUAY_PASSWORD CI/CD variable" && exit 1)
+    - mkdir -p /kaniko/.docker
+    - AUTH="$(printf "%s:%s" "${QUAY_USERNAME}" "${QUAY_PASSWORD}" | base64 | tr -d '\n')"
+    - echo "{\"auths\":{\"quay.io\":{\"auth\":\"${AUTH}\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context "${CI_PROJECT_DIR}" --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:${CI_COMMIT_SHORT_SHA}" --destination "quay.io/${QUAY_NAMESPACE}/${SERVICE_NAME}:latest"
+
+.openshift_template:
+  image:
+    name: quay.io/openshift/origin-cli:4.18
+    entrypoint: [ "" ]
+  only:
+    - main
+  before_script:
+    - test -n "${OPENSHIFT_SERVER}" || (echo "Missing OPENSHIFT_SERVER CI/CD variable" && exit 1)
+    - test -n "${OPENSHIFT_TOKEN}" || (echo "Missing OPENSHIFT_TOKEN CI/CD variable" && exit 1)
+    - test -n "${OPENSHIFT_PROJECT}" || (echo "Missing OPENSHIFT_PROJECT CI/CD variable" && exit 1)
+    - oc login --token="${OPENSHIFT_TOKEN}" --server="${OPENSHIFT_SERVER}"
+    - oc project "${OPENSHIFT_PROJECT}"
+    - oc create configmap prometheus-config --from-file=prometheus.yml=monitoring/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+    - oc create configmap grafana-datasources --from-file=prometheus.yml=monitoring/grafana/provisioning/datasources/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+    - oc create configmap grafana-dashboard-providers --from-file=dashboards.yml=monitoring/grafana/provisioning/dashboards/dashboards.yml --dry-run=client -o yaml | oc apply -f -
+    - oc create configmap grafana-dashboards --from-file=monitoring/grafana/dashboards --dry-run=client -o yaml | oc apply -f -
+    - oc label configmap prometheus-config grafana-datasources grafana-dashboard-providers grafana-dashboards app.kubernetes.io/part-of=winery-management-system app.kubernetes.io/component=monitoring --overwrite
+
+.deploy_template:
+  extends: .openshift_template
+  stage: deploy
+  script:
+    - test -n "${QUAY_NAMESPACE}" || (echo "Missing QUAY_NAMESPACE CI/CD variable" && exit 1)
+    - oc process -f openshift/winery-stack-template.yaml -p QUAY_NAMESPACE="${QUAY_NAMESPACE}" -p IMAGE_TAG="${CI_COMMIT_SHORT_SHA}" | oc apply -f -
+    - oc rollout status deployment/artemis --timeout=240s
+    - oc rollout status deployment/customer-service --timeout=240s
+    - oc rollout status deployment/harvest-service --timeout=240s
+    - oc rollout status deployment/inventory-service --timeout=240s
+    - oc rollout status deployment/production-service --timeout=240s
+    - oc rollout status deployment/prometheus --timeout=240s
+    - oc rollout status deployment/grafana --timeout=240s
+
+.wake_template:
+  extends: .openshift_template
+  stage: deploy
+  when: manual
+  allow_failure: true
+  script:
+    - oc scale deployment/artemis --replicas=1
+    - oc scale deployment/customer-service --replicas=1
+    - oc scale deployment/harvest-service --replicas=1
+    - oc scale deployment/inventory-service --replicas=1
+    - oc scale deployment/production-service --replicas=1
+    - oc scale deployment/prometheus --replicas=1
+    - oc scale deployment/grafana --replicas=1
+    - oc rollout status deployment/artemis --timeout=240s
+    - oc rollout status deployment/customer-service --timeout=240s
+    - oc rollout status deployment/harvest-service --timeout=240s
+    - oc rollout status deployment/inventory-service --timeout=240s
+    - oc rollout status deployment/production-service --timeout=240s
+    - oc rollout status deployment/prometheus --timeout=240s
+    - oc rollout status deployment/grafana --timeout=240s
 
 test_customer:
   extends: .test_template
@@ -111,3 +180,38 @@ docker_customer:
     SERVICE_NAME: customer-service
     DOCKERFILE_PATH: customer-service/Dockerfile
     IMAGE_NAME: winery-management/customer-service:${CI_COMMIT_SHORT_SHA}
+
+publish_harvest:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: harvest-service
+    DOCKERFILE_PATH: harvest-service/Dockerfile
+
+publish_inventory:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: inventory-service
+    DOCKERFILE_PATH: inventory-service/Dockerfile
+
+publish_production:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: production-service
+    DOCKERFILE_PATH: production-service/Dockerfile
+
+publish_customer:
+  extends: .docker_publish_template
+  variables:
+    SERVICE_NAME: customer-service
+    DOCKERFILE_PATH: customer-service/Dockerfile
+
+deploy_openshift:
+  extends: .deploy_template
+  needs:
+    - publish_harvest
+    - publish_inventory
+    - publish_production
+    - publish_customer
+
+wake_openshift:
+  extends: .wake_template

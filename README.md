@@ -395,11 +395,29 @@ checks packaging and module build correctness.
 Docker builds are performed with Kaniko using `--no-push`, so CI validates the Dockerfiles without publishing
 images to a container registry.
 
+4. `docker_publish`
+   Publishes Docker images for all executable services to Quay on pushes to the `main` branch:
+
+- `quay.io/${QUAY_NAMESPACE}/customer-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/harvest-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/inventory-service:${CI_COMMIT_SHORT_SHA}`
+- `quay.io/${QUAY_NAMESPACE}/production-service:${CI_COMMIT_SHORT_SHA}`
+
+Each image is also tagged as `latest`. The publish jobs use the GitLab CI/CD variables `QUAY_NAMESPACE`,
+`QUAY_USERNAME`, and `QUAY_PASSWORD`.
+
+5. `deploy`
+   Deploys the newly published commit image tag to OpenShift on pushes to the `main` branch. The deployment job logs in
+   with the GitLab CI/CD variables `OPENSHIFT_SERVER`, `OPENSHIFT_TOKEN`, and `OPENSHIFT_PROJECT`, applies the OpenShift
+   template, and waits until all deployments finish rolling out.
+
 In short, the CI pipeline checks that every service:
 
 - passes its Maven tests,
 - can be built together with required module dependencies,
-- has a Dockerfile that can be built successfully.
+- has a Dockerfile that can be built successfully,
+- is published to Quay from `main`,
+- is deployed to OpenShift from `main`.
 
 Container runtime validation with Docker Compose is currently intended to be performed locally, because the
 current GitLab runner setup does not provide a working Docker daemon for `docker compose up` / `docker run`
@@ -469,8 +487,210 @@ services.
 
 ## Kubernetes / OpenShift Deployment
 
-Kubernetes/OpenShift deployment is not implemented for this milestone.
-The application is intended to be built, started, and verified locally using Docker Compose.
+The project contains an OpenShift template in [
+`openshift/winery-stack-template.yaml`](openshift/winery-stack-template.yaml).
+It deploys:
+
+- Apache ActiveMQ Artemis as an internal broker,
+- `customer-service`,
+- `harvest-service`,
+- `inventory-service`,
+- `production-service`,
+- Prometheus,
+- Grafana.
+
+All API services, Prometheus, and Grafana get OpenShift `Route` objects so they can be tested from outside the cluster.
+Artemis is exposed only inside the OpenShift project and is used by `production-service` and `inventory-service` through
+`tcp://artemis:61616`. Prometheus scrapes the application services through their `/actuator/prometheus` endpoints, and
+Grafana is provisioned with the Prometheus datasource and preloaded Winery Management dashboards.
+
+### Quay Setup
+
+Create or use an existing Quay namespace, for example your faculty login. In that namespace, create these public
+repositories:
+
+- `customer-service`
+- `harvest-service`
+- `inventory-service`
+- `production-service`
+
+Create a Quay robot account or token with write access to these repositories.
+
+In GitLab, configure these project CI/CD variables:
+
+- `QUAY_NAMESPACE`: your Quay namespace, for example `xlogin`
+- `QUAY_USERNAME`: Quay username or robot account name
+- `QUAY_PASSWORD`: Quay password or robot token
+- `OPENSHIFT_SERVER`: OpenShift API server URL from the `oc login` command
+- `OPENSHIFT_TOKEN`: OpenShift token from the `oc login` command
+- `OPENSHIFT_PROJECT`: OpenShift project/namespace, for example `xlogin-dev`
+
+Mark `QUAY_USERNAME`, `QUAY_PASSWORD`, and `OPENSHIFT_TOKEN` as masked. If the `main` branch is protected, mark the
+variables as protected too.
+
+After merging to `main`, wait for the `docker_publish` jobs and the `deploy_openshift` job to finish. The publish jobs
+push each service image with both the commit tag and the `latest` tag. The deployment job uses the commit tag
+`${CI_COMMIT_SHORT_SHA}` so every main-branch deployment is tied to an exact Git commit.
+
+### OpenShift Setup
+
+Create or open your Red Hat Developer Sandbox. In the OpenShift console, use `Copy login command`, display the token,
+and copy these values into GitLab CI/CD variables:
+
+- server URL into `OPENSHIFT_SERVER`,
+- token into `OPENSHIFT_TOKEN`,
+- project name into `OPENSHIFT_PROJECT`.
+
+After this setup, deployment is automatic from the GitLab `main` pipeline. The job runs the equivalent of:
+
+```bash
+oc process -f openshift/winery-stack-template.yaml \
+  -p QUAY_NAMESPACE=<your-quay-namespace> \
+  -p IMAGE_TAG=<commit-short-sha> \
+  | oc apply -f -
+```
+
+For local troubleshooting, log in with `oc` and run the same command manually:
+
+```bash
+oc login --token=<your-token> --server=<your-openshift-api-url>
+oc project <your-openshift-project>
+oc create configmap prometheus-config --from-file=prometheus.yml=monitoring/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-datasources --from-file=prometheus.yml=monitoring/grafana/provisioning/datasources/prometheus.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-dashboard-providers --from-file=dashboards.yml=monitoring/grafana/provisioning/dashboards/dashboards.yml --dry-run=client -o yaml | oc apply -f -
+oc create configmap grafana-dashboards --from-file=monitoring/grafana/dashboards --dry-run=client -o yaml | oc apply -f -
+oc label configmap prometheus-config grafana-datasources grafana-dashboard-providers grafana-dashboards app.kubernetes.io/part-of=winery-management-system app.kubernetes.io/component=monitoring --overwrite
+oc process -f openshift/winery-stack-template.yaml \
+  -p QUAY_NAMESPACE=<your-quay-namespace> \
+  -p IMAGE_TAG=<commit-short-sha> \
+  | oc apply -f -
+```
+
+Check that all deployments become ready:
+
+```bash
+oc get deployments
+oc get pods
+```
+
+Get the public API URLs:
+
+```bash
+oc get routes
+```
+
+### Current OpenShift Routes
+
+The application is currently deployed in the course OpenShift Sandbox. The service root URLs do not serve a landing
+page;
+use the Swagger UI or OpenAPI links below for inspection.
+
+Swagger UI:
+
+- Customer
+  service: [https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html](https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html)
+- Harvest
+  service: [https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html](https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/swagger-ui/index.html)
+- Inventory
+  service: [https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui/index.html](https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/swagger-ui/index.html)
+- Production
+  service: [https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui/index.html](https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/swagger-ui/index.html)
+
+OpenAPI JSON:
+
+- Customer
+  service: [https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs](https://customer-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs)
+- Harvest
+  service: [https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs](https://harvest-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/v3/api-docs)
+- Inventory
+  service: [https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/v1/api-docs](https://inventory-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/inventory-service/api/v1/api-docs)
+- Production
+  service: [https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs](https://production-service-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com/api/v3/api-docs)
+
+Monitoring:
+
+- Prometheus: `https://prometheus-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com`
+- Grafana: `https://grafana-xsokolik-dev.apps.rm1.0a51.p1.openshiftapps.com`
+- Grafana credentials: `admin` / `admin`
+
+These URLs are tied to the current OpenShift Sandbox cluster and namespace. If the Sandbox is recreated or the routes
+change, redeploy the project and run `oc get routes` to get the new public hosts.
+
+### OpenShift Smoke Checks
+
+Use the route hostnames from `oc get routes`. The OpenShift routes use edge TLS termination, so public links are
+available through `https://`.
+
+Swagger/OpenAPI checks:
+
+```bash
+curl http://<customer-service-route>/v3/api-docs
+curl http://<harvest-service-route>/v3/api-docs
+curl http://<inventory-service-route>/inventory-service/api/v1/api-docs
+curl http://<production-service-route>/api/v3/api-docs
+curl http://<prometheus-route>/-/ready
+curl http://<grafana-route>/api/health
+```
+
+Messaging connection check:
+
+```bash
+oc logs deployment/production-service
+oc logs deployment/inventory-service
+```
+
+The logs should not contain connection errors for `tcp://artemis:61616`.
+
+### Waking Idle OpenShift Pods
+
+The Red Hat Developer Sandbox can scale idle workloads down automatically. To wake the application without changing the
+deployed image, run the manual GitLab CI job `wake_openshift` from the latest `main` pipeline. The job uses the same
+`OPENSHIFT_SERVER`, `OPENSHIFT_TOKEN`, and `OPENSHIFT_PROJECT` variables as deployment, scales all deployments to one
+replica, and waits for rollout completion.
+
+Equivalent manual commands:
+
+```bash
+oc scale deployment/artemis --replicas=1
+oc scale deployment/customer-service --replicas=1
+oc scale deployment/harvest-service --replicas=1
+oc scale deployment/inventory-service --replicas=1
+oc scale deployment/production-service --replicas=1
+oc scale deployment/prometheus --replicas=1
+oc scale deployment/grafana --replicas=1
+```
+
+Wait until the pods are available:
+
+```bash
+oc rollout status deployment/artemis
+oc rollout status deployment/customer-service
+oc rollout status deployment/harvest-service
+oc rollout status deployment/inventory-service
+oc rollout status deployment/production-service
+oc rollout status deployment/prometheus
+oc rollout status deployment/grafana
+```
+
+### Scaling And Cleanup
+
+Scale an API service, for example `harvest-service`, to two pods:
+
+```bash
+oc scale deployment/harvest-service --replicas=2
+```
+
+Scale it back down:
+
+```bash
+oc scale deployment/harvest-service --replicas=1
+```
+
+Delete all Winery Management System OpenShift resources:
+
+```bash
+oc delete all,route,configmap -l app.kubernetes.io/part-of=winery-management-system
+```
 
 ## OpenAPI / Swagger
 
