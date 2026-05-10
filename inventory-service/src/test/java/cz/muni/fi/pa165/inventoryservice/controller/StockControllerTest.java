@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.commonservice.exception.ResourceNotFoundException;
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
 import cz.muni.fi.pa165.inventoryservice.config.JpaConfig;
+import cz.muni.fi.pa165.inventoryservice.config.SecurityConfig;
 import cz.muni.fi.pa165.inventoryservice.config.TestJacksonConfig;
 import cz.muni.fi.pa165.inventoryservice.facade.StockFacade;
 import cz.muni.fi.pa165.inventoryservice.util.TestDataFactory;
@@ -16,11 +17,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     controllers = StockController.class,
     excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JpaConfig.class)
 )
-@Import(TestJacksonConfig.class)
+@Import({TestJacksonConfig.class, SecurityConfig.class})
 class StockControllerTest {
 
     @Autowired
@@ -41,6 +44,9 @@ class StockControllerTest {
     @MockitoBean
     private StockFacade stockFacade;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     @Test
     void findById_stockFound_returnsStock() throws Exception {
         // Arrange
@@ -49,7 +55,8 @@ class StockControllerTest {
 
         // Act + Assert
         mockMvc.perform(get("/stocks/{id}", TestDataFactory.STOCK_ID)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(TestDataFactory.STOCK_ID.toString()))
             .andExpect(jsonPath("$.wineId").value(TestDataFactory.WINE_ID.toString()))
@@ -64,7 +71,8 @@ class StockControllerTest {
 
         // Act + Assert
         mockMvc.perform(get("/stocks/{id}", TestDataFactory.STOCK_ID)
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isNotFound());
     }
 
@@ -76,7 +84,8 @@ class StockControllerTest {
 
         // Act + Assert
         mockMvc.perform(get("/stocks")
-                .accept(MediaType.APPLICATION_JSON))
+                .accept(MediaType.APPLICATION_JSON)
+                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].id").value(TestDataFactory.STOCK_ID.toString()));
     }
@@ -91,7 +100,8 @@ class StockControllerTest {
         // Act + Assert
         mockMvc.perform(post("/stocks/{id}/add", TestDataFactory.STOCK_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(changeDto)))
+                .content(objectMapper.writeValueAsString(changeDto))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.quantity").value(130));
     }
@@ -106,7 +116,8 @@ class StockControllerTest {
         // Act + Assert
         mockMvc.perform(post("/stocks/{id}/add", TestDataFactory.STOCK_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(changeDto)))
+                .content(objectMapper.writeValueAsString(changeDto))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isBadRequest());
     }
 
@@ -120,7 +131,8 @@ class StockControllerTest {
         // Act + Assert
         mockMvc.perform(post("/stocks/{id}/remove", TestDataFactory.STOCK_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(changeDto)))
+                .content(objectMapper.writeValueAsString(changeDto))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isNotFound());
     }
 
@@ -130,7 +142,8 @@ class StockControllerTest {
         Mockito.when(stockFacade.delete(TestDataFactory.STOCK_ID)).thenReturn(true);
 
         // Act + Assert
-        mockMvc.perform(delete("/stocks/{id}", TestDataFactory.STOCK_ID))
+        mockMvc.perform(delete("/stocks/{id}", TestDataFactory.STOCK_ID)
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isNoContent());
     }
 
@@ -143,7 +156,8 @@ class StockControllerTest {
         // Act + Assert
         mockMvc.perform(put("/stocks/{id}", TestDataFactory.STOCK_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
+                .content(objectMapper.writeValueAsString(dto))
+                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(TestDataFactory.STOCK_ID.toString()));
     }

@@ -4,6 +4,7 @@ import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.customerservice.api.ReviewCreateDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewUpdateDto;
+import cz.muni.fi.pa165.customerservice.config.SecurityConfig;
 import cz.muni.fi.pa165.customerservice.facade.ReviewFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,11 +37,19 @@ public class ReviewController {
     @PostMapping
     @Operation(
         summary = "Create review",
-        description = "Creates a new review for a wine by a customer."
+        description = "Creates a new review for a wine by a customer.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_write"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Review created",
             content = @Content(schema = @Schema(implementation = ReviewDto.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -59,12 +69,20 @@ public class ReviewController {
     @GetMapping("/{id}")
     @Operation(
         summary = "Get review by ID",
-        description = "Returns a review identified by UUID."
+        description = "Returns a review identified by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Review found",
             content = @Content(schema = @Schema(implementation = ReviewDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Review not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -79,11 +97,19 @@ public class ReviewController {
     @GetMapping
     @Operation(
         summary = "Get all reviews",
-        description = "Returns all reviews."
+        description = "Returns all reviews.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reviews retrieved",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class))))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<List<ReviewDto>> getAllReviews() {
         return ResponseEntity.ok(reviewFacade.getAllReviews());
@@ -92,11 +118,19 @@ public class ReviewController {
     @GetMapping("/customer/{customerId}")
     @Operation(
         summary = "Get reviews by customer",
-        description = "Returns all reviews created by a specific customer."
+        description = "Returns all reviews created by a specific customer.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reviews retrieved",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Customer not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -110,11 +144,19 @@ public class ReviewController {
     @GetMapping("/wine/{wineId}")
     @Operation(
         summary = "Get reviews by wine",
-        description = "Returns all reviews for a specific wine."
+        description = "Returns all reviews for a specific wine.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_read"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reviews retrieved",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ReviewDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -128,12 +170,20 @@ public class ReviewController {
     @PutMapping("/{id}")
     @Operation(
         summary = "Update review",
-        description = "Updates an existing review."
+        description = "Updates an existing review.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_write"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Review updated",
             content = @Content(schema = @Schema(implementation = ReviewDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid input data",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Review not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -155,10 +205,18 @@ public class ReviewController {
     @DeleteMapping("/{id}")
     @Operation(
         summary = "Delete review",
-        description = "Deletes a review by UUID."
+        description = "Deletes a review by UUID.",
+        security = @SecurityRequirement(
+            name = SecurityConfig.SECURITY_SCHEME_NAME,
+            scopes = {"test_write"}
+        )
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Review deleted"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Review not found",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })

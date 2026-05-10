@@ -37,3 +37,24 @@ spring:
       on-profile: seed
   liquibase:
     contexts: seed
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://id.muni.cz/oidc/
+          audiences: 7e02a0a9-446a-412d-ad2b-90add47b0fdd
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,loggers,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true

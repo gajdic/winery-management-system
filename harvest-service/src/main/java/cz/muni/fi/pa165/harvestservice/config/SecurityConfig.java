@@ -29,6 +29,9 @@ public class SecurityConfig {
 
     public static final String SECURITY_SCHEME_NAME = "MUNI";
 
+    public static final String READ_SCOPE = "test_read";
+    public static final String WRITE_SCOPE = "test_write";
+
     private static final String[] HARVEST_ENDPOINTS = {
         "/vineyards/**",
         "/grape-types/**",
@@ -39,7 +42,8 @@ public class SecurityConfig {
         "/error",
         "/swagger-ui.html",
         "/swagger-ui/**",
-        "/v3/api-docs/**"
+        "/v3/api-docs/**",
+        "/actuator/**"
     };
 
     @Bean
@@ -47,10 +51,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope("test_read"))
-                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope("test_write"))
+                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope(READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -89,8 +93,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "get user identifier")
-                                .addString("test_read", "read harvest data")
-                                .addString("test_write", "create, update, and delete harvest data")
+                                .addString(READ_SCOPE, "read harvest data")
+                                .addString(WRITE_SCOPE, "create, update, and delete harvest data")
                             )
                         )
                     )

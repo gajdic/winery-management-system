@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-04-29`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-07`.
 
 ## M3 povinne body
 
@@ -20,46 +20,47 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 2. Database seeding a clear/reset
 
-- [ ] `customer-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] `harvest-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] `production-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
-- [ ] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.
-- [ ] Existuje sposob, ako databazy vycistit alebo resetnut pred novym demo behom.
-- [ ] README popisuje, ako sa seedovanie a pripadny clear/reset databaz spusta.
+- [x] `customer-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] `harvest-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] `production-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] `inventory-service` ma seed dat cez migracny nastroj alebo jednoznacny startup seeder.
+- [x] Seed data posobia realisticky a nepouzivaju placeholder hodnoty typu `AAAAAA`.
+- [x] Existuje sposob, ako databazy vycistit alebo resetnut pred novym demo behom.
+- [x] README popisuje, ako sa seedovanie a pripadny clear/reset databaz spusta.
 
 ### 3. Security - OAuth 2 Resource Server
 
-- [ ] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
-- [ ] Pouzit seminarovy `client_id` a `client_secret` pre client aj resource servery.
-- [ ] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
-- [ ] Pouzit aspon dva rozne `test_*` scopes.
-- [ ] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
-- [ ] `customer-service` endpointy maju nastavene scope pravidla.
+- [x] Do vsetkych API services pridat Spring Security OAuth 2 Resource Server konfiguraciu.
+- [x] Pouzit seminarovy OAuth client nastavenia pre Swagger/client flow tam, kde ich service explicitne potrebuje.
+- [x] Nakonfigurovat issuer/JWK introspection podla seminaroveho OAuth provideru.
+- [x] Pouzit aspon dva rozne `test_*` scopes.
+- [x] Rozdelit scopes medzi metody tak, aby davali business zmysel, napr. citanie vs. zapis/admin operacie.
+- [x] `customer-service` endpointy maju nastavene scope pravidla.
 - [x] `harvest-service` endpointy maju nastavene scope pravidla.
-- [ ] `production-service` endpointy maju nastavene scope pravidla.
-- [ ] `inventory-service` endpointy maju nastavene scope pravidla.
-- [ ] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
-- [ ] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
+- [x] `production-service` endpointy maju nastavene scope pravidla.
+- [x] `inventory-service` endpointy maju nastavene scope pravidla.
+- [x] Verejne ponechat iba endpointy, ktore maju byt verejne, napr. health, OpenAPI docs alebo Swagger redirect podla dohody.
+- [x] `customer-service` ma pridane `/actuator/**` medzi public endpointy, aby Prometheus vedel scrapeovat metriky bez tokenu.
+- [x] Swagger/OpenAPI vie pracovat s OAuth tokenom, alebo README jasne popisuje ziskanie tokenu zo seminaroveho clienta.
 - [ ] Rucne overit, ze request bez tokenu zlyha na chranenych endpointoch.
 - [ ] Rucne overit, ze token bez potrebneho scope zlyha na endpointoch s vyssim opravnenim.
 - [ ] Rucne overit, ze token so spravnym scope prejde.
 
 ### 4. Observability - Actuator, Prometheus, Grafana
 
-- [ ] Do vsetkych services pridat `spring-boot-starter-actuator`.
-- [ ] Do vsetkych services pridat Prometheus/Micrometer registry.
-- [ ] `customer-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `harvest-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `production-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `inventory-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
-- [ ] `docker-compose.yml` obsahuje Prometheus.
-- [ ] Prometheus scrapeuje vsetky 4 services.
-- [ ] `docker-compose.yml` obsahuje Grafanu.
-- [ ] Grafana ma provisioning pre datasource, aby sa nemusela konfigurovat rucne po starte.
-- [ ] Grafana ma preloaded dashboard zobrazujuci stav systemu.
-- [ ] Dashboard ukazuje aspon health/up stav, request rate/latenciu a JVM alebo HTTP metriky pre services.
-- [ ] README obsahuje URL pre actuator, Prometheus a Grafanu.
+- [x] Do vsetkych services pridat `spring-boot-starter-actuator`.
+- [x] Do vsetkych services pridat Prometheus/Micrometer registry.
+- [x] `customer-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `harvest-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `production-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `inventory-service` exposeuje `/actuator/health` a `/actuator/prometheus`.
+- [x] `docker-compose.yml` obsahuje Prometheus.
+- [x] Prometheus je nakonfigurovany tak, aby automaticky scrapeoval vsetky 4 services.
+- [x] `docker-compose.yml` obsahuje Grafanu.
+- [x] Grafana ma provisioning pre datasource, aby sa nemusela konfigurovat rucne po starte.
+- [x] Grafana ma preloaded dashboard zobrazujuci stav systemu.
+- [x] Dashboard ukazuje aspon health/up stav, request rate/latenciu a JVM alebo HTTP metriky pre services.
+- [x] README obsahuje URL pre actuator, Prometheus a Grafanu.
 
 ### 5. Deployment a CI
 
@@ -86,12 +87,12 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### 7. README a dokumentacia pre M3
 
 - [ ] README obsahuje kompletny M3 runbook: build, start, seed/reset, token, Swagger, scenario, monitoring.
-- [ ] README obsahuje OAuth scopes a priklady requestov s tokenom.
-- [ ] README obsahuje zoznam service URL a portov.
-- [ ] README obsahuje observability URL: actuator endpoints, Prometheus, Grafana.
-- [ ] README obsahuje popis GitLab CI.
-- [ ] README obsahuje informaciu, ci a ako bol pouzity GenAI pri vyvoji.
-- [ ] README jasne rozlisuje povinne funkcionality a optional deployment.
+- [x] README obsahuje OAuth scopes a priklady requestov s tokenom.
+- [x] README obsahuje zoznam service URL a portov.
+- [x] README obsahuje observability URL: actuator endpoints, Prometheus, Grafana.
+- [x] README obsahuje popis GitLab CI.
+- [x] README obsahuje informaciu, ci a ako bol pouzity GenAI pri vyvoji.
+- [x] README jasne rozlisuje povinne funkcionality a optional deployment.
 
 ### 8. Teamwork a GitLab proces
 
@@ -103,7 +104,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### 9. Predodovzdavacia kontrola M3
 
-- [ ] `mvn clean install` prechadza nad celym multi-module projektom.
+- [x] `mvn clean install` prechadza nad celym multi-module projektom.
 - [ ] `docker compose up --build` nastartuje vsetky services a infrastructure komponenty.
 - [ ] Vsetky services maju dostupny Swagger/OpenAPI.
 - [ ] Chranene endpointy su bez tokenu odmietnute.
@@ -111,6 +112,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Seed/reset funguje po cistom starte.
 - [ ] Prometheus vidi vsetky services ako `up`.
 - [ ] Grafana dashboard po starte ukazuje data bez rucnej konfiguracie.
+- [x] Odstranit nahodne OneNote `.onetoc2` subory z `monitoring/`, ak maju byt trackovane v Gite.
 - [ ] Showcase scenar je spustitelny a ma ocakavany vysledok.
 - [ ] GitLab pipeline na aktualnom `main`/`master` prechadza.
 
@@ -226,13 +228,35 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne. (N/A — odstraneny)
 - [ ] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key.
 
+## Opravy po M2 review
+
+### Povinne alebo odporucane opravy s dopadom na hodnotenie
+
+- [ ] JMS queue names konfigurovat z jedneho miesta, nie duplicitne v `application.yml` a `Queues.java`.
+- [ ] Zaviest napr. `app.jms.queues.batch-completed=batch-completed-queue`.
+- [ ] Zaviest napr. `app.jms.queues.stock-updated=stock-updated-queue`.
+- [ ] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie.
+- [ ] Upravit testy messagingu po presune queue names do konfiguracie.
+- [ ] `production-service` ma spracovat ACK z `inventory-service` po update stocku.
+- [ ] `production-service` ma ulozit inbound ACK message do databazy.
+- [ ] Doplnit test uspesneho ACK flow.
+- [ ] Doplnit test pre pripad, ked ACK nepride alebo consumer zlyha.
+- [ ] V `docker-compose.yml` nepouzivat externe image tagy `latest`, hlavne pre `apache/activemq-artemis`.
+- [ ] Rozhodnut, ci `harvest-service` bude nadalej drzat PostgreSQL dependency pre buduce externe DB behy, alebo ju odstranit, ak sa pouziva iba H2.
+
+### Nice to have z M2 review
+
+- [ ] Zvazit vytiahnutie opakovanych OpenAPI kodov a popisov do triedy typu `SwaggerConstants`.
+- [ ] Zvazit explicitnu dedicated Docker network v `docker-compose.yml`.
+- [ ] Zvazit presun hardcoded secrets z `docker-compose.yml` do `.env`.
+
 ## Najblizsie odporucane kroky
 
-1. Pridat Spring Security OAuth 2 Resource Server do vsetkych 4 services a rozdelit endpointy medzi aspon 2 `test_*` scopes.
-2. Pridat actuator + Prometheus metriky do services a rozsirit `docker-compose.yml` o Prometheus a Grafanu s provisioningom dashboardu.
-3. Zjednotit database seeding/reset pre vsetky services a zdokumentovat ho v README.
-4. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
-5. Overit v GitLabe, ze merge requesty realne vyzaduju aspon 2 approvals, kedze to sa z lokalneho repozitara neda potvrdit.
+1. Rucne overit security flow pre vsetky services: bez tokenu `401`, zly scope `403`, spravny scope `2xx`.
+2. Pripravit runnable showcase scenar a overit ho po cistom `docker compose up --build`.
+3. Spustit cisty `docker compose up --build` po vsetkych mergeoch a overit Swagger, actuator endpointy, Prometheus targets a Grafana dashboardy.
+4. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta, ACK handling v `production-service`, odstranit `latest` image tagy.
+5. Overit GitLab pipeline na aktualnom `main`/`master`.
 6. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
 
 ## Nice to have
@@ -266,7 +290,8 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 ## Poznamky k finalnemu odovzdaniu
 
 - Povinne M2 body su v repozitari momentalne pokryte.
-- M3 checklist bol doplneny dna `2026-04-29`; vacsina M3 infrastruktury este nie je oznacena ako hotova.
-- `mvn install` prechadza nad celym multi-module projektom.
+- M3 checklist bol naposledy aktualizovany po novych zmenach dna `2026-05-07`.
+- `mvn clean install` prechadza nad celym multi-module projektom.
+- `docker compose config --quiet` prechadza, teda Compose konfiguracia je syntakticky validna.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.
