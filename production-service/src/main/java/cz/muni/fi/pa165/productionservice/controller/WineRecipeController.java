@@ -4,6 +4,7 @@ import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeUpdateDto;
+import cz.muni.fi.pa165.productionservice.config.SecurityConfig;
 import cz.muni.fi.pa165.productionservice.facade.WineRecipeFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class WineRecipeController {
     }
 
     @PostMapping
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Create a wine recipe",
         description = "Creates a recipe containing wine metadata, required grape composition, and optional additional ingredients."
@@ -42,6 +45,10 @@ public class WineRecipeController {
         @ApiResponse(responseCode = "201", description = "Wine recipe created",
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid request body",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
@@ -59,6 +66,7 @@ public class WineRecipeController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Get all wine recipes",
         description = "Returns all wine recipes known to the production service."
@@ -66,6 +74,10 @@ public class WineRecipeController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Wine recipes returned",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = WineRecipeDto.class)))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(schema = @Schema(implementation = ApiError.class)))
     })
@@ -74,6 +86,7 @@ public class WineRecipeController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.READ_SCOPE)
     @Operation(
         summary = "Get a wine recipe by id",
         description = "Returns a single wine recipe identified by UUID."
@@ -82,6 +95,10 @@ public class WineRecipeController {
         @ApiResponse(responseCode = "200", description = "Wine recipe returned",
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -96,6 +113,7 @@ public class WineRecipeController {
     }
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Update a wine recipe by id",
         description = "Replaces the recipe fields, grape composition, and additional ingredients for an existing wine recipe."
@@ -104,6 +122,10 @@ public class WineRecipeController {
         @ApiResponse(responseCode = "200", description = "Wine recipe updated",
             content = @Content(schema = @Schema(implementation = WineRecipeDto.class))),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format or request body",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -124,6 +146,7 @@ public class WineRecipeController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityConfig.WRITE_SCOPE)
     @Operation(
         summary = "Delete a wine recipe by id",
         description = "Deletes an existing wine recipe identified by UUID."
@@ -131,6 +154,10 @@ public class WineRecipeController {
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Wine recipe deleted", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - access token is missing or invalid",
+            content = @Content(schema = @Schema(implementation = ApiError.class))),
+        @ApiResponse(responseCode = "403", description = "Forbidden - missing required scope",
             content = @Content(schema = @Schema(implementation = ApiError.class))),
         @ApiResponse(responseCode = "404", description = "Wine recipe not found",
             content = @Content(schema = @Schema(implementation = ApiError.class))),

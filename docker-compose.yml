@@ -1,6 +1,6 @@
 services:
   artemis:
-    image: apache/activemq-artemis:latest-alpine
+    image: apache/artemis:2.53.0-alpine
     container_name: artemis
     ports:
       - "61616:61616"
@@ -21,6 +21,7 @@ services:
       - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:production-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+      SPRING_PROFILES_ACTIVE: ${PRODUCTION_SERVICE_PROFILES:-}
       SPRING_ARTEMIS_MODE: native
       SPRING_ARTEMIS_BROKER_URL: tcp://artemis:61616
       SPRING_ARTEMIS_USER: artemis
@@ -36,6 +37,7 @@ services:
       - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:harvest-service;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_PROFILES_ACTIVE: ${HARVEST_SERVICE_PROFILES:-seed}
 
   inventory-service:
     build:
@@ -64,3 +66,33 @@ services:
       - "8084:8084"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:customer-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus
+    depends_on:
+      - customer-service
+      - harvest-service
+      - production-service
+      - inventory-service
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
