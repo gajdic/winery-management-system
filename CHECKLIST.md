@@ -2,7 +2,7 @@
 
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
-Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-10`.
+Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-19`.
 
 ## M3 povinne body
 
@@ -217,16 +217,22 @@ Termin odovzdania review: `2026-05-15 23:59`.
 ### Este otvorene
 
 - [x] `customer-service`: odstranit alebo prehodnotit `RepositoryConfig`, ak este existuje alebo je zbytocny.
-- [ ] `customer-service`: zvazit vztah `Review -> Customer` namiesto samotneho `customerId`.
-- [ ] `customer-service`: zvazit vztah `PurchaseRecord -> Customer` namiesto samotneho `customerId`.
-- [ ] `customer-service`: zvazit bidirectional mapovanie cez `Customer -> reviews`.
-- [ ] `customer-service`: zvazit bidirectional mapovanie cez `Customer -> purchaseRecords`.
-- [ ] `customer-service`: doplnit reviews do `CustomerDto`, ak to chcete dorobit podla feedbacku.
-- [ ] `customer-service`: doplnit purchase history do `CustomerDto`, ak to chcete dorobit podla feedbacku.
+- [x] `customer-service`: `Review` uz pouziva vztah `Review -> Customer` namiesto samotneho `customerId`.
+- [x] `customer-service`: `PurchaseRecord` uz pouziva vztah `PurchaseRecord -> Customer` namiesto samotneho `customerId`.
+- [x] `customer-service`: `Customer` uz ma bidirectional mapovanie cez `reviews`.
+- [x] `customer-service`: `Customer` uz ma bidirectional mapovanie cez `purchaseRecords`.
+- [x] `customer-service`: `CustomerDto` uz obsahuje reviews.
+- [x] `customer-service`: `CustomerDto` uz obsahuje purchase history / `purchaseRecords`.
 - [x] `harvest-service`: zjednotit delete existence checks vo vsetkych service triedach.
+- [ ] Zjednotit aj update existence checks vo service vrstvach, aby sa nespoliehali na `IllegalArgumentException` z repository update operacii.
+- [ ] Rozlisit `IllegalArgumentException` pre nevalidny vstup od `ResourceNotFoundException` pre nenajdeny zaznam.
 - [x] `inventory-service`: rozhodnut, ci `ReservationStatus` ponechat alebo zjednodusit. (odstraneny 2026-04-24)
 - [x] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne. (N/A — odstraneny)
 - [ ] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key.
+- [x] `EntityBase` je uz v `common-service`.
+- [ ] Zvazit, ci duplicitu medzi create/update/detail DTO nema zmysel redukovat cez dedicnost alebo spolocne basic DTO typy.
+- [ ] Upratat duplicitne validacie medzi REST a service vrstvami tam, kde nepridavaju novu business ochranu.
+- [x] Projekt uz realne pouziva Lombok na DTO, entity aj messaging triedy.
 
 ## Opravy po M2 review
 
@@ -238,6 +244,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [ ] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie.
 - [ ] Upravit testy messagingu po presune queue names do konfiguracie.
 - [x] `production-service` spracuje ACK z `inventory-service` po update stocku.
+- [x] `production-service` viaze uspesnost messaging flow na prijatie validneho ACK, nie iba na odoslanie JMS spravy.
 - [ ] `production-service` ma ulozit inbound ACK message do databazy.
 - [x] Doplnit test uspesneho ACK flow.
 - [x] Doplnit test pre pripad, ked ACK nepride alebo ACK nesedi s odoslanym batchom.
@@ -266,19 +273,23 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 - [ ] Zvazit `@Parameter` len tam, kde parameter naozaj nie je z nazvu endpointu dostatocne jasny.
 - [ ] Doplnenie prikladov request/response DTO, ak sa rozhodnete ist viac do detailu.
 - [ ] Zjednotenie stylu nazvov a textov medzi vsetkymi services, aby Swagger neposobil ako zmes 4 roznych stylov.
+- [ ] Zvazit `SwaggerConstants` alebo podobny shared helper pre casto opakovane response kody a popisy.
 
 ### Customer service refaktory
 
-- [ ] Prejst z `customerId` na realny vztah na `Customer` v `Review`.
-- [ ] Prejst z `customerId` na realny vztah na `Customer` v `PurchaseRecord`.
-- [ ] Rozsirit `CustomerDto` o review historiu.
-- [ ] Rozsirit `CustomerDto` o purchase history.
+- [x] `Review` uz pouziva realny vztah na `Customer`.
+- [x] `PurchaseRecord` uz pouziva realny vztah na `Customer`.
+- [x] `CustomerDto` uz obsahuje review historiu.
+- [x] `CustomerDto` uz obsahuje purchase history.
 
 ### Domain model a konzistencia
 
 - [ ] Skontrolovat `equals()` / `hashCode()` strategiu v entitach a modeloch.
 - [ ] Upratat pripadne zbytocne duplicitne validacie medzi REST a nizsimi vrstvami.
 - [ ] Zjednotit delete/update existence checks napriec service vrstvami.
+- [x] `EntityBase` je zdielany z `common-service`, nie je uz len v jednom module.
+- [ ] Zvazit, ci `production-service` nema pri referencii na harvest data drzat skor externe ID nez denormalizovane atributy, ak by to znizilo riziko nekonzistencie.
+- [ ] Zvazit zjednotenie casovych typov tam, kde sa miesa `Instant` a `LocalDateTime`, a vediet obhajit aktualnu volbu.
 
 ### Dokumentacia a infra
 
@@ -298,3 +309,99 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 - GitLab pipeline na merge requeste bola po retry uspesna.
 - Messaging je implementovany, ale oplati sa ho este raz rucne overit v Docker Compose prostredi pred odovzdanim.
 - GitLab workflow body (`2 approvals`, individual contribution) treba skontrolovat priamo v GitLabe, nie len lokalne.
+
+## Prehlad review zdrojov
+
+- [x] M1 review: `Reviews/M1/M1_gamma.md` (`11.5` bodu)
+- [x] M2 review: `Reviews/M1/M2_gamma.md` (`11.5` bodu)
+- [x] M3 review: `Reviews/M1/M3_gamma.md` (`12` bodov)
+- [ ] Pri prioritizacii pracovat podla tohto zjednoteneho checklistu, nie len podla jednotlivych review suborov.
+
+## Opravy po M3 review `gamma`
+
+Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo commit `fdcf1b94ddd6c8803b10ef44d0bb98d6261aa705` a projekt dostal `12` bodov. Ciel tejto sekcie je mat jasny defense checklist: co opravit, co overit runtime behom a na ake otazky byt pripraveny.
+
+### Kriticke pred obhajobou / finalnym handoffom
+
+- [x] README obsahuje GenAI usage disclosure (`README.md`, sekcia `GenAI Usage Disclosure`).
+- [ ] Znovu overit Docker Compose start vsetkych 4 microservices a zapisat vysledok do checklistu alebo README poznamky.
+- [ ] Opravit alebo vysvetlit `customer-service` runtime cez Docker Compose:
+  - reviewerovi port `8084` vratil connection refused,
+  - `docker-compose.yml` aktualne nenastavuje `SPRING_PROFILES_ACTIVE=seed` pre `customer-service`,
+  - `customer-service/src/main/resources/application.yml` ma security/management konfiguraciu pod seed profilom,
+  - skontrolovat aj Liquibase changelog path, aby service po cistom starte nespadol.
+- [ ] Zjednotit alebo jasne zdokumentovat actuator/swagger URL pre vsetky services:
+  - `harvest-service` bezi na porte `8081` bez `/api` context path,
+  - `production-service` bezi na porte `8082` s `/api`,
+  - `inventory-service` bezi na porte `8083` s `/inventory-service/api`, preto reviewerov check cez `/api/...` vracal `404`,
+  - `customer-service` bezi na porte `8084` bez `/api` context path.
+- [ ] Rozhodnut, ktore endpointy maju byt public, a zosuladit security config + README:
+  - minimalne `/actuator/health`, `/actuator/metrics`, `/actuator/prometheus`,
+  - Swagger/OpenAPI endpoints,
+  - OAuth redirect pre centralny Swagger UI na porte `8090`.
+- [ ] Overit Prometheus scrape po cistom `docker compose up` tak, aby vsetky 4 services boli `up`.
+- [ ] Znovu spustit showcase scenar od nuly a mat pripraveny vystup:
+  - health check harvest/production/inventory/customer,
+  - nacitanie harvest seed dat,
+  - dokoncenie production batchu,
+  - JMS sprava z production do inventory,
+  - inventory stock zvyseny o ocakavany pocet flias.
+- [ ] Overit GitLab pipeline na branche/commite, ktory pojde na obhajobu, a pripravit screenshot alebo URL zelenej pipeline.
+- [ ] Overit README deployment/OpenShift URL; ak nefunguju, oznacit deployment ako optional/demo-only alebo pripravit funkcne URL na prezentaciu.
+
+### Code cleanup odporucany reviewerom
+
+- [ ] Vytiahnut opakovane scope string literaly do konstant a pouzivat ich napriec configom, OpenAPI anotaciami a testami:
+  - `test_read`,
+  - `test_write`,
+  - `test_1`, ak sa este niekde pouziva.
+- [ ] Najprv upratat `customer-service`, kde `SecurityConfig` stale pouziva hardcoded `test_read` / `test_write` vo viacerych matcher pravidlach a OpenAPI scopes.
+- [ ] Potom zvazit zjednotenie scope konstant v `common-service`, aby ich vsetky services neudrziavali duplicitne.
+- [ ] Zvazit vytiahnutie spolocnej security/openapi konfiguracie do shared modulu len tam, kde to znizi duplicitu bez zbytocneho skomplikovania.
+- [ ] Zvazit vytiahnutie `JmsConfig` do `common-service`, ak produkcia a inventory musia pouzivat identicky messaging setup.
+- [ ] Zvazit vytiahnutie `jwtDecoder` bean do `common-service`, ak je medzi services rovnaky.
+- [ ] Prejst DTO duplicity a rozhodnut, kde dava zmysel kompozicia alebo dedicnost namiesto opakovanych poli.
+- [ ] Prejst Harvest mapping a zvazit zjednodusenie:
+  - camelCase vs snake_case mapping cez Hibernate naming strategy,
+  - MapStruct mapper composition namiesto rucneho skladania.
+
+### Body, ktore reviewer explicitne pochvalil
+
+- [x] REST API je prepojene so service a persistence vrstvou vo vsetkych microservices.
+- [x] Seed data su cez Liquibase a posobia realisticky.
+- [x] OAuth2 Resource Server je nastaveny vo vsetkych services.
+- [x] Pouzivaju sa minimalne dva scopes.
+- [x] Centralny Swagger UI kontajner na porte `8090` je dobre riesenie pre OAuth redirect.
+- [x] Prometheus + Grafana su pripravene a dashboard je provisioned.
+- [x] Showcase scenar je domenovo dobry: dokoncenie production batchu a automaticky update inventory cez JMS.
+- [x] CI pipeline existuje.
+- [x] Shared exception handling a common package posobia dobre.
+- [x] `ProductionPlanningService` ma netrivialnu business logiku.
+
+### Otazky na obhajobu
+
+- [ ] Vediet vysvetlit, preco su `HarvestRecordService#summaryByYear` a `HarvestRecordService#summaryByVineyard` implementovane aktualnym sposobom.
+- [ ] Pripravit odpoved, ako by sa dali harvest summary metody zlepsit, napr. podobnym filter pristupom ako `ReservationRepository#filter`.
+- [ ] Vediet vysvetlit, preco `HarvestRecord` referencuje iba jeden `GrapeType`.
+- [ ] Pripravit domain/DB dosledky single-grape modelu:
+  - jednoduchsi model a query,
+  - nevie prirodzene reprezentovat blend alebo zber s viacerymi odrodami,
+  - alternativa je join entity / many-to-many s mnozstvom alebo percentom.
+- [ ] Vediet vysvetlit dvojitu validaciu na REST a service vrstve:
+  - REST `@Valid` chrani HTTP boundary a dava pekne 400 response,
+  - service validacia chrani business API pri volani mimo REST vrstvy,
+  - ak je duplicita prilis velka, treba ju zjednotit alebo ponechat iba invarianty v service vrstve.
+
+### Rychly defense runbook
+
+- [ ] `docker compose config --quiet`
+- [ ] `docker compose up -d --force-recreate artemis production-service harvest-service inventory-service customer-service prometheus grafana swagger-ui`
+- [ ] Skontrolovat health endpoints pod realnymi context path:
+  - `http://localhost:8081/actuator/health`
+  - `http://localhost:8082/api/actuator/health`
+  - `http://localhost:8083/inventory-service/api/actuator/health`
+  - `http://localhost:8084/actuator/health`
+- [ ] Skontrolovat centralny Swagger UI: `http://localhost:8090/swagger-ui.html`
+- [ ] Skontrolovat Prometheus targets: `http://localhost:9090/targets`
+- [ ] Skontrolovat Grafana dashboard: `http://localhost:3000`
+- [ ] Spustit showcase skript a ulozit si vystup pre pripad, ze demo internet/OAuth zlyha.
