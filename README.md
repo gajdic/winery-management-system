@@ -792,7 +792,7 @@ Central Swagger UI with OAuth authorize flow for all services:
 
 Docker Compose includes an Apache ActiveMQ Artemis broker used for asynchronous communication.
 
-- Broker TCP endpoint: `localhost:61616`
+- Broker TCP endpoint: `localhost:61690`
 - Artemis web console: [http://localhost:8161](http://localhost:8161)
 - Default credentials: `artemis` / `artemis`
 
