@@ -3,6 +3,50 @@
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
 Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-19`.
+Posledny systematicky audit checklistu proti kodu: `2026-05-20`.
+
+## Audit `2026-05-20` - sumar zisteni
+
+Sumar zisteni z auditu vsetkych odskrtnutych a neodskrtnutych bodov:
+
+### Hotove veci, ktore boli nespravne oznacene ako otvorene `[ ]`
+
+- M1 review: **update existence checks vo service vrstvach** su uz zjednotene (`findById(id)` pred `update`/`deleteById` v `CustomerService`, `ReviewService`, `GrapeTypeService`, `HarvestRecordService`, `VineyardService` atd.).
+- M1 review: **rozlisenie `IllegalArgumentException` vs. `ResourceNotFoundException`** je uz hotove - `BaseGlobalExceptionHandler` v `common-service` ma separate handlery (400 vs. 404).
+- M1 review: **`equals()` / `hashCode()` strategia** - vsetky entity pouzivaju Lombok `@EqualsAndHashCode` alebo custom implementaciu (Reservation pouziva business keys: customerId, wineId, quantity, createdAt).
+
+### Polozky `[x]`, ktore vyzaduju este overenie alebo maju nuansie
+
+- M2 review: **"JMS queue names z jedneho miesta"** - queue names SU centralizovane, ale cez **`common-service/messaging/Queues.java`** konstanty (`Queues.BATCH_COMPLETED`, `Queues.STOCK_UPDATED`), **NIE** cez `application.yml` properties (`app.jms.queues.*`), ako konkretne navrhol cviciaci. V `application.yml` nie su duplicate hodnoty, ale architektonicky to mozno cviciaci hodnotuje inac. Treba sa pri obhajobe vediet obhajit, ze "queue names su z jedneho miesta - z Queues.java konstant" + povedat, ze cviciacov hint na `app.jms.queues.*` je nice-to-have ktory zatial nie je urobeny.
+
+### Kriticke otvorene `[ ]` body, ktore treba urgentne dovyriesit pred obhajobou
+
+1. **Customer-service v Docker Compose nestartuje spravne** (potvrdene auditom):
+   - `docker-compose.yml` riadky 86-95: customer-service NEMA nastaveny `SPRING_PROFILES_ACTIVE`.
+   - `customer-service/src/main/resources/application.yml` riadky 31-60: security (OAuth issuer-uri) a management (actuator endpoints) konfiguracia je **iba pod `seed` profilom**.
+   - Dosledok: bez seed profilu sa OAuth resource server nenakonfiguruje a actuator endpointy nie su exposed, takze customer-service na porte `8084` zlyha pri OAuth/actuator pristupe - presne to, co cviciaci hlasil v M3 review.
+   - **Fix**: pridat `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` do `docker-compose.yml`, **alebo** vytiahnut security/management konfiguraciu z `seed` profilu do default casti `application.yml`.
+
+2. **Scope literaly nie su extrahovane do konstant** (potvrdene auditom, M3 review must-fix):
+   - `customer-service` ma hardcoded `"test_read"` / `"test_write"` v 12+ miestach (SecurityConfig, vsetky 3 controllery + testy).
+   - `inventory-service` ma hardcoded `"test_read"` / `"test_write"` v 18+ miestach (SecurityConfig + StockController + ReservationController).
+   - `harvest-service` a `production-service` maju lokalne konstanty `READ_SCOPE` / `WRITE_SCOPE` v `SecurityConfig`, **ale ich controllery stale pouzivaju hardcoded retazce** v `@SecurityRequirement` anotaciach.
+   - V `common-service` nie su zdielane scope konstanty.
+   - **Fix**: pridat `ScopeConstants` triedu do `common-service` so `READ_SCOPE` a `WRITE_SCOPE`, a pouzit ich naprieč vsetkymi 4 services v SecurityConfig + controlleroch + testoch.
+
+3. **`production-service` nezapisuje inbound ACK do DB** (potvrdene auditom):
+   - Tabulka `inbound_message_log` v Liquibase changeset `001_create_tables.xml` v production-service uz existuje.
+   - `ProductionBatchCompletedProducer.java` riadky 63-67: ACK je iba prijaty a validovany (`jmsTemplate.receiveSelectedAndConvert`), ale nikde sa neuklada do `inbound_message_log`.
+   - **Fix**: po validacii ACK volat `inboundMessageLogRepository.save(...)` v `ProductionBatchCompletedProducer`.
+
+### Doplnujuce pozorovania
+
+- `JmsConfig` je duplicitne v `production-service/config/JmsConfig.java` a `inventory-service/config/JmsConfig.java` - obe verzie su identicke. Bod "vytiahnut JmsConfig do common-service" je teda priam vhodny refaktor (zatial otvoreny).
+- `jwtDecoder` bean je duplikovany v `SecurityConfig` vsetkych 4 services s rovnakou implementaciou - tiez vhodny refaktor (zatial otvoreny).
+- DTO inheritance nie je nikde - vsetky `Create*Dto` / `Update*Dto` / `View*Dto` su samostatne triedy bez spolocneho baseu (otvoreny nice-to-have).
+- Duplicate validation medzi REST `@Valid` a service-level explicit `if/throw` stale existuje (napr. `ReviewService`). Toto je tema otazky cviciaceho pri obhajobe.
+
+---
 
 ## M3 povinne body
 
@@ -224,11 +268,11 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `customer-service`: `CustomerDto` uz obsahuje reviews.
 - [x] `customer-service`: `CustomerDto` uz obsahuje purchase history / `purchaseRecords`.
 - [x] `harvest-service`: zjednotit delete existence checks vo vsetkych service triedach.
-- [ ] Zjednotit aj update existence checks vo service vrstvach, aby sa nespoliehali na `IllegalArgumentException` z repository update operacii.
-- [ ] Rozlisit `IllegalArgumentException` pre nevalidny vstup od `ResourceNotFoundException` pre nenajdeny zaznam.
+- [x] Zjednotit aj update existence checks vo service vrstvach, aby sa nespoliehali na `IllegalArgumentException` z repository update operacii. *(audit 2026-05-20: `findById(id)` sa vola pred `update`/`deleteById` vo vsetkych service triedach)*
+- [x] Rozlisit `IllegalArgumentException` pre nevalidny vstup od `ResourceNotFoundException` pre nenajdeny zaznam. *(audit 2026-05-20: `BaseGlobalExceptionHandler` v `common-service` ma separate handlery - 400 pre IllegalArgumentException, 404 pre ResourceNotFoundException)*
 - [x] `inventory-service`: rozhodnut, ci `ReservationStatus` ponechat alebo zjednodusit. (odstraneny 2026-04-24)
 - [x] `inventory-service`: ak `ReservationStatus` ostane, neumoznit klientovi nastavovat ho lubovolne. (N/A — odstraneny)
-- [ ] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key.
+- [x] Skontrolovat `equals()` / `hashCode()` strategiu tam, kde dava zmysel business key. *(audit 2026-05-20: vsetky entity pouzivaju Lombok `@EqualsAndHashCode`; `Reservation` ma custom equals/hashCode s business keys: customerId, wineId, quantity, createdAt)*
 - [x] `EntityBase` je uz v `common-service`.
 - [ ] Zvazit, ci duplicitu medzi create/update/detail DTO nema zmysel redukovat cez dedicnost alebo spolocne basic DTO typy.
 - [ ] Upratat duplicitne validacie medzi REST a service vrstvami tam, kde nepridavaju novu business ochranu.
@@ -238,14 +282,14 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ### Povinne alebo odporucane opravy s dopadom na hodnotenie
 
-- [ ] JMS queue names konfigurovat z jedneho miesta, nie duplicitne v `application.yml` a `Queues.java`.
-- [ ] Zaviest napr. `app.jms.queues.batch-completed=batch-completed-queue`.
-- [ ] Zaviest napr. `app.jms.queues.stock-updated=stock-updated-queue`.
-- [ ] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie.
-- [ ] Upravit testy messagingu po presune queue names do konfiguracie.
+- [~] JMS queue names konfigurovat z jedneho miesta, nie duplicitne v `application.yml` a `Queues.java`. *(audit 2026-05-20: queue names su centralizovane v `common-service/messaging/Queues.java` ako Java konstanty; v `application.yml` nie su duplicate hodnoty. Cviciacov konkretny hint pouzit `app.jms.queues.batch-completed` v `application.yml` zatial implementovany **nie je**.)*
+- [ ] Zaviest napr. `app.jms.queues.batch-completed=batch-completed-queue` (cviciaco-specificky hint, optional).
+- [ ] Zaviest napr. `app.jms.queues.stock-updated=stock-updated-queue` (cviciaco-specificky hint, optional).
+- [x] Upravit producer/consumer kod tak, aby queue names cital z konfiguracie. *(audit 2026-05-20: producer/consumer kod uz cita z `Queues.BATCH_COMPLETED` / `Queues.STOCK_UPDATED` konstant, ziadne hardcoded retazce)*
+- [x] Upravit testy messagingu po presune queue names do konfiguracie. *(audit 2026-05-20: testy pouzivaju `Queues.*` konstanty)*
 - [x] `production-service` spracuje ACK z `inventory-service` po update stocku.
 - [x] `production-service` viaze uspesnost messaging flow na prijatie validneho ACK, nie iba na odoslanie JMS spravy.
-- [ ] `production-service` ma ulozit inbound ACK message do databazy.
+- [ ] `production-service` ma ulozit inbound ACK message do databazy. *(audit 2026-05-20: tabulka `inbound_message_log` v Liquibase changeset existuje, ale `ProductionBatchCompletedProducer` ACK iba validuje, nezapisuje ho do DB)*
 - [x] Doplnit test uspesneho ACK flow.
 - [x] Doplnit test pre pripad, ked ACK nepride alebo ACK nesedi s odoslanym batchom.
 - [x] V `docker-compose.yml` nepouzivat image tagy `latest`; infrastructure aj lokalne service images maju fixne tagy.
@@ -259,9 +303,16 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 ## Najblizsie odporucane kroky
 
-1. Doriesit otvorene body z M2 review: JMS queue names z jedneho miesta a ulozenie inbound ACK v `production-service`, ak sa rozhodnete tieto odporucania implementovat.
-2. Ak ostane cas, vratit sa k volitelnym customer model/DTO refaktorom z feedbacku po M1.
-3. Pred merge este raz skontrolovat finalny diff a commitnut iba vlastne zmeny.
+Prioritizovane podla auditu `2026-05-20` (s ohladom na nadchadzajucu finalnu obhajobu):
+
+1. **KRITICKY**: Opravit `customer-service` runtime v Docker Compose (chybajuci `SPRING_PROFILES_ACTIVE` alebo presun security/management z `seed` profilu do default). Bez tejto opravy cviciaci pri obhajobe znova narazi na connection refused / 401.
+2. **KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.
+3. **KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.
+4. Po cistom `docker compose up --build` rucne overit, ze vsetky 4 services odpovedaju na `/actuator/health`, `/actuator/prometheus`, `/swagger-ui/...` a ze chranene endpointy bez tokenu vracaju 401, so spravnym tokenom prejdu.
+5. Spustit kompletny showcase scenar (`scripts/showcase.ps1`) end-to-end po cistom starte a overit zvysenie stocku.
+6. Po vyriesenych must-fix bodoch overit, ze CI pipeline na `main`/MR-i prejde green.
+7. Nahrat demo video showcase scenara a pushnut link do repa (najneskor 24h pred obhajobou).
+8. Pripadne sa este vratit k nice-to-have refaktorom z M3 review: extract `JmsConfig` a `jwtDecoder` do `common-service`, DTO inheritance, Harvest mapping zjednodusenie.
 
 ## Nice to have
 
@@ -284,9 +335,9 @@ Tieto body nie su kriticke minimum pre M2, ale vedia zlepsit kvalitu projektu a 
 
 ### Domain model a konzistencia
 
-- [ ] Skontrolovat `equals()` / `hashCode()` strategiu v entitach a modeloch.
-- [ ] Upratat pripadne zbytocne duplicitne validacie medzi REST a nizsimi vrstvami.
-- [ ] Zjednotit delete/update existence checks napriec service vrstvami.
+- [x] Skontrolovat `equals()` / `hashCode()` strategiu v entitach a modeloch. *(audit 2026-05-20: hotove, viz horna sekcia opravy po M1 review)*
+- [ ] Upratat pripadne zbytocne duplicitne validacie medzi REST a nizsimi vrstvami. *(audit 2026-05-20: stale otvorene - napr. `ReviewService` aj `CustomerService` maju explicit if/throw validacie pre polia, ktore su uz validovane na DTO cez `@Valid`. Toto je presne otazka cviciaceho pri obhajobe.)*
+- [x] Zjednotit delete/update existence checks napriec service vrstvami. *(audit 2026-05-20: hotove, viz horna sekcia)*
 - [x] `EntityBase` je zdielany z `common-service`, nie je uz len v jednom module.
 - [ ] Zvazit, ci `production-service` nema pri referencii na harvest data drzat skor externe ID nez denormalizovane atributy, ak by to znizilo riziko nekonzistencie.
 - [ ] Zvazit zjednotenie casovych typov tam, kde sa miesa `Instant` a `LocalDateTime`, a vediet obhajit aktualnu volbu.
@@ -325,11 +376,12 @@ Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo
 
 - [x] README obsahuje GenAI usage disclosure (`README.md`, sekcia `GenAI Usage Disclosure`).
 - [ ] Znovu overit Docker Compose start vsetkych 4 microservices a zapisat vysledok do checklistu alebo README poznamky.
-- [ ] Opravit alebo vysvetlit `customer-service` runtime cez Docker Compose:
+- [ ] **KRITICKY**: Opravit `customer-service` runtime cez Docker Compose: *(audit 2026-05-20: potvrdene, presne to co cviciaci hlasil)*
   - reviewerovi port `8084` vratil connection refused,
-  - `docker-compose.yml` aktualne nenastavuje `SPRING_PROFILES_ACTIVE=seed` pre `customer-service`,
-  - `customer-service/src/main/resources/application.yml` ma security/management konfiguraciu pod seed profilom,
-  - skontrolovat aj Liquibase changelog path, aby service po cistom starte nespadol.
+  - `docker-compose.yml` riadky 86-95 aktualne **NEnastavuju** `SPRING_PROFILES_ACTIVE` pre `customer-service`,
+  - `customer-service/src/main/resources/application.yml` riadky 31-60: security (OAuth issuer-uri) **a** management (actuator endpoints) konfiguracia je iba pod `seed` profilom,
+  - dosledok: bez seed profilu chyba OAuth resource server konfiguracia + actuator endpointy nie su exposed,
+  - **fix**: bud pridat `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` do `docker-compose.yml`, **alebo** vytiahnut security/management bloky z `seed` profilu do default casti `application.yml`.
 - [ ] Zjednotit alebo jasne zdokumentovat actuator/swagger URL pre vsetky services:
   - `harvest-service` bezi na porte `8081` bez `/api` context path,
   - `production-service` bezi na porte `8082` s `/api`,
@@ -351,15 +403,17 @@ Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo
 
 ### Code cleanup odporucany reviewerom
 
-- [ ] Vytiahnut opakovane scope string literaly do konstant a pouzivat ich napriec configom, OpenAPI anotaciami a testami:
-  - `test_read`,
-  - `test_write`,
-  - `test_1`, ak sa este niekde pouziva.
-- [ ] Najprv upratat `customer-service`, kde `SecurityConfig` stale pouziva hardcoded `test_read` / `test_write` vo viacerych matcher pravidlach a OpenAPI scopes.
-- [ ] Potom zvazit zjednotenie scope konstant v `common-service`, aby ich vsetky services neudrziavali duplicitne.
+- [ ] **KRITICKY**: Vytiahnut opakovane scope string literaly do konstant a pouzivat ich napriec configom, OpenAPI anotaciami a testami: *(audit 2026-05-20: potvrdene cviciacove zistenie)*
+  - `test_read`: stale hardcoded v `customer-service` (12+ miest), `inventory-service` (16+ miest), `harvest-service` controlleroch, `production-service` controlleroch,
+  - `test_write`: rovnaky stav,
+  - `test_1`: zatial nepouzite v aktualnom kode.
+- [ ] **KRITICKY**: Najprv upratat `customer-service`, kde `SecurityConfig` stale pouziva hardcoded `test_read` / `test_write` v 12 matcher pravidlach a OpenAPI scopes.
+- [ ] **Podobne**: Inventory-service ma rovnaky problem - hardcoded scope literaly v SecurityConfig + StockController + ReservationController.
+- [ ] Harvest-service a production-service maju `READ_SCOPE` / `WRITE_SCOPE` lokalne konstanty v `SecurityConfig`, ale ich controllery (`@SecurityRequirement` anotacie) stale pouzivaju hardcoded retazce.
+- [ ] Potom zvazit zjednotenie scope konstant v `common-service` (napr. `ScopeConstants.READ_SCOPE` / `.WRITE_SCOPE`), aby ich vsetky services neudrziavali duplicitne.
 - [ ] Zvazit vytiahnutie spolocnej security/openapi konfiguracie do shared modulu len tam, kde to znizi duplicitu bez zbytocneho skomplikovania.
-- [ ] Zvazit vytiahnutie `JmsConfig` do `common-service`, ak produkcia a inventory musia pouzivat identicky messaging setup.
-- [ ] Zvazit vytiahnutie `jwtDecoder` bean do `common-service`, ak je medzi services rovnaky.
+- [ ] Zvazit vytiahnutie `JmsConfig` do `common-service`, ak produkcia a inventory musia pouzivat identicky messaging setup. *(audit 2026-05-20: `production-service/config/JmsConfig.java` a `inventory-service/config/JmsConfig.java` su identicke MessageConverter beany - velmi vhodny refaktor)*
+- [ ] Zvazit vytiahnutie `jwtDecoder` bean do `common-service`, ak je medzi services rovnaky. *(audit 2026-05-20: `jwtDecoder` metoda existuje vo vsetkych 4 SecurityConfig triedach a kod je identicky - velmi vhodny refaktor)*
 - [ ] Prejst DTO duplicity a rozhodnut, kde dava zmysel kompozicia alebo dedicnost namiesto opakovanych poli.
 - [ ] Prejst Harvest mapping a zvazit zjednodusenie:
   - camelCase vs snake_case mapping cez Hibernate naming strategy,
