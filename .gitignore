@@ -1,5 +1,7 @@
 **/target/**
 .idea
+AGENTS.md
+CLAUDE.md
 
 # OneNote artifacts
 *.onetoc2
