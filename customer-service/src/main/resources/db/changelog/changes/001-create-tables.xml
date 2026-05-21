@@ -66,7 +66,7 @@
       <column name="quantity" type="INT">
         <constraints nullable="false"/>
       </column>
-      <column name="price_per_bottle" type="DECIMAL(10,2)">
+      <column name="price_per_bottle" type="DOUBLE">
         <constraints nullable="false"/>
       </column>
       <column name="purchase_date" type="TIMESTAMP">

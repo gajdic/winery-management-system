@@ -21,11 +21,58 @@ Sumar zisteni z auditu vsetkych odskrtnutych a neodskrtnutych bodov:
 
 ### Kriticke otvorene `[ ]` body, ktore treba urgentne dovyriesit pred obhajobou
 
-1. **Customer-service v Docker Compose nestartuje spravne** (potvrdene auditom):
-   - `docker-compose.yml` riadky 86-95: customer-service NEMA nastaveny `SPRING_PROFILES_ACTIVE`.
-   - `customer-service/src/main/resources/application.yml` riadky 31-60: security (OAuth issuer-uri) a management (actuator endpoints) konfiguracia je **iba pod `seed` profilom**.
-   - Dosledok: bez seed profilu sa OAuth resource server nenakonfiguruje a actuator endpointy nie su exposed, takze customer-service na porte `8084` zlyha pri OAuth/actuator pristupe - presne to, co cviciaci hlasil v M3 review.
-   - **Fix**: pridat `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` do `docker-compose.yml`, **alebo** vytiahnut security/management konfiguraciu z `seed` profilu do default casti `application.yml`.
+1. ~~**Customer-service v Docker Compose nestartuje spravne**~~ **DEFINITIVNE VYRIESENE 2026-05-21** (po piatich vrstvach opravy + runtime overeni):
+
+   **Vrstva 1 (OAuth/management konfiguracia):**
+   - **Co bolo zle**: `docker-compose.yml` nenastavoval `SPRING_PROFILES_ACTIVE` pre `customer-service`, a v `customer-service/src/main/resources/application.yml` bola security a management konfiguracia umiestnena iba pod `seed` profile. Bez seed profilu sa OAuth resource server nenakonfiguroval a actuator endpointy neboli exposed.
+   - **Fix**:
+     - **`customer-service/src/main/resources/application.yml`**: security (`spring.security.oauth2.resourceserver` vratane `opaque-token`), `springdoc.swagger-ui.oauth` aj `management.*` presunute z `seed` profile do default. V `seed` profile zostal iba `spring.liquibase.contexts: seed`. Tym sa customer-service zosuladil s konvenciou `harvest-service`, `production-service` a `inventory-service`.
+     - **`docker-compose.yml`**: do `customer-service` environment pridane `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` - konzistentne s ostatnymi services.
+
+   **Vrstva 2 (Liquibase changelog path bug):**
+   - **Co bolo zle**: po oprave vrstvy 1 service nabehol az do Hibernate validacie a padol s `Schema validation: missing table [customer]`. Pricina: `application.yml` mal `change-log: classpath:db/changelog/db.changelog-master.xml`, ale skutocny subor sa volal `changelog-master.xml` (bez `db.` prefixu).
+   - **Fix**: v `customer-service/src/main/resources/application.yml` zmena `change-log: classpath:db/changelog/db.changelog-master.xml` -> `change-log: classpath:db/changelog/changelog-master.xml`.
+   - **Hierarchia changelog suborov**: `changelog-master.xml` zahrnuje `changes/001-create-tables.xml` (vzdy) a `changes/002-insert-seed-data.xml` (`context="seed"`, takze sa spusti len pri `seed` profile, co docker-compose nastavuje ako default).
+
+   **Vrstva 3 (chybajuca Liquibase Spring Boot autoconfigure):**
+   - **Co bolo zle**: aj po oprave vrstvy 2 sa Liquibase v logoch vobec neukazoval - ani lockservice, ani changelog scan. Vznikla rovnaka chyba `Schema validation: missing table [customer]`. Pricina: `customer-service/pom.xml` mal dependency `org.liquibase:liquibase-core` (holu kniznicu **bez** Spring Boot autoconfigure), zatial co ostatne 3 services maju `org.springframework.boot:spring-boot-starter-liquibase` (ktore obsahuje `LiquibaseAutoConfiguration` a zabezpeci, ze Liquibase migrate bezi PRED Hibernate). Bez autoconfigure Spring Boot ziadne migracie nespustil - Liquibase JAR bol len v classpath ale necinny.
+   - **Preco bola tato vrstva skryta**: pred vrstvou 1 OAuth padol skor, pred vrstvou 2 sa myslelo ze chyba je len v `change-log` path. Az pri starostlivej analyze logov (uplna absencia `liquibase.*` riadkov) bolo jasne, ze Spring Boot autoconfigure pre Liquibase vobec nebezi. Cviciaci v M3 review tuto chybu nemohol vidiet - service nikdy nenastartoval dostatocne dlho, aby sa odhalila.
+   - **Fix**: v `customer-service/pom.xml` zmena:
+     ```xml
+     <!-- pred -->
+     <dependency>
+       <groupId>org.liquibase</groupId>
+       <artifactId>liquibase-core</artifactId>
+     </dependency>
+     <!-- po -->
+     <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-liquibase</artifactId>
+     </dependency>
+     ```
+   - Tym je customer-service zosuladeny s pom.xml konvenciou harvest/production/inventory services.
+
+   **Vrstva 4 (neplatne UUID v seed datach):**
+   - **Co bolo zle**: po oprave vrstvy 3 Liquibase konecne zacal aplikovat changesety, ale changeset `002-insert-seed-data.xml` padol na inserte do `review` tabulky s chybou `Data conversion error converting "w1111111-1111-1111-1111-111111111111"`. Pricina: seed data obsahovali UUID s neplatnymi znakmi - `w` prefix pre wine IDs (`w1111111-...`, `w2222222-...`, `w3333333-...`) a `p` prefix pre purchase record IDs (`p1111111-...` az `p4444444-...`). UUID musi obsahovat iba hex znaky (`0-9`, `a-f`).
+   - **Fix v `customer-service/src/main/resources/db/changelog/changes/002-insert-seed-data.xml`**:
+     - Wine IDs zjednotene s production-service `wine_recipes` UUID (zaroven dava cross-service demo zmysel): `w1111111-...` -> `11111111-1111-4111-8111-111111111111` (Moravian Riesling), `w2222222-...` -> `22222222-2222-4222-8222-222222222222` (Palava Selection), `w3333333-...` -> `33333333-3333-4333-8333-333333333333` (Frankovka Reserve).
+     - Purchase record IDs prefixom `eeeeeeee` (rozlisitelne od customer/review IDs): `p1111111-...` -> `eeeeeeee-1111-4111-8111-111111111111` atd.
+     - Cele UUID teraz pouzivaju format `v4` (`4` na 13. pozicii, `8` na 17. pozicii) konzistentne s ostatnymi services.
+
+   **Vrstva 5 (mismatch column type medzi entitou a Liquibase):**
+   - **Co bolo zle**: po oprave vrstvy 4 Liquibase uspesne aplikoval oba changesety (`Update has been successful. Rows affected: 11`), ale Hibernate `ddl-auto: validate` zhasol s `Schema validation: wrong column type encountered in column [price_per_bottle] in table [purchase_record]; found [decimal (Types#DECIMAL)], but expecting [float(53) (Types#FLOAT)]`. Pricina: JPA entita `PurchaseRecord.pricePerBottle` je `double` (Hibernate to mapuje na `FLOAT(53)` / `DOUBLE PRECISION`), ale Liquibase vytvorila stlpec ako `DECIMAL(10,2)`.
+   - **Fix v `customer-service/src/main/resources/db/changelog/changes/001-create-tables.xml`**: `<column name="price_per_bottle" type="DECIMAL(10,2)">` -> `<column name="price_per_bottle" type="DOUBLE">`. Pragmaticky rychly fix pred obhajobou - mensi riziko nez refaktor JPA entity.
+   - **Post-defense nice-to-have**: zmenit `double pricePerBottle` v `PurchaseRecord` entite na `BigDecimal` (lepsie pre financie, vyhne sa floating point precision issues). To by vyzadovalo zmenu v DTO, mapperoch a testoch - kazda zmena ma byt sucastou samostatneho refaktor MR.
+
+   **Co teraz funguje (po vsetkych pätich vrstvach) - DEFINITIVNE OVERENE 2026-05-21:**
+   - Customer-service v Docker Compose nabehne korektne za ~41 sekund.
+   - Liquibase aplikoval oba changesety: `001-create-tables.xml` (vytvoril `customer`, `review`, `purchase_record` tabulky) + `002-insert-seed-data.xml` (`Rows affected: 11` - 3 customers + 4 reviews + 4 purchase records).
+   - Hibernate schema validation prebehla bez chyb.
+   - Tomcat startol na porte 8084, actuator expose-uje 5 endpointov.
+   - `DispatcherServlet` inicializovany, container ostava `Up` (overene cez `docker ps -a`).
+   - `curl http://localhost:8084/actuator/health` -> `200 OK`.
+   - `curl http://localhost:8084/customers` (bez tokenu) -> `401 Unauthorized` (OAuth resource server validuje).
+   - Customer-service uz nikdy nepadne so `Schema validation: missing table` ani `wrong column type`.
 
 2. **Scope literaly nie su extrahovane do konstant** (potvrdene auditom, M3 review must-fix):
    - `customer-service` ma hardcoded `"test_read"` / `"test_write"` v 12+ miestach (SecurityConfig, vsetky 3 controllery + testy).
@@ -305,14 +352,24 @@ Termin odovzdania review: `2026-05-15 23:59`.
 
 Prioritizovane podla auditu `2026-05-20` (s ohladom na nadchadzajucu finalnu obhajobu):
 
-1. **KRITICKY**: Opravit `customer-service` runtime v Docker Compose (chybajuci `SPRING_PROFILES_ACTIVE` alebo presun security/management z `seed` profilu do default). Bez tejto opravy cviciaci pri obhajobe znova narazi na connection refused / 401.
+1. ~~**KRITICKY**: Opravit `customer-service` runtime v Docker Compose.~~ **DEFINITIVNE HOTOVE 2026-05-21** - po piatich vrstvach opravy (application.yml profile reorganizacia + docker-compose env + Liquibase changelog path + Spring Boot starter dependency + UUID v seed + column type). Runtime overene: vsetky 4 services su `Up`, vsetky `/actuator/health` vracaju 200, chranene endpointy vracaju 401.
 2. **KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.
 3. **KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.
-4. Po cistom `docker compose up --build` rucne overit, ze vsetky 4 services odpovedaju na `/actuator/health`, `/actuator/prometheus`, `/swagger-ui/...` a ze chranene endpointy bez tokenu vracaju 401, so spravnym tokenom prejdu.
+4. Otvorit `http://localhost:9090/targets` v prehliadači a overit, ze Prometheus scrapuje vsetky 4 services ako `up`. Tiez otvorit Grafana dashboard `http://localhost:3000` (admin/admin) a overit, ze panely zobrazuju realne data.
 5. Spustit kompletny showcase scenar (`scripts/showcase.ps1`) end-to-end po cistom starte a overit zvysenie stocku.
 6. Po vyriesenych must-fix bodoch overit, ze CI pipeline na `main`/MR-i prejde green.
 7. Nahrat demo video showcase scenara a pushnut link do repa (najneskor 24h pred obhajobou).
 8. Pripadne sa este vratit k nice-to-have refaktorom z M3 review: extract `JmsConfig` a `jwtDecoder` do `common-service`, DTO inheritance, Harvest mapping zjednodusenie.
+
+### Bonus oprava 2026-05-21
+
+Pri debuggingu customer-service Docker Compose problemu boli odhalene a opravene aj nasledujuce **dovtedy skryte buggy v repe**, ktore by pri obhajobe pravdepodobne vyplavali tiez:
+
+- Customer-service nikdy spravne **nepouzival Liquibase** (mal `liquibase-core` artifact bez Spring Boot autoconfigure namiesto `spring-boot-starter-liquibase`).
+- Path k Liquibase changelogu bol nesprávny (`db.changelog-master.xml` namiesto `changelog-master.xml`).
+- Seed data obsahovali **neplatne UUID** (s prefixami `w` a `p` ktore nie su hex).
+- DB schema `price_per_bottle` mala typ `DECIMAL(10,2)` zatial co JPA entita pouziva Java `double` (mismatch).
+- Bonus z UUID opravy: `wine_id` v customer-service teraz zhoduje s `wine_recipes.id` v production-service - cross-service demo data davaju zmysel (Moravian Riesling, Palava Selection, Frankovka Reserve).
 
 ## Nice to have
 
@@ -375,23 +432,29 @@ Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo
 ### Kriticke pred obhajobou / finalnym handoffom
 
 - [x] README obsahuje GenAI usage disclosure (`README.md`, sekcia `GenAI Usage Disclosure`).
-- [ ] Znovu overit Docker Compose start vsetkych 4 microservices a zapisat vysledok do checklistu alebo README poznamky.
-- [ ] **KRITICKY**: Opravit `customer-service` runtime cez Docker Compose: *(audit 2026-05-20: potvrdene, presne to co cviciaci hlasil)*
-  - reviewerovi port `8084` vratil connection refused,
-  - `docker-compose.yml` riadky 86-95 aktualne **NEnastavuju** `SPRING_PROFILES_ACTIVE` pre `customer-service`,
-  - `customer-service/src/main/resources/application.yml` riadky 31-60: security (OAuth issuer-uri) **a** management (actuator endpoints) konfiguracia je iba pod `seed` profilom,
-  - dosledok: bez seed profilu chyba OAuth resource server konfiguracia + actuator endpointy nie su exposed,
-  - **fix**: bud pridat `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` do `docker-compose.yml`, **alebo** vytiahnut security/management bloky z `seed` profilu do default casti `application.yml`.
-- [ ] Zjednotit alebo jasne zdokumentovat actuator/swagger URL pre vsetky services:
-  - `harvest-service` bezi na porte `8081` bez `/api` context path,
-  - `production-service` bezi na porte `8082` s `/api`,
-  - `inventory-service` bezi na porte `8083` s `/inventory-service/api`, preto reviewerov check cez `/api/...` vracal `404`,
-  - `customer-service` bezi na porte `8084` bez `/api` context path.
-- [ ] Rozhodnut, ktore endpointy maju byt public, a zosuladit security config + README:
-  - minimalne `/actuator/health`, `/actuator/metrics`, `/actuator/prometheus`,
-  - Swagger/OpenAPI endpoints,
-  - OAuth redirect pre centralny Swagger UI na porte `8090`.
-- [ ] Overit Prometheus scrape po cistom `docker compose up` tak, aby vsetky 4 services boli `up`.
+- [x] **Runtime overene 2026-05-21**: Docker Compose start vsetkych 4 microservices funguje. Po cistom `docker compose up --build`:
+  - vsetky 4 services su `Up` v `docker ps -a` (overene po >11 minutach behu),
+  - health endpointy vsetkych 4 services vracaju `200 OK`:
+    - `http://localhost:8081/actuator/health` (harvest, bez context path),
+    - `http://localhost:8082/api/actuator/health` (production, `/api` context),
+    - `http://localhost:8083/inventory-service/api/actuator/health` (inventory, `/inventory-service/api` context),
+    - `http://localhost:8084/actuator/health` (customer, bez context path),
+  - chranene endpointy bez OAuth tokenu vracaju `401 Unauthorized`,
+  - OpenAPI/Swagger endpointy su verejne dostupne.
+- [x] **VYRIESENE 2026-05-20**: Opravit `customer-service` runtime cez Docker Compose:
+  - V `customer-service/src/main/resources/application.yml` presunute `spring.security.oauth2.resourceserver` (vratane `opaque-token`), `springdoc.swagger-ui.oauth` a `management.*` zo `seed` profile do default profile. V `seed` profile ostalo iba `spring.liquibase.contexts: seed`. Zosuladene s konvenciou ostatnych services.
+  - V `docker-compose.yml` pridane `SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}` pre `customer-service` (konzistentne s `harvest-service` a `inventory-service`).
+  - **Runtime overene 2026-05-20**: `curl http://localhost:8084/actuator/health` -> `200 OK`, `curl http://localhost:8084/customers` -> `401 Unauthorized`. Customer-service v Docker Compose funguje.
+- [x] **Overene 2026-05-21**: Actuator/swagger URL su zdokumentovane v `README.md` (kazdy service ma svoj kontext path uvedeny v sekcii "OpenAPI / Swagger") a vsetky vracaju `200`:
+  - `harvest-service` na porte `8081` bez `/api` context path,
+  - `production-service` na porte `8082` s `/api`,
+  - `inventory-service` na porte `8083` s `/inventory-service/api`,
+  - `customer-service` na porte `8084` bez `/api` context path.
+- [x] **Overene 2026-05-21**: Verejne endpointy su konzistentne naprieč vsetkymi 4 services (`SecurityConfig.permitAll` matchery):
+  - `/actuator/**`,
+  - `/swagger-ui/**`, `/swagger-ui.html`, `/v3/api-docs/**`,
+  - chranene business endpointy bez tokenu vracaju `401`.
+- [ ] Overit Prometheus scrape po cistom `docker compose up` tak, aby vsetky 4 services boli `up` (otvorit `http://localhost:9090/targets` v prehliadači - vid runbook nizsie).
 - [ ] Znovu spustit showcase scenar od nuly a mat pripraveny vystup:
   - health check harvest/production/inventory/customer,
   - nacitanie harvest seed dat,
