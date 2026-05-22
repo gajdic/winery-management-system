@@ -3,7 +3,9 @@ package cz.muni.fi.pa165.productionservice.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.commonservice.messaging.Queues;
+import cz.muni.fi.pa165.commonservice.messaging.data.InboundMessageLogRepository;
 import cz.muni.fi.pa165.commonservice.messaging.data.OutboundMessageLogRepository;
+import cz.muni.fi.pa165.commonservice.messaging.data.entity.InboundMessageLog;
 import cz.muni.fi.pa165.commonservice.messaging.data.entity.OutboundMessageLog;
 import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
 import cz.muni.fi.pa165.commonservice.messaging.messages.StockUpdatedMessage;
@@ -19,15 +21,18 @@ import java.util.UUID;
 public class ProductionBatchCompletedProducer {
     private final JmsTemplate jmsTemplate;
     private final OutboundMessageLogRepository outboundMessageLogRepository;
+    private final InboundMessageLogRepository inboundMessageLogRepository;
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
 
     @Autowired
     public ProductionBatchCompletedProducer(
         JmsTemplate jmsTemplate,
-        OutboundMessageLogRepository outboundMessageLogRepository
+        OutboundMessageLogRepository outboundMessageLogRepository,
+        InboundMessageLogRepository inboundMessageLogrepository
     ) {
         this.jmsTemplate = jmsTemplate;
         this.outboundMessageLogRepository = outboundMessageLogRepository;
+        this.inboundMessageLogRepository = inboundMessageLogrepository;
     }
 
     public void sendBatchCompleted(ProductionBatch batch) {
@@ -65,6 +70,20 @@ public class ProductionBatchCompletedProducer {
             "JMSCorrelationID = '" + correlationId + "'"
         );
         validateAck(batch.getId(), batch.getRecipeId(), ack);
+
+        String ackPayload;
+        try {
+            ackPayload = objectMapper.writeValueAsString(ack);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to serialize ACK message", e);
+        }
+
+        InboundMessageLog inboundLog = new InboundMessageLog();
+        inboundLog.setQueueName(Queues.STOCK_UPDATED);
+        inboundLog.setPayload(ackPayload);
+        inboundLog.setBatchId(batch.getId());
+        inboundLog.setReceivedAt(LocalDateTime.now());
+        inboundMessageLogRepository.save(inboundLog);
     }
 
     private void validateAck(UUID batchId, UUID wineId, Object ack) {
