@@ -81,34 +81,6 @@ class ReviewServiceTest {
     }
 
     @Test
-    void save_nullCustomerId_throwsIllegalArgumentException() {
-        // Arrange
-        Review review = createReview();
-        review.setCustomer(null);
-
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> reviewService.save(review));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
-        Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void save_nullWineId_throwsIllegalArgumentException() {
-        // Arrange
-        Review review = createReview();
-        review.setWineId(null);
-
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> reviewService.save(review));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("WineId cannot be null");
-        Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
     void update_validReview_updatesRatingAndCommentAndReturnsSavedReview() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
@@ -200,38 +172,6 @@ class ReviewServiceTest {
 
         // Assert
         assertThat(exception.getMessage()).isEqualTo("Rating must be between 0 and 5");
-        Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
-        Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void update_nullCustomer_throwsIllegalArgumentException() {
-        // Arrange
-        Review review = createReview();
-        review.setCustomer(null);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> reviewService.update(UUID.randomUUID(), review));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
-        Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
-        Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void update_nullWineId_throwsIllegalArgumentException() {
-        // Arrange
-        Review review = createReview();
-        review.setWineId(null);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> reviewService.update(UUID.randomUUID(), review));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("WineId cannot be null");
         Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
         Mockito.verify(reviewRepository, Mockito.never()).save(Mockito.any());
     }

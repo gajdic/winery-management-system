@@ -23,12 +23,6 @@ public class ReviewService {
         if (review.getRating() < 0 || review.getRating() > 5) {
             throw new IllegalArgumentException("Rating must be between 0 and 5");
         }
-        if (review.getCustomer() == null) {
-            throw new IllegalArgumentException("Customer cannot be null");
-        }
-        if (review.getWineId() == null) {
-            throw new IllegalArgumentException("WineId cannot be null");
-        }
 
         return reviewRepository.save(review);
     }
@@ -39,12 +33,6 @@ public class ReviewService {
         }
         if (updatedData.getRating() < 0 || updatedData.getRating() > 5) {
             throw new IllegalArgumentException("Rating must be between 0 and 5");
-        }
-        if (updatedData.getCustomer() == null) {
-            throw new IllegalArgumentException("Customer cannot be null");
-        }
-        if (updatedData.getWineId() == null) {
-            throw new IllegalArgumentException("WineId cannot be null");
         }
 
         Review existing = findById(id);

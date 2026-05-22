@@ -25,22 +25,6 @@ public class PurchaseRecordService {
             throw new IllegalArgumentException("PurchaseRecord cannot be null");
         }
 
-        if (purchaseRecord.getCustomer() == null) {
-            throw new IllegalArgumentException("Customer cannot be null");
-        }
-
-        if (purchaseRecord.getWineId() == null) {
-            throw new IllegalArgumentException("WineId cannot be null");
-        }
-
-        if (purchaseRecord.getQuantity() <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than 0");
-        }
-
-        if (purchaseRecord.getPricePerBottle() < 0) {
-            throw new IllegalArgumentException("Price per bottle must be >= 0");
-        }
-
         purchaseRecord.setPurchaseDate(LocalDateTime.now());
 
         return purchaseRecordRepository.save(purchaseRecord);
