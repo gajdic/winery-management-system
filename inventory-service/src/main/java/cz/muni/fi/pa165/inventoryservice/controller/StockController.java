@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
+import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
 import cz.muni.fi.pa165.inventoryservice.api.StockDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.StockQuantityChangeDto;
 import cz.muni.fi.pa165.inventoryservice.config.SecurityConfig;
@@ -34,7 +35,7 @@ public class StockController {
     @Operation(
         summary = "Create a stock",
         description = "Creates a new stock entry for a wine item",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Stock created successfully"),
@@ -51,7 +52,7 @@ public class StockController {
     @Operation(
         summary = "Get a stock by id",
         description = "Returns one stock entry by its unique identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
@@ -71,7 +72,7 @@ public class StockController {
     @Operation(
         summary = "List all stocks",
         description = "Returns all stock entries currently registered in the inventory service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stocks returned successfully"),
@@ -86,7 +87,7 @@ public class StockController {
     @Operation(
         summary = "Get a stock by wine id",
         description = "Returns the stock entry associated with the given wine identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock found"),
@@ -106,7 +107,7 @@ public class StockController {
     @Operation(
         summary = "Add quantity to a stock",
         description = "Increases the stock quantity by the value supplied in the request body",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
@@ -124,7 +125,7 @@ public class StockController {
     @Operation(
         summary = "Remove quantity from a stock",
         description = "Decreases the stock quantity by the value supplied in the request body",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock quantity updated successfully"),
@@ -142,7 +143,7 @@ public class StockController {
     @Operation(
         summary = "Update a stock",
         description = "Updates an existing stock entry by its identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Stock updated successfully"),
@@ -161,7 +162,7 @@ public class StockController {
     @Operation(
         summary = "Delete a stock",
         description = "Removes a stock entry from the inventory service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Stock deleted successfully"),
