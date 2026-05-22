@@ -433,33 +433,44 @@ class PurchaseRecordServiceTest {
     void deleteById_callsRepositoryDeleteById() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
+        PurchaseRecord purchaseRecord = createPurchaseRecord();
+        Mockito.when(purchaseRecordRepository.findById(purchaseRecordId)).thenReturn(Optional.of(purchaseRecord));
 
         // Act
         purchaseRecordService.deleteById(purchaseRecordId);
 
         // Assert
+        Mockito.verify(purchaseRecordRepository).findById(purchaseRecordId);
         Mockito.verify(purchaseRecordRepository).deleteById(purchaseRecordId);
     }
 
     @Test
-    void deleteById_nullId_callsRepositoryDeleteByIdWithNull() {
-        // Arrange + Act
-        purchaseRecordService.deleteById(null);
+    void deleteById_nullId_throwsIllegalArgumentException() {
+        // Arrange
+        IllegalArgumentException exception =
+            // Act + Assert
+            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.deleteById(null));
 
         // Assert
-        Mockito.verify(purchaseRecordRepository).deleteById(null);
+        assertThat(exception.getMessage()).isEqualTo("PurchaseRecord id cannot be null");
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     @Test
-    void deleteById_nonExistingId_stillCallsRepositoryDeleteById() {
+    void deleteById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
+        Mockito.when(purchaseRecordRepository.findById(purchaseRecordId)).thenReturn(Optional.empty());
 
-        // Act
-        purchaseRecordService.deleteById(purchaseRecordId);
+        ResourceNotFoundException exception =
+            // Act + Assert
+            assertThrows(ResourceNotFoundException.class, () -> purchaseRecordService.deleteById(purchaseRecordId));
 
         // Assert
-        Mockito.verify(purchaseRecordRepository).deleteById(purchaseRecordId);
+        assertThat(exception.getMessage()).isEqualTo("PurchaseRecord not found: " + purchaseRecordId);
+        Mockito.verify(purchaseRecordRepository).findById(purchaseRecordId);
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     private PurchaseRecord createPurchaseRecord() {

@@ -43,7 +43,7 @@ public class ReservationFacade {
         return reservationMapper.mapToDetailViewDto(reservationService.update(reservationMapper.mapToEntity(reservation)));
     }
 
-    public boolean delete(UUID id) {
-        return reservationService.delete(id);
+    public void delete(UUID id) {
+        reservationService.delete(id);
     }
 }

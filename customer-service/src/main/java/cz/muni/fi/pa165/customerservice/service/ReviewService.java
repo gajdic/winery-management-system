@@ -82,6 +82,11 @@ public class ReviewService {
     }
 
     public void deleteById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Review id cannot be null");
+        }
+
+        findById(id);
         reviewRepository.deleteById(id);
     }
 }

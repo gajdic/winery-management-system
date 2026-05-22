@@ -135,7 +135,7 @@ public class ReservationController {
         @ApiResponse(responseCode = "404", description = "Reservation not found")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        boolean deleted = reservationFacade.delete(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        reservationFacade.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

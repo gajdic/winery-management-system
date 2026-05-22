@@ -395,33 +395,44 @@ class ReviewServiceTest {
     void deleteById_callsRepositoryDeleteById() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
+        Review review = createReview();
+        Mockito.when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(review));
 
         // Act
         reviewService.deleteById(reviewId);
 
         // Assert
+        Mockito.verify(reviewRepository).findById(reviewId);
         Mockito.verify(reviewRepository).deleteById(reviewId);
     }
 
     @Test
-    void deleteById_nullId_callsRepositoryDeleteByIdWithNull() {
-        // Arrange + Act
-        reviewService.deleteById(null);
+    void deleteById_nullId_throwsIllegalArgumentException() {
+        // Arrange
+        IllegalArgumentException exception =
+            // Act + Assert
+            assertThrows(IllegalArgumentException.class, () -> reviewService.deleteById(null));
 
         // Assert
-        Mockito.verify(reviewRepository).deleteById(null);
+        assertThat(exception.getMessage()).isEqualTo("Review id cannot be null");
+        Mockito.verify(reviewRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(reviewRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     @Test
-    void deleteById_nonExistingId_stillCallsRepositoryDeleteById() {
+    void deleteById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID reviewId = UUID.randomUUID();
+        Mockito.when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
 
-        // Act
-        reviewService.deleteById(reviewId);
+        ResourceNotFoundException exception =
+            // Act + Assert
+            assertThrows(ResourceNotFoundException.class, () -> reviewService.deleteById(reviewId));
 
         // Assert
-        Mockito.verify(reviewRepository).deleteById(reviewId);
+        assertThat(exception.getMessage()).isEqualTo("Review not found: " + reviewId);
+        Mockito.verify(reviewRepository).findById(reviewId);
+        Mockito.verify(reviewRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     private Review createReview() {

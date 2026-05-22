@@ -97,6 +97,11 @@ public class PurchaseRecordService {
     }
 
     public void deleteById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("PurchaseRecord id cannot be null");
+        }
+
+        findById(id);
         purchaseRecordRepository.deleteById(id);
     }
 }

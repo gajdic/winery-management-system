@@ -139,7 +139,7 @@ class StockControllerTest {
     @Test
     void delete_stockDeleted_returnsNoContent() throws Exception {
         // Arrange
-        Mockito.when(stockFacade.delete(TestDataFactory.STOCK_ID)).thenReturn(true);
+        Mockito.doNothing().when(stockFacade).delete(TestDataFactory.STOCK_ID);
 
         // Act + Assert
         mockMvc.perform(delete("/stocks/{id}", TestDataFactory.STOCK_ID)

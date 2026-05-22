@@ -170,8 +170,8 @@ public class StockController {
         @ApiResponse(responseCode = "404", description = "Stock not found")
     })
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        boolean deleted = stockFacade.delete(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        stockFacade.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

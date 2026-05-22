@@ -362,10 +362,10 @@ class PurchaseRecordControllerIT {
     }
 
     @Test
-    void deletePurchase_nonExistingPurchase_returnsNoContent() throws Exception {
+    void deletePurchase_nonExistingPurchase_returnsNotFound() throws Exception {
         // Arrange + Act + Assert
         mockMvc.perform(delete("/purchases/{id}", UUID.randomUUID()))
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNotFound());
     }
 
     @Test
