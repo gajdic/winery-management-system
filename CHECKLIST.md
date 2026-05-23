@@ -159,7 +159,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] GitLab CI ma test jobs pre `customer-service`, `harvest-service`, `inventory-service` a `production-service`.
 - [x] GitLab CI ma build jobs pre vsetky 4 domenove services.
 - [x] GitLab CI ma Docker build kontrolu cez Kaniko pre vsetky 4 domenove services.
-- [x] Overit v GitLabe, ze pipeline realne bezi na `main`/merge requestoch.
+- [x] Overit v GitLabe, ze pipeline realne bezi na `main`/merge requestoch. *(potvrdene 2026-05-21: MR `M4/reviews` pipeline `#552446` passed)*
 - [x] Overit, ze zlyhavajuce testy alebo build rozbiju pipeline.
 - [x] README popisuje CI pipeline.
 - [x] [OPTIONAL] Ak sa robi OpenShift/Kubernetes deployment, doplnit manifesty a README instrukcie. Inak v README jasne oznacit ako not implemented.
@@ -289,7 +289,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] `inventory-service` ma doplnene `@ApiResponses` na endpointoch.
 - [x] `inventory-service` ma doplnene `@Schema` anotacie na hlavnych DTO triedach.
 - [x] Vsetky 4 domenove services maju pouzite aspon `@Tag` na controlleroch, `@Operation` na endpointoch, `@ApiResponses` na hlavnych endpointoch, `@Schema` na hlavnych DTO a zmysluplne summary/description texty bez placeholderov.
-- [ ] OpenAPI ma byt dorobene "na vybornu", nie len minimalne: konzistentne nazvy endpointov, jasne popisane business operacie, rozumne popisane request/response DTO a bez modulov, kde by dokumentacia chybala alebo bola len ciastocna.
+- [~] OpenAPI ma byt dorobene "na vybornu", nie len minimalne: konzistentne nazvy endpointov, jasne popisane business operacie, rozumne popisane request/response DTO a bez modulov, kde by dokumentacia chybala alebo bola len ciastocna. *(audit 2026-05-21: OpenAPI je FUNKCNE kompletny v 4 services - vsetky maju @Tag, @Operation+description, @ApiResponses, DTOs maju @Schema. Hlavna nezrovnalost je v DRY: `common-service/openapi/SwaggerConstants.java` UZ EXISTUJE so vsetkym potrebnym (`SECURITY_SCHEME_NAME`, `READ_SCOPE`/`WRITE_SCOPE`, `ResponseCodes.*`, `ResponseDescriptions.*`), ale ho POUZIVA IBA `inventory-service` (88x). Ostatne 3 services maju hardcoded literaly: `customer-service` 34 scope + 82 response codes, `harvest-service` 24 scope + 115 response codes, `production-service` 2 scope + 67 response codes.)*
 
 ## Opravy po M1 review
 
@@ -355,9 +355,9 @@ Prioritizovane podla auditu `2026-05-20` (s ohladom na nadchadzajucu finalnu obh
 1. ~~**KRITICKY**: Opravit `customer-service` runtime v Docker Compose.~~ **DEFINITIVNE HOTOVE 2026-05-21** - po piatich vrstvach opravy (application.yml profile reorganizacia + docker-compose env + Liquibase changelog path + Spring Boot starter dependency + UUID v seed + column type). Runtime overene: vsetky 4 services su `Up`, vsetky `/actuator/health` vracaju 200, chranene endpointy vracaju 401.
 2. ~~**KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.~~ **VYRESENE 2026-05-22**
 3. **KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.
-4. Otvorit `http://localhost:9090/targets` v prehliadači a overit, ze Prometheus scrapuje vsetky 4 services ako `up`. Tiez otvorit Grafana dashboard `http://localhost:3000` (admin/admin) a overit, ze panely zobrazuju realne data.
+4. ~~Otvorit `http://localhost:9090/targets` v prehliadači a overit, ze Prometheus scrapuje vsetky 4 services ako `up`. Tiez otvorit Grafana dashboard `http://localhost:3000` (admin/admin) a overit, ze panely zobrazuju realne data.~~ **HOTOVE 2026-05-21** - vsetkych 5 targetov UP, oba Grafana dashboardy preloaded a zobrazuju realne metriky vratane HTTP request rate spike z manualnych curl testov.
 5. Spustit kompletny showcase scenar (`scripts/showcase.ps1`) end-to-end po cistom starte a overit zvysenie stocku.
-6. Po vyriesenych must-fix bodoch overit, ze CI pipeline na `main`/MR-i prejde green.
+6. ~~Po vyriesenych must-fix bodoch overit, ze CI pipeline na `main`/MR-i prejde green.~~ **HOTOVE 2026-05-21** - MR `M4/reviews -> main`, pipeline `#552446` passed na commite `d0a0be63`. Vsetky 3 jobs zelene (test + build + docker_build).
 7. Nahrat demo video showcase scenara a pushnut link do repa (najneskor 24h pred obhajobou).
 8. Pripadne sa este vratit k nice-to-have refaktorom z M3 review: extract `JmsConfig` a `jwtDecoder` do `common-service`, DTO inheritance, Harvest mapping zjednodusenie.
 
@@ -454,7 +454,16 @@ Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo
   - `/actuator/**`,
   - `/swagger-ui/**`, `/swagger-ui.html`, `/v3/api-docs/**`,
   - chranene business endpointy bez tokenu vracaju `401`.
-- [ ] Overit Prometheus scrape po cistom `docker compose up` tak, aby vsetky 4 services boli `up` (otvorit `http://localhost:9090/targets` v prehliadači - vid runbook nizsie).
+- [x] **Overene 2026-05-21**: Prometheus scrape po cistom `docker compose up` funguje pre vsetky 4 services + self-scrape pre Prometheus:
+  - `customer-service` (`http://customer-service:8084/actuator/prometheus`) - **UP** (last scrape 722ms ago, duration 6.7ms),
+  - `harvest-service` (`http://harvest-service:8081/actuator/prometheus`) - **UP** (1.7s ago, 6.6ms),
+  - `inventory-service` (`http://inventory-service:8083/inventory-service/api/actuator/prometheus`) - **UP** (3.4s ago, 7.4ms),
+  - `production-service` (`http://production-service:8082/api/actuator/prometheus`) - **UP** (3.3s ago, 5.3ms),
+  - `prometheus` self-scrape - **UP** (3.7s ago, 10.7ms).
+- [x] **Overene 2026-05-21**: Grafana dashbordy:
+  - dva preloaded dashboardy v zlozke "Winery Management": **Winery Management Overview** a **Winery Service Details** (oba s tagmi `m3`, `pa165`, `winery`),
+  - Overview ukazuje `Services Up: 4`, Service Availability stala na 1 (100%), HTTP Request Rate (vidno aj live spike pri rucnych curl testoch), Average HTTP Latency (~10ms), JVM Memory Used, Process CPU Usage,
+  - Service Details ukazuje HTTP Requests per Second rozdelene podla service + status code (vratane zelenych `customer-service 200` spikes z rucneho testovania), Average HTTP Latency, Process CPU Usage, JVM Memory Used (heap aj nonheap), Live JVM Threads (22-32 per service).
 - [ ] Znovu spustit showcase scenar od nuly a mat pripraveny vystup:
   - health check harvest/production/inventory/customer,
   - nacitanie harvest seed dat,
@@ -466,14 +475,18 @@ Feedback bol zapisany z review suboru `Reviews/M1/M3_gamma.md`. Review hodnotilo
 
 ### Code cleanup odporucany reviewerom
 
-- [ ] **KRITICKY**: Vytiahnut opakovane scope string literaly do konstant a pouzivat ich napriec configom, OpenAPI anotaciami a testami: *(audit 2026-05-20: potvrdene cviciacove zistenie)*
-  - `test_read`: stale hardcoded v `customer-service` (12+ miest), `inventory-service` (16+ miest), `harvest-service` controlleroch, `production-service` controlleroch,
-  - `test_write`: rovnaky stav,
-  - `test_1`: zatial nepouzite v aktualnom kode.
-- [ ] **KRITICKY**: Najprv upratat `customer-service`, kde `SecurityConfig` stale pouziva hardcoded `test_read` / `test_write` v 12 matcher pravidlach a OpenAPI scopes.
-- [ ] **Podobne**: Inventory-service ma rovnaky problem - hardcoded scope literaly v SecurityConfig + StockController + ReservationController.
-- [ ] Harvest-service a production-service maju `READ_SCOPE` / `WRITE_SCOPE` lokalne konstanty v `SecurityConfig`, ale ich controllery (`@SecurityRequirement` anotacie) stale pouzivaju hardcoded retazce.
-- [ ] Potom zvazit zjednotenie scope konstant v `common-service` (napr. `ScopeConstants.READ_SCOPE` / `.WRITE_SCOPE`), aby ich vsetky services neudrziavali duplicitne.
+- [ ] **KRITICKY**: Vytiahnut opakovane scope string literaly do konstant a pouzivat ich napriec configom, OpenAPI anotaciami a testami: *(audit 2026-05-21: PODSTATNE UPRESNENIE - `common-service/openapi/SwaggerConstants` UZ EXISTUJE so vsetkym potrebnym! Treba ho len pouzit v 3 zostavajucich services.)*
+  - `customer-service`: 34 hardcoded `"test_read"`/`"test_write"` literalov,
+  - `harvest-service`: 24 hardcoded scope literalov (controllery, SecurityConfig ma vlastne lokalne konstanty `READ_SCOPE`/`WRITE_SCOPE`),
+  - `production-service`: 2 hardcoded scope literalov (SecurityConfig ma vlastne lokalne konstanty),
+  - `inventory-service`: 10 hardcoded scope literalov (zvysok uz pouziva `SwaggerConstants.READ_SCOPE`/`.WRITE_SCOPE`).
+- [ ] **KRITICKY**: Refaktor scope literals v 4 services -> nahradit za `SwaggerConstants.READ_SCOPE`/`.WRITE_SCOPE` (z `common-service.openapi.SwaggerConstants`):
+  - V Spring SecurityConfig matcheroch (`hasScope("test_read")` -> `hasScope(SwaggerConstants.READ_SCOPE)`),
+  - V `@SecurityRequirement(scopes = {"test_read"})` v controlleroch,
+  - V OpenApiCustomizer `addString("test_read", "...")` cez `SwaggerConstants.READ_SCOPE`,
+  - V `SecurityConfigTest` `token.claim("scope", "test_read")` cez `SwaggerConstants.READ_SCOPE`,
+  - Odstranit lokalne `SecurityConfig.READ_SCOPE`/`WRITE_SCOPE` konstanty v harvest a production-service (su redundantne so shared SwaggerConstants).
+- [ ] **Bonus**: Zaroven nahradit hardcoded HTTP status code stringy v `@ApiResponse(responseCode="200"/"201"/"400"/...)` za `SwaggerConstants.ResponseCodes.*` (`OK`, `CREATED`, `BAD_REQUEST`, ...). Aktualne pocty: `customer-service` 82x, `harvest-service` 115x, `production-service` 67x. Inventory-service to uz pouziva - sluzi ako vzor.
 - [ ] Zvazit vytiahnutie spolocnej security/openapi konfiguracie do shared modulu len tam, kde to znizi duplicitu bez zbytocneho skomplikovania.
 - [ ] Zvazit vytiahnutie `JmsConfig` do `common-service`, ak produkcia a inventory musia pouzivat identicky messaging setup. *(audit 2026-05-20: `production-service/config/JmsConfig.java` a `inventory-service/config/JmsConfig.java` su identicke MessageConverter beany - velmi vhodny refaktor)*
 - [ ] Zvazit vytiahnutie `jwtDecoder` bean do `common-service`, ak je medzi services rovnaky. *(audit 2026-05-20: `jwtDecoder` metoda existuje vo vsetkych 4 SecurityConfig triedach a kod je identicky - velmi vhodny refaktor)*
