@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.config;
 
+import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
@@ -29,9 +30,6 @@ public class SecurityConfig {
 
     public static final String SECURITY_SCHEME_NAME = "MUNI";
 
-    public static final String READ_SCOPE = "test_read";
-    public static final String WRITE_SCOPE = "test_write";
-
     private static final String[] HARVEST_ENDPOINTS = {
         "/vineyards/**",
         "/grape-types/**",
@@ -51,10 +49,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope(READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope(WRITE_SCOPE))
+                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -93,8 +91,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "get user identifier")
-                                .addString(READ_SCOPE, "read harvest data")
-                                .addString(WRITE_SCOPE, "create, update, and delete harvest data")
+                                .addString(SecurityScopes.READ_SCOPE, "read harvest data")
+                                .addString(SecurityScopes.WRITE_SCOPE, "create, update, and delete harvest data")
                             )
                         )
                     )

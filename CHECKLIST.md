@@ -74,7 +74,7 @@ Sumar zisteni z auditu vsetkych odskrtnutych a neodskrtnutych bodov:
    - `curl http://localhost:8084/customers` (bez tokenu) -> `401 Unauthorized` (OAuth resource server validuje).
    - Customer-service uz nikdy nepadne so `Schema validation: missing table` ani `wrong column type`.
 
-2. **Scope literaly nie su extrahovane do konstant** (potvrdene auditom, M3 review must-fix):
+2. ~~**Scope literaly nie su extrahovane do konstant**~~ **VYRESENE 2026-05-22** (potvrdene auditom, M3 review must-fix):
    - `customer-service` ma hardcoded `"test_read"` / `"test_write"` v 12+ miestach (SecurityConfig, vsetky 3 controllery + testy).
    - `inventory-service` ma hardcoded `"test_read"` / `"test_write"` v 18+ miestach (SecurityConfig + StockController + ReservationController).
    - `harvest-service` a `production-service` maju lokalne konstanty `READ_SCOPE` / `WRITE_SCOPE` v `SecurityConfig`, **ale ich controllery stale pouzivaju hardcoded retazce** v `@SecurityRequirement` anotaciach.
@@ -353,7 +353,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 Prioritizovane podla auditu `2026-05-20` (s ohladom na nadchadzajucu finalnu obhajobu):
 
 1. ~~**KRITICKY**: Opravit `customer-service` runtime v Docker Compose.~~ **DEFINITIVNE HOTOVE 2026-05-21** - po piatich vrstvach opravy (application.yml profile reorganizacia + docker-compose env + Liquibase changelog path + Spring Boot starter dependency + UUID v seed + column type). Runtime overene: vsetky 4 services su `Up`, vsetky `/actuator/health` vracaju 200, chranene endpointy vracaju 401.
-2. **KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.
+2. ~~**KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.~~ **VYRESENE 2026-05-22**
 3. **KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.
 4. Otvorit `http://localhost:9090/targets` v prehliadači a overit, ze Prometheus scrapuje vsetky 4 services ako `up`. Tiez otvorit Grafana dashboard `http://localhost:3000` (admin/admin) a overit, ze panely zobrazuju realne data.
 5. Spustit kompletny showcase scenar (`scripts/showcase.ps1`) end-to-end po cistom starte a overit zvysenie stocku.

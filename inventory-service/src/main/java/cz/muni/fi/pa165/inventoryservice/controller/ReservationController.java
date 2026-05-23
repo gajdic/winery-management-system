@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.inventoryservice.controller;
 
+import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationBasicViewDto;
 import cz.muni.fi.pa165.inventoryservice.api.ReservationDetailedViewDto;
 import cz.muni.fi.pa165.inventoryservice.config.SecurityConfig;
@@ -35,7 +36,7 @@ public class ReservationController {
     @Operation(
         summary = "Create a reservation",
         description = "Creates a reservation of a given wine quantity for a customer",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Reservation created successfully"),
@@ -52,7 +53,7 @@ public class ReservationController {
     @Operation(
         summary = "Get a reservation by id",
         description = "Returns one reservation with detailed customer and wine references",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservation found"),
@@ -72,7 +73,7 @@ public class ReservationController {
     @Operation(
         summary = "List all reservations",
         description = "Returns all reservations currently registered in the inventory service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservations returned successfully"),
@@ -87,7 +88,7 @@ public class ReservationController {
     @Operation(
         summary = "Filter reservations",
         description = "Returns reservations filtered by customer, wine and creation date range",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_read"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservations returned successfully"),
@@ -107,7 +108,7 @@ public class ReservationController {
     @Operation(
         summary = "Update a reservation",
         description = "Updates an existing reservation by its identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Reservation updated successfully"),
@@ -126,7 +127,7 @@ public class ReservationController {
     @Operation(
         summary = "Delete a reservation",
         description = "Removes a reservation from the inventory service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {"test_write"})
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE})
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Reservation deleted successfully"),
