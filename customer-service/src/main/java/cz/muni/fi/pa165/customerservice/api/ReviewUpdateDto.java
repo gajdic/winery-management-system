@@ -21,7 +21,7 @@ public class ReviewUpdateDto {
     private UUID wineId;
 
     @NotNull
-    @Schema(description = "Id of the customer") //TODO
+    @Schema(description = "Id of the customer who wrote the review", example = "44444444-4444-4444-4444-444444444444")
     private UUID customerId;
 
     @Min(0)

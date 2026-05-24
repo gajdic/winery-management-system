@@ -27,7 +27,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "email")
 @ToString
 public class Customer {
 

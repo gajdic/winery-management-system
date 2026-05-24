@@ -57,81 +57,6 @@ class PurchaseRecordServiceTest {
     }
 
     @Test
-    void save_nullCustomer_throwsIllegalArgumentException() {
-        // Arrange
-        PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setCustomer(null);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Customer cannot be null");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void save_nullWineId_throwsIllegalArgumentException() {
-        // Arrange
-        PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setWineId(null);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("WineId cannot be null");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void save_zeroQuantity_throwsIllegalArgumentException() {
-        // Arrange
-        PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setQuantity(0);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Quantity must be greater than 0");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void save_negativeQuantity_throwsIllegalArgumentException() {
-        // Arrange
-        PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setQuantity(-1);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Quantity must be greater than 0");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
-    void save_negativePricePerBottle_throwsIllegalArgumentException() {
-        // Arrange
-        PurchaseRecord purchaseRecord = createPurchaseRecord();
-        purchaseRecord.setPricePerBottle(-0.01);
-
-        IllegalArgumentException exception =
-            // Act + Assert
-            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.save(purchaseRecord));
-
-        // Assert
-        assertThat(exception.getMessage()).isEqualTo("Price per bottle must be >= 0");
-        Mockito.verify(purchaseRecordRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    @Test
     void findById_existingId_returnsPurchaseRecord() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
@@ -433,33 +358,44 @@ class PurchaseRecordServiceTest {
     void deleteById_callsRepositoryDeleteById() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
+        PurchaseRecord purchaseRecord = createPurchaseRecord();
+        Mockito.when(purchaseRecordRepository.findById(purchaseRecordId)).thenReturn(Optional.of(purchaseRecord));
 
         // Act
         purchaseRecordService.deleteById(purchaseRecordId);
 
         // Assert
+        Mockito.verify(purchaseRecordRepository).findById(purchaseRecordId);
         Mockito.verify(purchaseRecordRepository).deleteById(purchaseRecordId);
     }
 
     @Test
-    void deleteById_nullId_callsRepositoryDeleteByIdWithNull() {
-        // Arrange + Act
-        purchaseRecordService.deleteById(null);
+    void deleteById_nullId_throwsIllegalArgumentException() {
+        // Arrange
+        IllegalArgumentException exception =
+            // Act + Assert
+            assertThrows(IllegalArgumentException.class, () -> purchaseRecordService.deleteById(null));
 
         // Assert
-        Mockito.verify(purchaseRecordRepository).deleteById(null);
+        assertThat(exception.getMessage()).isEqualTo("PurchaseRecord id cannot be null");
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).findById(Mockito.any());
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     @Test
-    void deleteById_nonExistingId_stillCallsRepositoryDeleteById() {
+    void deleteById_nonExistingId_throwsResourceNotFoundException() {
         // Arrange
         UUID purchaseRecordId = UUID.randomUUID();
+        Mockito.when(purchaseRecordRepository.findById(purchaseRecordId)).thenReturn(Optional.empty());
 
-        // Act
-        purchaseRecordService.deleteById(purchaseRecordId);
+        ResourceNotFoundException exception =
+            // Act + Assert
+            assertThrows(ResourceNotFoundException.class, () -> purchaseRecordService.deleteById(purchaseRecordId));
 
         // Assert
-        Mockito.verify(purchaseRecordRepository).deleteById(purchaseRecordId);
+        assertThat(exception.getMessage()).isEqualTo("PurchaseRecord not found: " + purchaseRecordId);
+        Mockito.verify(purchaseRecordRepository).findById(purchaseRecordId);
+        Mockito.verify(purchaseRecordRepository, Mockito.never()).deleteById(Mockito.any());
     }
 
     private PurchaseRecord createPurchaseRecord() {

@@ -51,7 +51,7 @@ public class StockFacade {
         return stockMapper.mapToDetailViewDto(stockService.update(stockMapper.mapToEntity(stock)));
     }
 
-    public boolean delete(UUID id) {
-        return stockService.delete(id);
+    public void delete(UUID id) {
+        stockService.delete(id);
     }
 }
