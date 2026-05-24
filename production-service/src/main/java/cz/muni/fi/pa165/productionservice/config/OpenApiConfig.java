@@ -20,11 +20,14 @@ public class OpenApiConfig {
                 .version("1.0.0")
                 .description("API for managing wine recipes, production planning, quality evaluation, and production batches."))
             .addServersItem(new Server()
+                .url("/production-api" + normalizeContextPath(contextPath))
+                .description("Production service via central Swagger UI proxy"))
+            .addServersItem(new Server()
                 .url(normalizeContextPath(contextPath))
-                .description("Production service API context path"));
+                .description("Production service direct (when accessed on port 8082)"));
     }
 
     private String normalizeContextPath(String contextPath) {
-        return contextPath == null || contextPath.isBlank() ? "/" : contextPath;
+        return contextPath == null || contextPath.isBlank() ? "" : contextPath;
     }
 }

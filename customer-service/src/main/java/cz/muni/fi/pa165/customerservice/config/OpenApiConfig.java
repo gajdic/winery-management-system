@@ -20,11 +20,14 @@ public class OpenApiConfig {
                 .version("1.0.0")
                 .description("API for managing customers, purchase records, and customer reviews of wines."))
             .addServersItem(new Server()
+                .url("/customer-api" + normalizeContextPath(contextPath))
+                .description("Customer service via central Swagger UI proxy"))
+            .addServersItem(new Server()
                 .url(normalizeContextPath(contextPath))
-                .description("Customer service API context path"));
+                .description("Customer service direct (when accessed on port 8084)"));
     }
 
     private String normalizeContextPath(String contextPath) {
-        return contextPath == null || contextPath.isBlank() ? "/" : contextPath;
+        return contextPath == null || contextPath.isBlank() ? "" : contextPath;
     }
 }

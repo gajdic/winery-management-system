@@ -39,12 +39,12 @@ public class BatchCompletedConsumer {
     public void onBatchCompleted(BatchCompletedMessage message) throws Exception {
         log.info("Received BatchCompletedMessage: {}", message);
 
-        InboundMessageLog log = new InboundMessageLog();
-        log.setQueueName(Queues.BATCH_COMPLETED);
-        log.setPayload(objectMapper.writeValueAsString(message));
-        log.setBatchId(message.getBatchId());
-        log.setReceivedAt(LocalDateTime.now());
-        messageLogRepository.save(log);
+        InboundMessageLog inboundLog = new InboundMessageLog();
+        inboundLog.setQueueName(Queues.BATCH_COMPLETED);
+        inboundLog.setPayload(objectMapper.writeValueAsString(message));
+        inboundLog.setBatchId(message.getBatchId());
+        inboundLog.setReceivedAt(LocalDateTime.now());
+        messageLogRepository.save(inboundLog);
 
         Stock existing = stockService.findByWine(message.getWineId());
         Stock stock;
@@ -65,6 +65,8 @@ public class BatchCompletedConsumer {
         );
 
         String correlationId = message.getBatchId().toString();
+        log.info("Sending StockUpdatedMessage ACK to {}, correlationId={}, newStockQuantity={}",
+            Queues.STOCK_UPDATED, correlationId, stock.getQuantity());
         jmsTemplate.convertAndSend(Queues.STOCK_UPDATED, ack, jmsMessage -> {
             jmsMessage.setJMSCorrelationID(correlationId);
             return jmsMessage;
