@@ -81,7 +81,7 @@ Sumar zisteni z auditu vsetkych odskrtnutych a neodskrtnutych bodov:
    - V `common-service` nie su zdielane scope konstanty.
    - **Fix**: pridat `ScopeConstants` triedu do `common-service` so `READ_SCOPE` a `WRITE_SCOPE`, a pouzit ich naprieč vsetkymi 4 services v SecurityConfig + controlleroch + testoch.
 
-3. **`production-service` nezapisuje inbound ACK do DB** (potvrdene auditom):
+3. ~~**`production-service` nezapisuje inbound ACK do DB**~~ **VYRIESENE 2026-05-22** (potvrdene auditom):
    - Tabulka `inbound_message_log` v Liquibase changeset `001_create_tables.xml` v production-service uz existuje.
    - `ProductionBatchCompletedProducer.java` riadky 63-67: ACK je iba prijaty a validovany (`jmsTemplate.receiveSelectedAndConvert`), ale nikde sa neuklada do `inbound_message_log`.
    - **Fix**: po validacii ACK volat `inboundMessageLogRepository.save(...)` v `ProductionBatchCompletedProducer`.
@@ -336,7 +336,7 @@ Termin odovzdania review: `2026-05-15 23:59`.
 - [x] Upravit testy messagingu po presune queue names do konfiguracie. *(audit 2026-05-20: testy pouzivaju `Queues.*` konstanty)*
 - [x] `production-service` spracuje ACK z `inventory-service` po update stocku.
 - [x] `production-service` viaze uspesnost messaging flow na prijatie validneho ACK, nie iba na odoslanie JMS spravy.
-- [ ] `production-service` ma ulozit inbound ACK message do databazy. *(audit 2026-05-20: tabulka `inbound_message_log` v Liquibase changeset existuje, ale `ProductionBatchCompletedProducer` ACK iba validuje, nezapisuje ho do DB)*
+- [x] `production-service` ma ulozit inbound ACK message do databazy. *(audit 2026-05-20: tabulka `inbound_message_log` v Liquibase changeset existuje, ale `ProductionBatchCompletedProducer` ACK iba validuje, nezapisuje ho do DB)*
 - [x] Doplnit test uspesneho ACK flow.
 - [x] Doplnit test pre pripad, ked ACK nepride alebo ACK nesedi s odoslanym batchom.
 - [x] V `docker-compose.yml` nepouzivat image tagy `latest`; infrastructure aj lokalne service images maju fixne tagy.
@@ -354,7 +354,7 @@ Prioritizovane podla auditu `2026-05-20` (s ohladom na nadchadzajucu finalnu obh
 
 1. ~~**KRITICKY**: Opravit `customer-service` runtime v Docker Compose.~~ **DEFINITIVNE HOTOVE 2026-05-21** - po piatich vrstvach opravy (application.yml profile reorganizacia + docker-compose env + Liquibase changelog path + Spring Boot starter dependency + UUID v seed + column type). Runtime overene: vsetky 4 services su `Up`, vsetky `/actuator/health` vracaju 200, chranene endpointy vracaju 401.
 2. ~~**KRITICKY**: Vytiahnut scope konstanty (`READ_SCOPE = "test_read"`, `WRITE_SCOPE = "test_write"`) do `common-service` a pouzit ich naprieč vsetkymi 4 services (SecurityConfig + controllery + testy). Najma `customer-service` a `inventory-service` maju hardcoded literaly v 30+ miestach.~~ **VYRESENE 2026-05-22**
-3. **KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.
+3. ~~**KRITICKY**: Implementovat ulozenie inbound ACK do `inbound_message_log` tabulky v `production-service` (M2 review still open). Tabulka uz existuje cez Liquibase, treba len pridat repository volanie v `ProductionBatchCompletedProducer`.~~ **VYRESENE 2026-05-22**
 4. ~~Otvorit `http://localhost:9090/targets` v prehliadači a overit, ze Prometheus scrapuje vsetky 4 services ako `up`. Tiez otvorit Grafana dashboard `http://localhost:3000` (admin/admin) a overit, ze panely zobrazuju realne data.~~ **HOTOVE 2026-05-21** - vsetkych 5 targetov UP, oba Grafana dashboardy preloaded a zobrazuju realne metriky vratane HTTP request rate spike z manualnych curl testov.
 5. Spustit kompletny showcase scenar (`scripts/showcase.ps1`) end-to-end po cistom starte a overit zvysenie stocku.
 6. ~~Po vyriesenych must-fix bodoch overit, ze CI pipeline na `main`/MR-i prejde green.~~ **HOTOVE 2026-05-21** - MR `M4/reviews -> main`, pipeline `#552446` passed na commite `d0a0be63`. Vsetky 3 jobs zelene (test + build + docker_build).

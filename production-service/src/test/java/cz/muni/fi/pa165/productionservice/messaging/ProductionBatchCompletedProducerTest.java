@@ -2,6 +2,7 @@ package cz.muni.fi.pa165.productionservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.muni.fi.pa165.commonservice.messaging.Queues;
+import cz.muni.fi.pa165.commonservice.messaging.data.InboundMessageLogRepository;
 import cz.muni.fi.pa165.commonservice.messaging.data.OutboundMessageLogRepository;
 import cz.muni.fi.pa165.commonservice.messaging.data.entity.OutboundMessageLog;
 import cz.muni.fi.pa165.commonservice.messaging.messages.BatchCompletedMessage;
@@ -37,6 +38,9 @@ class ProductionBatchCompletedProducerTest {
     private JmsTemplate jmsTemplate;
 
     @Mock
+    private InboundMessageLogRepository inboundMessageLogRepository;
+
+    @Mock
     private OutboundMessageLogRepository outboundMessageLogRepository;
 
     private ProductionBatchCompletedProducer producer;
@@ -56,7 +60,8 @@ class ProductionBatchCompletedProducerTest {
     void setUp() {
         producer = new ProductionBatchCompletedProducer(
             jmsTemplate,
-            outboundMessageLogRepository
+            outboundMessageLogRepository,
+            inboundMessageLogRepository
         );
     }
 
