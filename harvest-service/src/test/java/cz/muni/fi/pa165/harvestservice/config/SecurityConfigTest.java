@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.config;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardViewDto;
 import cz.muni.fi.pa165.harvestservice.facade.VineyardFacade;
@@ -50,7 +50,7 @@ class SecurityConfigTest {
     @Test
     void getEndpoint_withWriteScopeOnly_returnsForbidden() throws Exception {
         mockMvc.perform(get("/vineyards")
-                .with(jwt().jwt(token -> token.claim("scope", SecurityScopes.WRITE_SCOPE))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE))))
             .andExpect(status().isForbidden());
     }
 
@@ -59,7 +59,7 @@ class SecurityConfigTest {
         Mockito.when(vineyardFacade.findAll()).thenReturn(List.of(TestDataFactory.vineyardViewDto()));
 
         mockMvc.perform(get("/vineyards")
-                .with(jwt().jwt(token -> token.claim("scope", SecurityScopes.READ_SCOPE))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE))))
             .andExpect(status().isOk());
     }
 
@@ -68,7 +68,7 @@ class SecurityConfigTest {
         VineyardCreateDto createDto = TestDataFactory.vineyardCreateDto();
 
         mockMvc.perform(post("/vineyards")
-                .with(jwt().jwt(token -> token.claim("scope", SecurityScopes.READ_SCOPE)))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isForbidden());
@@ -81,7 +81,7 @@ class SecurityConfigTest {
         Mockito.when(vineyardFacade.create(Mockito.any(VineyardCreateDto.class))).thenReturn(viewDto);
 
         mockMvc.perform(post("/vineyards")
-                .with(jwt().jwt(token -> token.claim("scope", SecurityScopes.WRITE_SCOPE)))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated());

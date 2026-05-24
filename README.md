@@ -184,29 +184,47 @@ cleared by rolling back that Liquibase changeset.
 
 ### Customer-service Database Seed
 
-`customer-service` loads initial data on application startup using `InsertInitialDataService`.
+`customer-service` uses Liquibase for schema creation. By default it starts with an empty schema so tests and local
+development runs are deterministic.
 
-Run `customer-service` with startup seed data:
+Run `customer-service` with realistic seed data:
 
 ```bash
-mvn -pl customer-service spring-boot:run
+mvn -pl customer-service -Dspring-boot.run.profiles=seed spring-boot:run
 ```
 
-The startup seed includes customer profiles with addresses, reviews, and purchase records. Because the service uses an
-H2 in-memory database, the data is reset by restarting the service.
+PowerShell equivalent:
+
+```powershell
+mvn -pl customer-service -D"spring-boot.run.profiles"=seed spring-boot:run
+```
+
+The seed data is stored in the Liquibase `seed` context and includes customer profiles with embedded addresses,
+realistic reviews, and purchase records. Wine IDs referenced in reviews and purchases match the `wine_recipes` IDs in
+`production-service`, which keeps the cross-service demo data consistent. The seed changeset also contains rollback
+delete statements, so the seeded data can be cleared by rolling back that Liquibase changeset.
 
 ### Inventory-service Database Seed
 
-`inventory-service` loads initial data on application startup using `InsertInitialDataService`.
+`inventory-service` uses Liquibase for schema creation. By default it starts with an empty schema so tests and local
+development runs are deterministic.
 
-Run `inventory-service` with startup seed data:
+Run `inventory-service` with realistic seed data:
 
 ```bash
-mvn -pl inventory-service spring-boot:run
+mvn -pl inventory-service -Dspring-boot.run.profiles=seed spring-boot:run
 ```
 
-The startup seed includes stock records and reservations. Because the service uses an H2 in-memory database, the data is
-reset by restarting the service.
+PowerShell equivalent:
+
+```powershell
+mvn -pl inventory-service -D"spring-boot.run.profiles"=seed spring-boot:run
+```
+
+The seed data is stored in the Liquibase `seed` context and includes realistic stock records and reservations.
+Stock entries reference the same wine IDs as `production-service` `wine_recipes`, keeping the cross-service demo data
+consistent end-to-end. The seed changeset also contains rollback delete statements, so the seeded data can be cleared
+by rolling back that Liquibase changeset.
 
 ## Docker
 
@@ -216,11 +234,14 @@ Build and run services with Docker Compose:
 docker compose up --build
 ```
 
-`customer-service` and `inventory-service` load their startup seed data automatically. In Docker Compose,
-`harvest-service` starts with the `seed` Spring profile by default, while `production-service` uses the `seed` profile
-only when `PRODUCTION_SERVICE_PROFILES=seed` is set. Docker Compose also starts a central Swagger UI on port `8090`
-so Swagger OAuth authorization can use the registered redirect URL
-`http://localhost:8090/swagger-ui/oauth2-redirect.html`.
+In Docker Compose, `customer-service`, `harvest-service`, and `inventory-service` start with the `seed` Spring profile
+by default (Liquibase loads realistic demo data), while `production-service` uses the `seed` profile only when
+`PRODUCTION_SERVICE_PROFILES=seed` is set. Each service profile can be overridden through its environment variable
+(`CUSTOMER_SERVICE_PROFILES`, `HARVEST_SERVICE_PROFILES`, `INVENTORY_SERVICE_PROFILES`, `PRODUCTION_SERVICE_PROFILES`) —
+for example set it to an empty string to start without seed data.
+
+Docker Compose also starts a central Swagger UI on port `8090`, so Swagger OAuth authorization can use the registered
+redirect URL `http://localhost:8090/swagger-ui/oauth2-redirect.html`.
 
 Rebuild from scratch without cache (recommended after messaging changes):
 
@@ -320,30 +341,47 @@ Run the customer-service container:
 docker run --rm -p 8084:8084 winery-management/customer-service:1.0.0
 ```
 
-## Asynchronous Communication 
+## Asynchronous Communication
 
-Implemented message flow:
+Implemented end-to-end message flow with ACK:
 
-- `production-service` (producer) sends `BatchCompletedMessage` to queue `batch-completed-queue`
-- `inventory-service` (consumer) reads message asynchronously, stores inbound log, and updates stock
-- `inventory-service` sends `StockUpdatedMessage` to `stock-updated-queue` (optional feedback event)
+1. `production-service` (producer) sends `BatchCompletedMessage` to queue `batch-completed-queue` when a batch transitions
+   to `COMPLETED`.
+2. `inventory-service` (consumer) reads the message asynchronously, persists it in its inbound log, and updates the
+   corresponding wine stock.
+3. `inventory-service` (producer) sends a `StockUpdatedMessage` ACK to queue `stock-updated-queue`, carrying the same
+   `JMSCorrelationID` as the original batch message.
+4. `production-service` (consumer) reads the ACK, validates that the batch ID and wine ID match, and only then persists
+   the ACK in its own inbound log. Invalid or missing ACKs throw an `IllegalStateException` and the ACK is **not**
+   persisted, which keeps the inbound log clean of garbage entries.
 
-Queue names are centralized in `common-service`:
+Queue names are centralized in `common-service` (`Queues.BATCH_COMPLETED`, `Queues.STOCK_UPDATED`):
 
 - `batch-completed-queue`
 - `stock-updated-queue`
 
-Message persistence:
+Message persistence is symmetric on both sides:
 
-- Producer outbound log table: `OUTBOUND_MESSAGE_LOG` (`production-service` DB)
-- Consumer inbound log table: `INBOUND_MESSAGE_LOG` (`inventory-service` DB)
+| Service | Outbound log table | Inbound log table |
+|---|---|---|
+| `production-service` | `OUTBOUND_MESSAGE_LOG` (BatchCompletedMessage) | `INBOUND_MESSAGE_LOG` (StockUpdatedMessage ACK) |
+| `inventory-service` | `OUTBOUND_MESSAGE_LOG` (StockUpdatedMessage ACK) | `INBOUND_MESSAGE_LOG` (BatchCompletedMessage) |
+
+This gives a full audit trail of every message that crossed the broker, on both the sending and the receiving side.
 
 How to verify messaging end-to-end:
 
-1. Start stack with Docker Compose (`docker compose up --build`).
-2. Create/update a production batch and set status to `COMPLETED` in production-service API.
-3. Check Artemis console queue metrics (message count/delivering count).
-4. Check DB logs in both services (`OUTBOUND_MESSAGE_LOG`, `INBOUND_MESSAGE_LOG`).
+1. Start the stack with Docker Compose (`docker compose up --build`).
+2. Create or update a production batch and set its status to `COMPLETED` through the `production-service` API
+   (Swagger UI on port `8082` or via `scripts/showcase.ps1`).
+3. Check Artemis console queue metrics (message count / delivering count) at http://localhost:8161.
+4. Verify the four message log tables:
+   - `production-service` `OUTBOUND_MESSAGE_LOG` — one row for the sent `BatchCompletedMessage`.
+   - `inventory-service` `INBOUND_MESSAGE_LOG` — one row for the received `BatchCompletedMessage`.
+   - `inventory-service` `OUTBOUND_MESSAGE_LOG` — one row for the sent `StockUpdatedMessage` ACK.
+   - `production-service` `INBOUND_MESSAGE_LOG` — one row for the received and validated ACK.
+5. Verify in `inventory-service` `GET /stocks` that the stock for the produced wine has increased by the batch's bottle
+   count.
 
 ## CI Pipeline
 
@@ -862,6 +900,14 @@ Rendered `.png` exports are stored next to the PlantUML sources.
 
 ## GenAI Usage Disclosure
 
-GenAI tools were used as an implementation support aid (code review assistance, refactoring suggestions,
-README generation and updates, and documentation drafting).
-All generated suggestions were manually reviewed and adjusted by team members before integration.
+Tools used: **Claude** and **ChatGPT**, as in-IDE assistants. Every AI suggestion was reviewed and committed by a human; no AI had autonomous push/merge access.
+
+Where AI helped:
+
+- Documentation (README, OpenAPI descriptions, `CLAUDE.md`, milestone instructions, EN/SK translations).
+- Scaffolding (Liquibase changesets, OpenAPI annotations, JMS producer/consumer skeleton, `common-service` extraction).
+- Infrastructure (GitLab CI pipeline, OpenShift template, Prometheus/Grafana provisioning).
+- Debugging (CHECKLIST audit against the codebase, multi-layer customer-service Docker Compose fix).
+- Code review as a second pair of eyes (edge cases, naming consistency, refactor candidates).
+
+Not delegated to AI: business logic, security policy decisions, messaging contract design, final code review and commits.

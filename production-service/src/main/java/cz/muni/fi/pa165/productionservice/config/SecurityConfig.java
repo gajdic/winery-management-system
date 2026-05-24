@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.productionservice.config;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
@@ -55,13 +55,13 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.GET, PRODUCTION_API).access(hasScope(SecurityScopes.READ_SCOPE))
+                .requestMatchers(HttpMethod.GET, PRODUCTION_API).access(hasScope(SwaggerConstants.READ_SCOPE))
                 .requestMatchers(HttpMethod.POST, PLANNING_ENDPOINT, QUALITY_EVALUATIONS_ENDPOINT)
-                .access(hasScope(SecurityScopes.READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, RECIPES_ENDPOINTS, BATCHES_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, PRODUCTION_API).access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PATCH, PRODUCTION_API).access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, PRODUCTION_API).access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, RECIPES_ENDPOINTS, BATCHES_ENDPOINTS).access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, PRODUCTION_API).access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PATCH, PRODUCTION_API).access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, PRODUCTION_API).access(hasScope(SwaggerConstants.WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -100,8 +100,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "get user identifier")
-                                .addString(SecurityScopes.READ_SCOPE, "read production data and calculate plans")
-                                .addString(SecurityScopes.WRITE_SCOPE, "create, update, and delete production data")
+                                .addString(SwaggerConstants.READ_SCOPE, "read production data and calculate plans")
+                                .addString(SwaggerConstants.WRITE_SCOPE, "create, update, and delete production data")
                             )
                         )
                     )

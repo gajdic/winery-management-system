@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.VineyardUpdateDto;
@@ -38,7 +38,7 @@ public class VineyardRestController {
 
     @PostMapping
     @Operation(summary = "Create a vineyard", description = "Creates a vineyard that can later be referenced by harvest records",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Vineyard created successfully",
             content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
@@ -65,7 +65,7 @@ public class VineyardRestController {
 
     @GetMapping(path = "/{id}")
     @Operation(summary = "Get a vineyard by id", description = "Returns one vineyard detail by its unique identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Vineyard found",
             content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
@@ -89,7 +89,7 @@ public class VineyardRestController {
 
     @GetMapping(path = "/by-name/{name}")
     @Operation(summary = "Get a vineyard by name", description = "Finds one vineyard by its business name",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Vineyard found",
             content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
@@ -111,7 +111,7 @@ public class VineyardRestController {
 
     @GetMapping
     @Operation(summary = "List all vineyards", description = "Returns all vineyards currently registered in the harvest service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Vineyards returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = VineyardViewDto.class)))),
@@ -128,7 +128,7 @@ public class VineyardRestController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a vineyard", description = "Updates an existing vineyard by its identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Vineyard updated successfully",
             content = @Content(schema = @Schema(implementation = VineyardViewDto.class))),
@@ -158,7 +158,7 @@ public class VineyardRestController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a vineyard", description = "Removes a vineyard from the harvest service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Vineyard deleted successfully", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",

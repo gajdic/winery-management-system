@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.GrapeTypeUpdateDto;
@@ -38,7 +38,7 @@ public class GrapeTypeRestController {
 
     @PostMapping
     @Operation(summary = "Create a grape type", description = "Creates a new grape variety",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Grape type created successfully",
             content = @Content(schema = @Schema(implementation = GrapeTypeViewDto.class))),
@@ -65,7 +65,7 @@ public class GrapeTypeRestController {
 
     @GetMapping(path = "/{id}")
     @Operation(summary = "Get a grape type by id", description = "Returns one grape type detail by its unique identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Grape type found",
             content = @Content(schema = @Schema(implementation = GrapeTypeViewDto.class))),
@@ -89,7 +89,7 @@ public class GrapeTypeRestController {
 
     @GetMapping(path = "/by-name/{name}")
     @Operation(summary = "Get a grape type by name", description = "Finds one grape type by its business name",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Grape type found",
             content = @Content(schema = @Schema(implementation = GrapeTypeViewDto.class))),
@@ -111,7 +111,7 @@ public class GrapeTypeRestController {
 
     @GetMapping
     @Operation(summary = "List all grape types", description = "Returns all grape varieties currently registered in the harvest service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Grape types returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = GrapeTypeViewDto.class)))),
@@ -128,7 +128,7 @@ public class GrapeTypeRestController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a grape type", description = "Updates an existing grape variety by its identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Grape type updated successfully",
             content = @Content(schema = @Schema(implementation = GrapeTypeViewDto.class))),
@@ -158,7 +158,7 @@ public class GrapeTypeRestController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a grape type", description = "Removes a grape variety from the harvest service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Grape type deleted successfully", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",

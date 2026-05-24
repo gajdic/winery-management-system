@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.productionservice.controller;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeDto;
@@ -37,7 +37,7 @@ public class WineRecipeController {
     }
 
     @PostMapping
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Create a wine recipe",
         description = "Creates a recipe containing wine metadata, required grape composition, and optional additional ingredients."
@@ -67,7 +67,7 @@ public class WineRecipeController {
     }
 
     @GetMapping
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Get all wine recipes",
         description = "Returns all wine recipes known to the production service."
@@ -87,7 +87,7 @@ public class WineRecipeController {
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Get a wine recipe by id",
         description = "Returns a single wine recipe identified by UUID."
@@ -114,7 +114,7 @@ public class WineRecipeController {
     }
 
     @PutMapping("/{id}")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Update a wine recipe by id",
         description = "Replaces the recipe fields, grape composition, and additional ingredients for an existing wine recipe."
@@ -147,7 +147,7 @@ public class WineRecipeController {
     }
 
     @DeleteMapping("/{id}")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Delete a wine recipe by id",
         description = "Deletes an existing wine recipe identified by UUID."

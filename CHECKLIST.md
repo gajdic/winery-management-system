@@ -3,7 +3,48 @@
 Hlavny priebezne aktualizovany checklist pre cely projekt.
 
 Aktualny stav bol naposledy skontrolovany proti repozitaru dna `2026-05-19`.
-Posledny systematicky audit checklistu proti kodu: `2026-05-20`.
+Posledny systematicky audit checklistu proti kodu: `2026-05-24`.
+
+## Audit `2026-05-24` - sumar po vsetkych merge-och
+
+Top 3 merge commits su uz na `M4/reviews`:
+
+| Merge | Commit | Autor | Datum |
+|---|---|---|---|
+| `M4/service-consistency-openapi` -> `M4/reviews` (OpenAPI cleanup + DTO/test refaktor) | `e07a629` | Jan Novak | `2026-05-24 15:50` |
+| `production-service-inbound-ack` -> `M4/reviews` (ACK persistence v DB) | `e5a7c7d` | (tim) | `2026-05-24 15:13` |
+| `scopes-extraction` -> `M4/reviews` (Luciin scope refaktor) | `7cf5245` | (tim) | predtym |
+
+Z M4/service-consistency-openapi merge (e07a629) prislo 8 commitov ktore zatvorili **vela M1 a M2 review otvorenych bodov naraz**:
+- `eead731` entity equals/hashcode by business key (M1 review otvoreny bod **vyriesene**)
+- `1680538` unify delete/update existence checks (M1 review otvoreny bod **vyriesene**)
+- `473a2f6` remove duplicated dto validations from services (**vyriesil weak point #1 z prezentacie!**)
+- `d95360d` swagger constants in common-service (M2 nice-to-have **vyriesene**)
+- `a05842c` schema annotations on apierror
+- `939aca9` add openapi config to customer and inventory services
+- `7a2cbda` openapi descriptions and examples in controllers
+- `b418df1` fill in dto schema examples for customer ids
+
+**Zostavajuci tech debt (po dnesnych merge-och):**
+- Duplicita `common-service/config/SecurityScopes` + `common-service/openapi/SwaggerConstants` - obe tu su, scope literal cleanup nebol dokoncenu cez vsetky 4 services (15+ suborov stale importuje `SecurityScopes`). Build prejde (oba subory existuju), je to len suchy refactor follow-up.
+
+**Final stav M3 must-fix bodov:**
+- ✅ Customer-service Docker Compose runtime (`d0a0be6`)
+- ✅ Scope literals extraction - **COMMITNUTE 2026-05-24** v `643a828 Refactor: replace SecurityScopes with shared SwaggerConstants from common-service.openapi` - `SecurityScopes.java` zmazany, 0 zostavajucich `SecurityScopes` referencii, `SwaggerConstants` pouzity vo vsetkych 4 services (customer 43x, harvest 37x, production 30x, inventory 49x)
+- ✅ Inbound ACK persistence (`2684bc7` + `e5a7c7d`)
+- ✅ Showcase scenar - dokument `docs/DEMO_SCENARIO.md` + **runtime overene 2026-05-24** (skript `scripts/showcase.ps1` bezi end-to-end vratane health checku pre customer-service na porte 8084)
+- 🔴 **Demo video - chyba, treba nahrat 24h pred obhajobou**
+- ✅ CI pipeline green
+- ✅ README GenAI disclosure (rozsirena dnes)
+- ✅ Actuator/Swagger URLs dokumentovane
+- ✅ Public endpointy konzistentne
+- ✅ Prometheus + Grafana runtime overene
+
+**10 z 10 hotove okrem demo videa.** Demo video je posledny otvoreny must-fix bod.
+
+---
+
+## Audit `2026-05-20` - sumar zisteni
 
 ## Audit `2026-05-20` - sumar zisteni
 

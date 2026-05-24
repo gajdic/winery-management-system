@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.productionservice.controller;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;
@@ -35,7 +35,7 @@ public class ProductionPlanningController {
     }
 
     @PostMapping("/planning")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Plan production from harvest lots and recipe requirements",
         description = "Calculates how many bottles can be produced for a recipe from the provided harvest lots."
@@ -67,7 +67,7 @@ public class ProductionPlanningController {
     }
 
     @PostMapping("/quality-evaluations")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Evaluate expected blend quality for a recipe and harvest set",
         description = "Calculates weighted quality and recommendation for a recipe using the supplied harvest lots."
