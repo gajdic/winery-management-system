@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.productionservice.controller;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchCreateRequestDto;
 import cz.muni.fi.pa165.productionservice.api.ProductionBatchDto;
@@ -38,7 +38,7 @@ public class ProductionBatchController {
     }
 
     @PostMapping
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Create a production batch from a requested bottle count",
         description = "Creates a planned batch by calculating feasible production from the selected recipe and supplied harvest lots."
@@ -71,7 +71,7 @@ public class ProductionBatchController {
     }
 
     @GetMapping
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Get all production batches",
         description = "Returns all production batches managed by the production service."
@@ -91,7 +91,7 @@ public class ProductionBatchController {
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.READ_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.READ_SCOPE)
     @Operation(
         summary = "Get a production batch by id",
         description = "Returns a single production batch identified by UUID."
@@ -118,7 +118,7 @@ public class ProductionBatchController {
     }
 
     @DeleteMapping("/{id}")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Delete a production batch by id",
         description = "Deletes an existing production batch identified by UUID."
@@ -145,7 +145,7 @@ public class ProductionBatchController {
     }
 
     @PatchMapping("/{id}/status")
-    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SecurityScopes.WRITE_SCOPE)
+    @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = SwaggerConstants.WRITE_SCOPE)
     @Operation(
         summary = "Update a production batch status",
         description = "Changes the lifecycle status of an existing production batch."

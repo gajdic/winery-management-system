@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.rest;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordCreateDto;
 import cz.muni.fi.pa165.harvestservice.api.dto.HarvestRecordUpdateDto;
@@ -39,7 +39,7 @@ public class HarvestRecordRestController {
 
     @PostMapping
     @Operation(summary = "Create a harvest record", description = "Creates a harvest record linked to an existing vineyard and grape type",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Harvest record created successfully",
             content = @Content(schema = @Schema(implementation = HarvestRecordViewDto.class))),
@@ -66,7 +66,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a harvest record by id", description = "Returns one harvest record with nested vineyard and grape type references",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest record found",
             content = @Content(schema = @Schema(implementation = HarvestRecordViewDto.class))),
@@ -90,7 +90,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/by-year/{year}")
     @Operation(summary = "List harvest records by year", description = "Returns all harvest records whose harvest date falls into the given year",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest records returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestRecordViewDto.class)))),
@@ -110,7 +110,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/by-vineyard/{id}")
     @Operation(summary = "List harvest records by vineyard", description = "Returns all harvest records associated with the selected vineyard",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest records returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestRecordViewDto.class)))),
@@ -134,7 +134,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/by-grape-type/{id}")
     @Operation(summary = "List harvest records by grape type", description = "Returns all harvest records associated with the selected grape variety",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest records returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestRecordViewDto.class)))),
@@ -158,7 +158,7 @@ public class HarvestRecordRestController {
 
     @GetMapping
     @Operation(summary = "List all harvest records", description = "Returns the complete harvest history stored in the harvest service",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest records returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestRecordViewDto.class)))),
@@ -175,7 +175,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/summary/by-year")
     @Operation(summary = "Summarize harvest by year", description = "Aggregates harvested quantity by year across all recorded harvests",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest summary by year returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestSummaryDto.class)))),
@@ -192,7 +192,7 @@ public class HarvestRecordRestController {
 
     @GetMapping("/summary/by-vineyard")
     @Operation(summary = "Summarize harvest by vineyard", description = "Aggregates harvested quantity by vineyard across all recorded harvests",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.READ_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.READ_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest summary by vineyard returned successfully",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = HarvestSummaryDto.class)))),
@@ -209,7 +209,7 @@ public class HarvestRecordRestController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a harvest record", description = "Updates an existing harvest record by its identifier",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Harvest record updated successfully",
             content = @Content(schema = @Schema(implementation = HarvestRecordViewDto.class))),
@@ -239,7 +239,7 @@ public class HarvestRecordRestController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a harvest record", description = "Removes a harvest record from the harvest history",
-        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SecurityScopes.WRITE_SCOPE}))
+        security = @SecurityRequirement(name = SecurityConfig.SECURITY_SCHEME_NAME, scopes = {SwaggerConstants.WRITE_SCOPE}))
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Harvest record deleted successfully", content = @Content),
         @ApiResponse(responseCode = "400", description = "Invalid UUID format",

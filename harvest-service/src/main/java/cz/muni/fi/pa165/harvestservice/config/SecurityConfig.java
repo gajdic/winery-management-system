@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.harvestservice.config;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
@@ -49,10 +49,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.GET, HARVEST_ENDPOINTS).access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, HARVEST_ENDPOINTS).access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, HARVEST_ENDPOINTS).access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, HARVEST_ENDPOINTS).access(hasScope(SwaggerConstants.WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -91,8 +91,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "get user identifier")
-                                .addString(SecurityScopes.READ_SCOPE, "read harvest data")
-                                .addString(SecurityScopes.WRITE_SCOPE, "create, update, and delete harvest data")
+                                .addString(SwaggerConstants.READ_SCOPE, "read harvest data")
+                                .addString(SwaggerConstants.WRITE_SCOPE, "create, update, and delete harvest data")
                             )
                         )
                     )

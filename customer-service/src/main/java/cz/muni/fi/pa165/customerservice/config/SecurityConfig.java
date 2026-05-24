@@ -1,6 +1,6 @@
 package cz.muni.fi.pa165.customerservice.config;
 
-import cz.muni.fi.pa165.commonservice.config.SecurityScopes;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -37,20 +37,20 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET, "/customers/**").access(hasScope(SecurityScopes.READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, "/customers/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, "/customers/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, "/customers/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.GET, "/customers/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
 
-                .requestMatchers(HttpMethod.GET, "/purchases/**").access(hasScope(SecurityScopes.READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, "/purchases/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, "/purchases/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, "/purchases/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.GET, "/purchases/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
 
-                .requestMatchers(HttpMethod.GET, "/reviews/**").access(hasScope(SecurityScopes.READ_SCOPE))
-                .requestMatchers(HttpMethod.POST, "/reviews/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.PUT, "/reviews/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
-                .requestMatchers(HttpMethod.DELETE, "/reviews/**").access(hasScope(SecurityScopes.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.GET, "/reviews/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -85,8 +85,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "user identifier")
-                                .addString(SecurityScopes.READ_SCOPE,  "read customer data")
-                                .addString(SecurityScopes.WRITE_SCOPE, "create, update and delete customer data")
+                                .addString(SwaggerConstants.READ_SCOPE,  "read customer data")
+                                .addString(SwaggerConstants.WRITE_SCOPE, "create, update and delete customer data")
                             )
                         )
                     )
