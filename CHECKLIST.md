@@ -30,9 +30,9 @@ Z M4/service-consistency-openapi merge (e07a629) prislo 8 commitov ktore zatvori
 
 **Final stav M3 must-fix bodov:**
 - ✅ Customer-service Docker Compose runtime (`d0a0be6`)
-- 🟡 Scope literals extraction - z casti hotove cez `7cf5245` (scopes-extraction), zvysny cleanup po dnesnom merge tu zostava
+- ✅ Scope literals extraction - **COMMITNUTE 2026-05-24** v `643a828 Refactor: replace SecurityScopes with shared SwaggerConstants from common-service.openapi` - `SecurityScopes.java` zmazany, 0 zostavajucich `SecurityScopes` referencii, `SwaggerConstants` pouzity vo vsetkych 4 services (customer 43x, harvest 37x, production 30x, inventory 49x)
 - ✅ Inbound ACK persistence (`2684bc7` + `e5a7c7d`)
-- ✅ Showcase scenar - dokument `docs/DEMO_SCENARIO.md`
+- ✅ Showcase scenar - dokument `docs/DEMO_SCENARIO.md` + **runtime overene 2026-05-24** (skript `scripts/showcase.ps1` bezi end-to-end vratane health checku pre customer-service na porte 8084)
 - 🔴 **Demo video - chyba, treba nahrat 24h pred obhajobou**
 - ✅ CI pipeline green
 - ✅ README GenAI disclosure (rozsirena dnes)
@@ -40,7 +40,7 @@ Z M4/service-consistency-openapi merge (e07a629) prislo 8 commitov ktore zatvori
 - ✅ Public endpointy konzistentne
 - ✅ Prometheus + Grafana runtime overene
 
-**8 z 10 hotove + 1 v progress + 1 chyba.**
+**10 z 10 hotove okrem demo videa.** Demo video je posledny otvoreny must-fix bod.
 
 ---
 

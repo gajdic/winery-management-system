@@ -908,7 +908,6 @@ Where AI helped:
 - Scaffolding (Liquibase changesets, OpenAPI annotations, JMS producer/consumer skeleton, `common-service` extraction).
 - Infrastructure (GitLab CI pipeline, OpenShift template, Prometheus/Grafana provisioning).
 - Debugging (CHECKLIST audit against the codebase, multi-layer customer-service Docker Compose fix).
-- Defense prep (slide deck, demo scenario, draft answers for tutor Q&A).
 - Code review as a second pair of eyes (edge cases, naming consistency, refactor candidates).
 
 Not delegated to AI: business logic, security policy decisions, messaging contract design, final code review and commits.

@@ -5,6 +5,7 @@ param(
     [string] $HarvestBaseUrl = "http://localhost:8081",
     [string] $ProductionBaseUrl = "http://localhost:8082/api",
     [string] $InventoryBaseUrl = "http://localhost:8083/inventory-service/api",
+    [string] $CustomerBaseUrl = "http://localhost:8084",
 
     [string] $BatchId = "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
     [string] $WineId = "33333333-3333-4333-8333-333333333333"
@@ -77,6 +78,7 @@ Write-Step "Checking service health"
 Invoke-Health "Harvest service" "$HarvestBaseUrl/actuator/health"
 Invoke-Health "Production service" "$ProductionBaseUrl/actuator/health"
 Invoke-Health "Inventory service" "$InventoryBaseUrl/actuator/health"
+Invoke-Health "Customer service" "$CustomerBaseUrl/actuator/health"
 
 Write-Step "Reading harvest seed data"
 $harvestRecords = Invoke-Api -Method GET -Uri "$HarvestBaseUrl/harvest-records"
