@@ -46,13 +46,15 @@ public class BatchCompletedConsumer {
         log.setReceivedAt(LocalDateTime.now());
         messageLogRepository.save(log);
 
-        var stock = new Stock();
-        if (stockService.findByWine(message.getWineId()) == null) {
+        Stock existing = stockService.findByWine(message.getWineId());
+        Stock stock;
+        if (existing == null) {
+            stock = new Stock();
             stock.setQuantity(message.getBottleCount());
             stock.setWineId(message.getWineId());
-            stockService.create(stock);
+            stock = stockService.create(stock);
         } else {
-            stock = stockService.addToStock(message.getWineId(), message.getBottleCount());
+            stock = stockService.addToStock(existing.getId(), message.getBottleCount());
         }
 
         StockUpdatedMessage ack = new StockUpdatedMessage(
