@@ -45,12 +45,11 @@ public class ReservationService {
         return reservationRepository.filter(customerId, wineId, createdAfter, createdBefore);
     }
 
-    public boolean delete(UUID id) {
+    public void delete(UUID id) {
         if (!reservationRepository.existsById(id)) {
-            return false;
+            throw new ResourceNotFoundException("Reservation not found: " + id);
         }
         reservationRepository.deleteById(id);
-        return true;
     }
 
 }

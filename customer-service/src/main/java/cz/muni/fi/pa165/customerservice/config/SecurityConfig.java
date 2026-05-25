@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.config;
 
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.SecurityScheme;
@@ -36,20 +37,20 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/**")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET, "/customers/**").access(hasScope("test_read"))
-                .requestMatchers(HttpMethod.POST, "/customers/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.PUT, "/customers/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.DELETE, "/customers/**").access(hasScope("test_write"))
+                .requestMatchers(HttpMethod.GET, "/customers/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/customers/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
 
-                .requestMatchers(HttpMethod.GET, "/purchases/**").access(hasScope("test_read"))
-                .requestMatchers(HttpMethod.POST, "/purchases/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.PUT, "/purchases/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.DELETE, "/purchases/**").access(hasScope("test_write"))
+                .requestMatchers(HttpMethod.GET, "/purchases/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/purchases/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
 
-                .requestMatchers(HttpMethod.GET, "/reviews/**").access(hasScope("test_read"))
-                .requestMatchers(HttpMethod.POST, "/reviews/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.PUT, "/reviews/**").access(hasScope("test_write"))
-                .requestMatchers(HttpMethod.DELETE, "/reviews/**").access(hasScope("test_write"))
+                .requestMatchers(HttpMethod.GET, "/reviews/**").access(hasScope(SwaggerConstants.READ_SCOPE))
+                .requestMatchers(HttpMethod.POST, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.PUT, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
+                .requestMatchers(HttpMethod.DELETE, "/reviews/**").access(hasScope(SwaggerConstants.WRITE_SCOPE))
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
@@ -84,8 +85,8 @@ public class SecurityConfig {
                             .tokenUrl("https://id.muni.cz/oidc/token")
                             .scopes(new Scopes()
                                 .addString("openid", "user identifier")
-                                .addString("test_read",  "read customer data")
-                                .addString("test_write", "create, update and delete customer data")
+                                .addString(SwaggerConstants.READ_SCOPE,  "read customer data")
+                                .addString(SwaggerConstants.WRITE_SCOPE, "create, update and delete customer data")
                             )
                         )
                     )

@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordCreateDto;
 import cz.muni.fi.pa165.customerservice.api.PurchaseRecordDto;
@@ -39,7 +40,7 @@ public class PurchaseRecordController {
         description = "Creates a new purchase record for a customer and wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_write"}
+            scopes = {SwaggerConstants.WRITE_SCOPE}
         )
     )
     @ApiResponses({
@@ -71,7 +72,7 @@ public class PurchaseRecordController {
         description = "Returns a purchase record identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -99,7 +100,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -120,7 +121,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records for a given customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -144,7 +145,7 @@ public class PurchaseRecordController {
         description = "Returns all purchase records for a given wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -170,7 +171,7 @@ public class PurchaseRecordController {
         description = "Returns purchases filtered by optional min and max quantity.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -197,7 +198,7 @@ public class PurchaseRecordController {
         description = "Calculates total amount spent by a given customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -221,7 +222,7 @@ public class PurchaseRecordController {
         description = "Deletes a purchase record by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_write"}
+            scopes = {SwaggerConstants.WRITE_SCOPE}
         )
     )
     @ApiResponses({

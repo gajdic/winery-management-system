@@ -3,7 +3,7 @@ services:
     image: apache/artemis:2.53.0
     container_name: artemis
     ports:
-      - "61616:61616"
+      - "61690:61616"
       - "8161:8161"
     environment:
       ARTEMIS_USER: artemis
@@ -93,6 +93,7 @@ services:
       - "8084:8084"
     environment:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:customer-service;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      SPRING_PROFILES_ACTIVE: ${CUSTOMER_SERVICE_PROFILES:-seed}
 
   prometheus:
     image: prom/prometheus:v2.55.1

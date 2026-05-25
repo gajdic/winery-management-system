@@ -122,7 +122,7 @@ class ReservationControllerTest {
     @Test
     void delete_reservationDeleted_returnsNoContent() throws Exception {
         // Arrange
-        Mockito.when(reservationFacade.delete(TestDataFactory.RESERVATION_ID)).thenReturn(true);
+        Mockito.doNothing().when(reservationFacade).delete(TestDataFactory.RESERVATION_ID);
 
         // Act + Assert
         mockMvc.perform(delete("/reservations/{id}", TestDataFactory.RESERVATION_ID)

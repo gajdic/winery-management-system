@@ -20,11 +20,14 @@ public class OpenApiConfig {
                 .version("1.0.0")
                 .description("API for managing vineyards, grape varieties, harvest records, and harvest summaries."))
             .addServersItem(new Server()
+                .url("/harvest-api" + normalizeContextPath(contextPath))
+                .description("Harvest service via central Swagger UI proxy"))
+            .addServersItem(new Server()
                 .url(normalizeContextPath(contextPath))
-                .description("Harvest service API context path"));
+                .description("Harvest service direct (when accessed on port 8081)"));
     }
 
     private String normalizeContextPath(String contextPath) {
-        return contextPath == null || contextPath.isBlank() ? "/" : contextPath;
+        return contextPath == null || contextPath.isBlank() ? "" : contextPath;
     }
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 public class PurchaseRecordCreateDto {
 
     @NotNull
-    @Schema(description = "Id of the customer") //TODO
+    @Schema(description = "Id of the customer who purchased the wine", example = "44444444-4444-4444-4444-444444444444")
     private UUID customerId;
 
     @NotNull

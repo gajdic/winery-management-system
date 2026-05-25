@@ -20,7 +20,7 @@ spring:
     change-log: classpath:db/changelog/main-changelog.xml
   artemis:
     mode: native
-    broker-url: tcp://localhost:61616
+    broker-url: tcp://localhost:61690
     user: artemis
     password: artemis
   jms:

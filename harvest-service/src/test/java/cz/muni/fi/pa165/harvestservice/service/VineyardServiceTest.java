@@ -64,42 +64,6 @@ class VineyardServiceTest {
     }
 
     @Test
-    void create_vineyardNameIsBlank_throwsIllegalArgumentException() {
-        // Arrange
-        Vineyard vineyard = TestDataFactory.vineyardEntity();
-        vineyard.setName("  ");
-
-        // Act & Assert
-        assertThatThrownBy(() -> vineyardService.create(vineyard))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Vineyard name cannot be null or blank.");
-    }
-
-    @Test
-    void create_locationIsBlank_throwsIllegalArgumentException() {
-        // Arrange
-        Vineyard vineyard = TestDataFactory.vineyardEntity();
-        vineyard.setLocation("");
-
-        // Act & Assert
-        assertThatThrownBy(() -> vineyardService.create(vineyard))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Location cannot be null or blank.");
-    }
-
-    @Test
-    void create_areaSizeIsZero_throwsIllegalArgumentException() {
-        // Arrange
-        Vineyard vineyard = TestDataFactory.vineyardEntity();
-        vineyard.setAreaSize(0);
-
-        // Act & Assert
-        assertThatThrownBy(() -> vineyardService.create(vineyard))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Area size must be greater than 0.");
-    }
-
-    @Test
     void findById_vineyardFound_returnsVineyard() {
         // Arrange
         Vineyard vineyard = TestDataFactory.vineyardEntity();

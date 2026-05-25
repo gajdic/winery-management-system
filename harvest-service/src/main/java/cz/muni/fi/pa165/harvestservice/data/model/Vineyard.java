@@ -39,8 +39,7 @@ public class Vineyard {
             return false;
         }
 
-        return Objects.equals(getId(), vineyard.getId())
-            && Objects.equals(getName(), vineyard.getName())
+        return Objects.equals(getName(), vineyard.getName())
             && Objects.equals(getLocation(), vineyard.getLocation())
             && Double.compare(getAreaSize(), vineyard.getAreaSize()) == 0
             && Objects.equals(getDescription(), vineyard.getDescription());
@@ -48,7 +47,7 @@ public class Vineyard {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getLocation(), getAreaSize(), getDescription());
+        return Objects.hash(getName(), getLocation(), getAreaSize(), getDescription());
     }
 
     @Override

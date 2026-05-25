@@ -1,7 +1,7 @@
 package cz.muni.fi.pa165.customerservice.config;
 
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
@@ -47,14 +47,14 @@ public class SecurityConfigTest {
     @Test
     void getCustomers_withWrongScope_returns403() throws Exception {
         mockMvc.perform(get("/customers")
-                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE))))
             .andExpect(status().isForbidden());
     }
 
     @Test
     void getCustomers_withRightScope_returns200() throws Exception {
         mockMvc.perform(get("/customers")
-                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE))))
             .andExpect(status().isOk());
     }
 
@@ -63,7 +63,7 @@ public class SecurityConfigTest {
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .with(jwt().jwt(token -> token.claim("scope", "test_read"))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE))))
             .andExpect(status().isForbidden());
     }
 
@@ -72,7 +72,7 @@ public class SecurityConfigTest {
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}")
-                .with(jwt().jwt(token -> token.claim("scope", "test_write"))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE))))
             .andExpect(status().isBadRequest());
     }
 }

@@ -23,10 +23,6 @@ public class GrapeTypeService {
             throw new IllegalArgumentException("Grape type cannot be null");
         }
 
-        if  (grapeType.getName() == null || grapeType.getName().isBlank()) {
-            throw new IllegalArgumentException("Grape type name cannot be null or blank");
-        }
-
         return grapeTypeRepository.save(grapeType);
     }
 
@@ -51,10 +47,6 @@ public class GrapeTypeService {
 
         if (grapeType.getId() == null) {
             throw new IllegalArgumentException("Grape type id cannot be null");
-        }
-
-        if  (grapeType.getName() == null || grapeType.getName().isBlank()) {
-            throw new IllegalArgumentException("Grape type name cannot be null or blank");
         }
 
         grapeTypeRepository.findById(grapeType.getId())

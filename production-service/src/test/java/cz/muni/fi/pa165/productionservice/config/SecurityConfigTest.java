@@ -1,6 +1,7 @@
 package cz.muni.fi.pa165.productionservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.config.TestJacksonConfig;
 import cz.muni.fi.pa165.productionservice.api.ProductionPlanRequestDto;
 import cz.muni.fi.pa165.productionservice.api.WineRecipeCreateDto;
@@ -70,7 +71,7 @@ class SecurityConfigTest {
     @Test
     void getEndpoint_withWriteScopeOnly_returnsForbidden() throws Exception {
         mockMvc.perform(get(SecurityConfig.RECIPES_ENDPOINTS.replace("/**", ""))
-                .with(jwt().jwt(token -> token.claim("scope", SecurityConfig.WRITE_SCOPE))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE))))
             .andExpect(status().isForbidden());
     }
 
@@ -79,7 +80,7 @@ class SecurityConfigTest {
         Mockito.when(wineRecipeFacade.findAllRecipes()).thenReturn(List.of(TestDataFactory.wineRecipeDto()));
 
         mockMvc.perform(get(SecurityConfig.RECIPES_ENDPOINTS.replace("/**", ""))
-                .with(jwt().jwt(token -> token.claim("scope", SecurityConfig.READ_SCOPE))))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE))))
             .andExpect(status().isOk());
     }
 
@@ -88,7 +89,7 @@ class SecurityConfigTest {
         WineRecipeCreateDto createDto = TestDataFactory.wineRecipeCreateDto();
 
         mockMvc.perform(post(SecurityConfig.RECIPES_ENDPOINTS.replace("/**", ""))
-                .with(jwt().jwt(token -> token.claim("scope", SecurityConfig.READ_SCOPE)))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isForbidden());
@@ -101,7 +102,7 @@ class SecurityConfigTest {
             .thenReturn(TestDataFactory.wineRecipeDto());
 
         mockMvc.perform(post(SecurityConfig.RECIPES_ENDPOINTS.replace("/**", ""))
-                .with(jwt().jwt(token -> token.claim("scope", SecurityConfig.WRITE_SCOPE)))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.WRITE_SCOPE)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createDto)))
             .andExpect(status().isCreated());
@@ -115,7 +116,7 @@ class SecurityConfigTest {
             .thenReturn(TestDataFactory.productionPlanDto());
 
         mockMvc.perform(post(SecurityConfig.PLANNING_ENDPOINT)
-                .with(jwt().jwt(token -> token.claim("scope", SecurityConfig.READ_SCOPE)))
+                .with(jwt().jwt(token -> token.claim("scope", SwaggerConstants.READ_SCOPE)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
             .andExpect(status().isOk());

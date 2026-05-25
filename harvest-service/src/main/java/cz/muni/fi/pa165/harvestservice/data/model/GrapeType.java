@@ -33,14 +33,13 @@ public class GrapeType {
             return false;
         }
 
-        return Objects.equals(getId(), grapeType.getId())
-            && Objects.equals(getName(), grapeType.getName())
+        return Objects.equals(getName(), grapeType.getName())
             && Objects.equals(getDescription(), grapeType.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription());
+        return Objects.hash(getName(), getDescription());
     }
 
     @Override

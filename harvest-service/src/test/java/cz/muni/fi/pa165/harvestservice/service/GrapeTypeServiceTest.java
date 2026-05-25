@@ -49,30 +49,6 @@ class GrapeTypeServiceTest {
     }
 
     @Test
-    void create_nameIsNull_throwsIllegalArgumentException() {
-        // Arrange
-        GrapeType grapeType = TestDataFactory.grapeTypeEntity();
-        grapeType.setName(null);
-
-        // Act & Assert
-        assertThatThrownBy(() -> grapeTypeService.create(grapeType))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Grape type name cannot be null or blank");
-    }
-
-    @Test
-    void create_nameIsBlank_throwsIllegalArgumentException() {
-        // Arrange
-        GrapeType grapeType = TestDataFactory.grapeTypeEntity();
-        grapeType.setName("   ");
-
-        // Act & Assert
-        assertThatThrownBy(() -> grapeTypeService.create(grapeType))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Grape type name cannot be null or blank");
-    }
-
-    @Test
     void findById_grapeTypeFound_returnsGrapeType() {
         // Arrange
         GrapeType grapeType = TestDataFactory.grapeTypeEntity();

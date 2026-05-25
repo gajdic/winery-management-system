@@ -24,35 +24,12 @@ public class CustomerService {
             throw new IllegalArgumentException("Customer cannot be null");
         }
 
-        if (customer.getName() == null || customer.getName().isBlank()) {
-            throw new IllegalArgumentException("Customer name cannot be blank");
-        }
-
-        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Customer email cannot be blank");
-        }
-
-        if (customer.getAddress() == null) {
-            throw new IllegalArgumentException("Customer address cannot be null");
-        }
-
         return customerRepository.save(customer);
     }
 
     public Customer update(UUID id, Customer updatedData) {
         if (updatedData == null) {
             throw new IllegalArgumentException("Customer cannot be null");
-        }
-        if (updatedData.getName() == null || updatedData.getName().isBlank()) {
-            throw new IllegalArgumentException("Customer name cannot be blank");
-        }
-
-        if (updatedData.getEmail() == null || updatedData.getEmail().isBlank()) {
-            throw new IllegalArgumentException("Customer email cannot be blank");
-        }
-
-        if (updatedData.getAddress() == null) {
-            throw new IllegalArgumentException("Customer address cannot be null");
         }
 
         Customer existing = findById(id);

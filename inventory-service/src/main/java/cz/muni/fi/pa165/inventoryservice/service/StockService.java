@@ -68,12 +68,11 @@ public class StockService {
         return stockRepository.save(stock);
     }
 
-    public boolean delete(UUID id) {
+    public void delete(UUID id) {
         if (!stockRepository.existsById(id)) {
-            return false;
+            throw new ResourceNotFoundException("Stock not found: " + id);
         }
         stockRepository.deleteById(id);
-        return true;
     }
 
     private void validatePositiveQuantity(int quantity) {

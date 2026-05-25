@@ -35,16 +35,14 @@ public class Reservation extends EntityBase {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reservation that = (Reservation) o;
-        return quantity == that.quantity
-                && Objects.equals(id, that.id)
-                && Objects.equals(customerId, that.customerId)
+        return Objects.equals(customerId, that.customerId)
                 && Objects.equals(wineId, that.wineId)
                 && Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, customerId, wineId, quantity, createdAt);
+        return Objects.hash(customerId, wineId, createdAt);
     }
 
     @Override

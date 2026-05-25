@@ -1,5 +1,6 @@
 package cz.muni.fi.pa165.customerservice.rest;
 
+import cz.muni.fi.pa165.commonservice.openapi.SwaggerConstants;
 import cz.muni.fi.pa165.commonservice.rest.exceptionhandling.ApiError;
 import cz.muni.fi.pa165.customerservice.api.ReviewCreateDto;
 import cz.muni.fi.pa165.customerservice.api.ReviewDto;
@@ -40,7 +41,7 @@ public class ReviewController {
         description = "Creates a new review for a wine by a customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_write"}
+            scopes = {SwaggerConstants.WRITE_SCOPE}
         )
     )
     @ApiResponses({
@@ -72,7 +73,7 @@ public class ReviewController {
         description = "Returns a review identified by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -100,7 +101,7 @@ public class ReviewController {
         description = "Returns all reviews.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -121,7 +122,7 @@ public class ReviewController {
         description = "Returns all reviews created by a specific customer.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -147,7 +148,7 @@ public class ReviewController {
         description = "Returns all reviews for a specific wine.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_read"}
+            scopes = {SwaggerConstants.READ_SCOPE}
         )
     )
     @ApiResponses({
@@ -173,7 +174,7 @@ public class ReviewController {
         description = "Updates an existing review.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_write"}
+            scopes = {SwaggerConstants.WRITE_SCOPE}
         )
     )
     @ApiResponses({
@@ -208,7 +209,7 @@ public class ReviewController {
         description = "Deletes a review by UUID.",
         security = @SecurityRequirement(
             name = SecurityConfig.SECURITY_SCHEME_NAME,
-            scopes = {"test_write"}
+            scopes = {SwaggerConstants.WRITE_SCOPE}
         )
     )
     @ApiResponses({

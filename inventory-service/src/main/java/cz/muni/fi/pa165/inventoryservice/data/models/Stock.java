@@ -30,15 +30,12 @@ public class Stock extends EntityBase {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Stock stock = (Stock) o;
-        return quantity == stock.quantity
-                && reservedQuantity == stock.reservedQuantity
-                && Objects.equals(id, stock.id)
-                && Objects.equals(wineId, stock.wineId);
+        return Objects.equals(wineId, stock.wineId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, wineId, quantity, reservedQuantity);
+        return Objects.hash(wineId);
     }
 
     @Override

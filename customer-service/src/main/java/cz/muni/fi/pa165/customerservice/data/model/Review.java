@@ -24,7 +24,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"customer"})
 @ToString
 public class Review {
 
